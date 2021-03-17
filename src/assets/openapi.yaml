@@ -1,0 +1,332 @@
+openapi: 3.0.3
+info:
+  title: COMPASS NUM-APP Mobile Backend
+  description: COMPASS NUM-APP Mobile Backend API
+  version: 0.1.0
+servers:
+  - url: 'http://localhost:8080/api'
+tags:
+  - name: health
+    description: Healthcheck
+  - name: user
+    description: User Operations
+  - name: auth
+    description: Authentication for Download APIs
+  - name: questionnaire
+    description: Questionnaire Operations
+  - name: queue
+    description: Queue Operations
+  - name: download
+    description: API to download data from Queue
+paths:
+  '/questionnaire/{questionnaireId}':
+    get:
+      tags:
+        - user
+      summary: Get a specific questionnaire
+      operationId: getQuestionnaire
+      parameters:
+        - name: questionnaireId
+          in: path
+          description: Questionnaire ID
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: A FHIR Questionnaire as JSON
+          content:
+            application/json:
+              schema:
+                type: object
+        '401':
+          $ref: '#/components/responses/401NotAuthenticated'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      security:
+        - Bearer: []
+  /queue:
+      post:
+        tags:
+        - queue
+        summary: Persists an encrypted report or questionnaire
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueueInsert'
+        parameters:
+        - name: type
+          in: query
+          description: 'questionnaire_response || report'
+          schema:
+            type: string
+          required: true
+        - name: appId
+          in: query
+          description: StudyID
+          schema:
+            type: string
+          required: true
+        - name: surveyId
+          in: query
+          description: ID of the current questionnaire (if type === questionnaire_response)
+          schema:
+            type: string
+          required: false
+        - name: instanceId
+          in: query
+          description: ID of the instance of the current questionnaire (if type === questionnaire_response)
+          schema:
+            type: string
+          required: false
+        - name: updateValues
+          in: query
+          description: ID of the instance of the current questionnaire (if type === questionnaire_response)
+          schema:
+            type: object
+            required: [""]
+            properties:
+              basicTrigger:
+                type: boolean
+              specialTrigger:
+                type: boolean
+          required: false
+        responses:
+          '200':
+            description: Added to queue
+          '401':
+            $ref: '#/components/responses/401NotAuthenticated'
+          '500':
+            $ref: '#/components/responses/500ServerError'
+  /health:
+    get:
+      tags:
+        - health
+      summary: Get backend status - exposes the HealthEndpoint from https://cloudnativejs.io/
+      operationId: getHealth
+      responses:
+        '200':
+          description: Server OK - When app is started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+           $ref: '#/components/responses/503ServerError'
+  '/user/{studyId}':
+    get:
+      tags:
+        - user
+      summary: Get current user information
+      operationId: getUser
+      parameters:
+        - name: studyId
+          in: path
+          description: Study ID
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Study user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+      security:
+        - Bearer: []
+  '/auth':
+    post:
+      tags:
+        - auth
+      summary: Get an authentication token used for accessing the Download API
+      operationId: authenticate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: Access token for accessing the Download API
+        '500':
+          $ref: '#/components/responses/500ServerError'
+        '401':
+          $ref: '#/components/responses/401NotAuthenticated'
+  /download:
+    get:
+      tags:
+        - download
+      summary: Get current data from queue
+      parameters:
+        - name: page
+          in: query
+          description: Number of current page
+          schema:
+            type: number
+            minimum: 1
+            default: 1
+      security:
+        -  DownloadAuthentication: []
+      responses:
+        '200':
+          description: Current Queue data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadAnswer'
+        '400':
+          description: Page query parameter set wrong
+        '500':
+          $ref: '#/components/responses/500ServerError'
+    delete:
+      tags:
+        - download
+      summary: Delete given IDs from queue
+      requestBody:
+        description: "UUIDs of CTransferList to be deleted"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteUUIDsParam'
+      security:
+        -  DownloadAuthentication: []
+      responses:
+        '200':
+          description: Deleted row count
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedRowCount'
+        '500':
+          $ref: '#/components/responses/500ServerError'
+components:
+  schemas:
+    DownloadAnswer:
+      type: object
+      properties:
+        totalEntries:
+          type: number
+        totalPages:
+          type: number
+        currentPage:
+          type: number
+        cTransferList:
+          type: array
+          items:
+            $ref: '#/components/schemas/CTransfer'
+    CTransfer:
+      type: object
+      properties:
+        UUID:
+          type: string
+          example: "534772d7-b62d-4050-ab2f-f052933c325f"
+        AppId:
+          type: string
+        JSON:
+          type: string
+          description: The encrypted Questionnaire Response
+        AbsendeDatum:
+          type: string
+          format: date-time
+        ErhaltenDatum:
+          type: string
+          format: date-time
+        Signature:
+          type: string
+          description: "'RSA-SHA256' Signature of whole CTransfer object, without Signature property."
+    DeleteUUIDsParam:
+      type: array
+      items:
+        type: string
+        description: "UUID of CTransfer to be deleted."
+        example: "534772d7-b62d-4050-ab2f-f052933c325f"
+    DeletedRowCount:
+      type: object
+      properties:
+        deletedRowCount:
+          type: number
+    LoginRequest:
+      type: object
+      properties:
+        encrypted_creds:
+          type: string
+          description: |
+            Json object with  "ApiID" + "ApiKey" + "CurrentDate" with random AES 256bit key and random initialization vector;
+        encrypted_key:
+          type: string
+          description: |
+            Encrypt random AES key with backends public key (RSA-AES-256-CBC Encryption)
+        iv:
+          type: string
+          description: Random initialization vector
+    QueueInsert:
+      type: object
+      properties:
+        payload:
+          type: string
+          description: encrypted, base
+    User:
+      type: object
+      properties:
+        current_instance_id:
+          type: string
+          description: "ID of the current Questionnaire Instance"
+        current_questionnaire_id:
+          type: string
+          description: "ID of the current Questionnaire "
+        due_date:
+          type: string
+          description: "Due Date of the Questionnaire"
+        start_date:
+          type: string
+          description: "Start Date of the Questionnaire"
+        study_id:
+          type: string
+          description: "Study ID given by QR Code"
+        firstTime:
+          type: boolean
+          description: "Marks if the user has already send in a questionnaire"
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - UP
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: string    # optional, arbitrary value for documentation purposes
+      description: |
+        Study ID to identify the user.
+    DownloadAuthentication:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Access token for the Download API
+  responses:
+    400BadRequest:
+      description: Bad Request - URL parameter is missing
+    401NotAuthenticated:
+      description: Not Authenticated - No valid authentication data was supplied
+    403NotAuthorized:
+      description: Unauthorized - No valid authorization header was supplied
+    404NotFound:
+      description: Not Found - Requested data does not exist
+    500ServerError:
+      description: Internal Server Error
+    503ServerError:
+        description: Unavailable

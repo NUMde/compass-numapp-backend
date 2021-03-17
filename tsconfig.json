@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es2017",
+        "sourceMap": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "outDir": "./build",
+        "esModuleInterop": true
+    },
+    "files": [
+        "./src/server/Route.ts"
+    ],
+    "include": [
+        "./src/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

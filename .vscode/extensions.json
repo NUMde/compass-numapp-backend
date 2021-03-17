@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "steoates.autoimport",
+        "editorconfig.editorconfig",
+        "gruntfuggly.todo-tree",
+        "mike-co.import-sorter",
+        "esbenp.prettier-vscode"
+    ]
+}

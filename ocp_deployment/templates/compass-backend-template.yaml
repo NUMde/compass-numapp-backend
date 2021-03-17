@@ -1,0 +1,550 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: compass-mobile-backend-template
+  annotations:
+    description: "Template for the set up of the compass mobile backend and PostgreSQL database service on OpenShift."
+    tags: "compass,nodejs,backend,database,postgresql"
+objects:
+# PostgreSQL objects
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    annotations:
+      template.openshift.io/expose-database_name: '{.data[''database-name'']}'
+      template.openshift.io/expose-password: '{.data[''database-password'']}'
+      template.openshift.io/expose-username: '{.data[''database-user'']}'
+    name: database-creds
+    labels:
+      app: database
+      app.kubernetes.io/component: database
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  stringData:
+    database-name: ${DATABASE_NAME}
+    database-password: ${DATABASE_PASSWORD}
+    database-user: ${DATABASE_USER}
+- kind: Service
+  apiVersion: v1
+  metadata:
+    annotations:
+      template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="database")].port}
+    name: database
+    labels:
+      app: database
+      app.kubernetes.io/component: database
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  spec:
+    ports:
+    - name: database
+      nodePort: 0
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    sessionAffinity: None
+    type: ClusterIP
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    name: database
+    labels:
+      app: database
+      app.kubernetes.io/component: database
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    annotations:
+      template.alpha.openshift.io/wait-for-ready: "true"
+    name: database
+    labels:
+      app: database
+      app.kubernetes.io/component: database
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${DATABASE_SERVICE_NAME}
+      spec:
+        containers:
+        - capabilities: {}
+          env:
+          - name: POSTGRESQL_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: database-creds
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: database-creds
+          - name: POSTGRESQL_DATABASE
+            valueFrom:
+              secretKeyRef:
+                key: database-name
+                name: database-creds
+          image: ' '
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+              - /usr/libexec/check-container
+              - --live
+            initialDelaySeconds: 120
+            timeoutSeconds: 10
+          name: database
+          ports:
+          - containerPort: 5432
+            protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+              - /usr/libexec/check-container
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /var/lib/pgsql/data
+            name: ${DATABASE_SERVICE_NAME}-data
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        volumes:
+        - name: ${DATABASE_SERVICE_NAME}-data
+          persistentVolumeClaim:
+            claimName: ${DATABASE_SERVICE_NAME}
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - database
+        from:
+          kind: ImageStreamTag
+          name: postgresql:${DATABASE_VERSION}
+          namespace: openshift
+        lastTriggeredImage: ""
+      type: ImageChange
+    - type: ConfigChange
+# Mobile Backend objects
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: mobile-backend-gitlab-webhook-secret
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  data:
+    WebHookSecretKey: ${GITLAB_WEBHOOK_SECRET}
+  type: Opaque
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: mobile-backend-github-webhook-secret
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  data:
+    WebHookSecretKey: ${GITHUB_WEBHOOK_SECRET}
+  type: Opaque
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: mobile-backend-generic-webhook-secret
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  data:
+    WebHookSecretKey: ${GENERIC_WEBHOOK_SECRET}
+  type: Opaque
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: mobile-backend-git-access-cert
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  data:
+    ssh-privatekey: ${SSH_PRIVATE_KEY}
+  type: kubernetes.io/ssh-auth
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: mobile-backend-signing-key-pair
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  data:
+    COMPASS_PRIVATE_KEY: ${PRIVATE_KEY}
+    COMPASS_PUBLIC_KEY: ${PUBLIC_KEY}
+  type: Opaque
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: mobile-backend-push-config
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  data:
+    PUSH_CLIENT_SECRET: ${PUSH_CLIENT_SECRET}
+    PUSH_API_KEY: ${PUSH_API_KEY}
+    PUSH_APP_ID: ${PUSH_APP_ID}
+  type: Opaque
+- kind: ConfigMap
+  apiVersion: v1
+  metadata:
+    name: mobile-backend-env
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  data:
+    DB_HOST: ${DATABASE_HOST}
+    DB_PORT: ${DATABASE_PORT}
+    DB_USE_SSL: ${DATABASE_USE_SSL}
+- kind: ImageStream
+  apiVersion: image.openshift.io/v1
+  metadata:
+    annotations:
+      app.openshift.io/vcs-ref: ${GIT_BRANCH}
+      app.openshift.io/vcs-uri: ${APP_GIT_URL}
+    name: mobile-backend
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+      app.openshift.io/runtime: nodejs
+      app.openshift.io/runtime-version: '12'
+  spec: {}
+- kind: BuildConfig
+  apiVersion: build.openshift.io/v1
+  metadata:
+    name: mobile-backend
+    annotations:
+      app.openshift.io/vcs-ref: ${GIT_BRANCH}
+      app.openshift.io/vcs-uri: ${APP_GIT_URL}
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+      app.openshift.io/runtime: nodejs
+      app.openshift.io/runtime-version: '12'
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: mobile-backend:${ENV}
+    resources: {}
+    successfulBuildsHistoryLimit: 5
+    failedBuildsHistoryLimit: 5
+    strategy:
+      type: Source
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          namespace: openshift
+          name: 'nodejs:12'
+    postCommit: {}
+    source:
+      type: Git
+      git:
+        uri: ${APP_GIT_URL}
+        ref: ${GIT_BRANCH}
+      contextDir: /
+      sourceSecret:
+        name: mobile-backend-git-access-cert
+    triggers:
+      - type: Generic
+        generic:
+          secretReference:
+            name: mobile-backend-generic-webhook-secret
+      - type: GitLab
+        gitlab:
+          secretReference:
+            name: mobile-backend-gitlab-webhook-secret
+      - type: GitHub
+        github:
+          secretReference:
+            name: mobile-backend-github-webhook-secret
+      - type: ConfigChange
+    runPolicy: Serial
+- kind: DeploymentConfig
+  apiVersion: apps.openshift.io/v1
+  metadata:
+    annotations:
+      app.openshift.io/vcs-uri: ${APP_GIT_URL}
+    name: mobile-backend
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+      app.openshift.io/runtime: nodejs
+      app.openshift.io/runtime-version: '12'
+  spec:
+    strategy:
+      type: Rolling
+      rollingParams:
+        updatePeriodSeconds: 1
+        intervalSeconds: 1
+        timeoutSeconds: 600
+        maxUnavailable: 25%
+        maxSurge: 25%
+      resources: {}
+      activeDeadlineSeconds: 21600
+    triggers:
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - mobile-backend
+          from:
+            kind: ImageStreamTag
+            name: 'mobile-backend:${ENV}'
+      - type: ConfigChange
+    replicas: 1
+    revisionHistoryLimit: 10
+    test: false
+    selector:
+      app: mobile-backend
+      deploymentconfig: mobile-backend
+    template:
+      metadata:
+        labels:
+          app: mobile-backend
+          deploymentconfig: mobile-backend
+      spec:
+        containers:
+          - name: mobile-backend
+            ports:
+              - containerPort: 8080
+                protocol: TCP
+            envFrom:
+              - secretRef:
+                  name: database-creds
+              - secretRef:
+                  name: mobile-backend-push-config
+              - secretRef:
+                  name: mobile-backend-signing-key-pair
+              - configMapRef:
+                  name: mobile-backend-env
+            resources: {}
+            readinessProbe:
+              httpGet:
+                path: /health
+                port: 8080
+                scheme: HTTP
+              timeoutSeconds: 1
+              periodSeconds: 10
+              successThreshold: 1
+              failureThreshold: 3
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            imagePullPolicy: Always
+            livenessProbe:
+              httpGet:
+                path: /health
+                port: 8080
+                scheme: HTTP
+              timeoutSeconds: 1
+              periodSeconds: 10
+              successThreshold: 1
+              failureThreshold: 3
+        restartPolicy: Always
+        terminationGracePeriodSeconds: 30
+        dnsPolicy: ClusterFirst
+        securityContext: {}
+        schedulerName: default-scheduler
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: mobile-backend
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  spec:
+    ports:
+      - name: 8080-tcp
+        protocol: TCP
+        port: 8080
+        targetPort: 8080
+    selector:
+      app: mobile-backend
+      deploymentconfig: mobile-backend
+    type: ClusterIP
+    sessionAffinity: None
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: mobile-backend
+    labels:
+      app: mobile-backend
+      app.kubernetes.io/component: mobile-backend
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  spec:
+    to:
+      kind: Service
+      name: mobile-backend
+      weight: 100
+    port:
+      targetPort: 8080-tcp
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+    wildcardPolicy: None
+parameters:
+- name: APP_GIT_URL
+  description: The Git URL of the application source code
+  required: true
+- name: APP_NAME
+  description: Name of the application
+  value: num-app
+- name: DATABASE_HOST
+  description: Name of database host
+  value: database
+- name: DATABASE_NAME
+  description: Name of the PostgreSQL database accessed.
+  displayName: PostgreSQL Database Name
+  required: true
+  value: sampledb
+- name: DATABASE_PASSWORD
+  description: Password for the PostgreSQL connection user.
+  displayName: PostgreSQL Connection Password
+  from: '[a-zA-Z0-9]{16}'
+  generate: expression
+  required: true
+- name: DATABASE_PORT
+  description: Name of database port
+  value: '5432'
+- name: DATABASE_SERVICE_NAME
+  description: The name of the OpenShift Service exposed for the database.
+  displayName: Database Service Name
+  required: true
+  value: database
+- name: DATABASE_USER
+  description: Username for PostgreSQL user that will be used for accessing the database.
+  displayName: PostgreSQL Connection Username
+  from: user[A-Z0-9]{3}
+  generate: expression
+  required: true
+- name: DATABASE_USE_SSL
+  description: Boolean setting use of SSL for db communication
+  value: 'false'
+- name: DATABASE_VERSION
+  description: Version of PostgreSQL image to be used.
+  displayName: Version of PostgreSQL Image
+  required: true
+  value: "12"
+- name: ENV
+  description: Name of the environment
+  value: dev
+- name: GIT_BRANCH
+  description: The Git branch that should be used for new builds
+  value: main
+- name: GENERIC_WEBHOOK_SECRET
+  description: Secret for generic webhook
+  generate: expression
+  from: '[a-zA-Z0-9]{16}'
+- name: GITHUB_WEBHOOK_SECRET
+  description: Secret for GitHub webhook
+  generate: expression
+  from: '[a-zA-Z0-9]{16}'
+- name: GITLAB_WEBHOOK_SECRET
+  description: Secret for GitLab webhook
+  generate: expression
+  from: '[a-zA-Z0-9]{16}'
+- name: HIGH_LVL_APP_NAME
+  description: Name of the higher level application that a resource is part of
+  value: COMPASS
+- name: INSTANCE_IDENTIFIER
+  description: Unique identifier for resources
+  generate: expression
+  from: '[a-zA-Z0-9]{5}'
+- name: MEMORY_LIMIT
+  description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  required: true
+  value: 512Mi
+- name: PRIVATE_KEY
+  description: Personal private Key for encryption functions
+  required: true
+- name: PUBLIC_KEY
+  description: Personal public Key for encryption functions
+  required: true
+- name: PUSH_CLIENT_SECRET
+  displayName: Push Service Client Secret
+  description: The client secret to register at the push service. (optional)
+  value: ''
+- name: PUSH_API_KEY
+  displayName: Push Service API Key
+  description: Api key for the push service. (optional)
+  value: ''
+- name: PUSH_APP_ID
+  displayName: Push Service APP ID
+  description: App Id for the push service. (optional)
+  value: ''
+- name: SSH_PRIVATE_KEY
+  description: Private Key for access to Git
+  required: true
+- name: VOLUME_CAPACITY
+  description: Volume space available for data, e.g. 512Mi, 2Gi.
+  displayName: Volume Capacity
+  required: true
+  value: 1Gi

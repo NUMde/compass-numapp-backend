@@ -1,0 +1,102 @@
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+
+= NUM-App Mobile Back End
+
+https://github.com/NUMde/compass-numapp[Main Repository] | link:./docs[Back End Documentation]
+
+== Welcome
+
+This repository provides the source code for the mobile back end of the link:https://github.com/NUMde/compass-numapp[Compass NUM-App Project]. This project provides a set of open source components meant for the digital conduct of questionnaire based studies. The mobile back end itself is a  part of link:https://num-compass.science/[COMPASS] (**C**oordination **O**n **M**obile **P**andemic **A**pps best practice and **S**olution **S**haring).
+
+The mobile back end provides study data for the NUM-App in form of link:https://www.hl7.org/fhir/questionnaire.html[FHIR Questionnaires]. It also stores the study data that is uploaded from the mobile app.
+Additionally it makes the collected data accessible for other parties.
+
+== Development
+
+=== Local Setup
+
+* Make sure you have a recent version (LTS recommended) of
+https://nodejs.org/[Node.js] installed and run the following commands to
+download and prepare this repository:
+
+[source,bash]
+----
+git clone https://github.com/NUMde/compass-numapp-backend.git
+npm install
+----
+
+* In case you use VSCode as your editor, install the recommended extensions
+
+=== Run the back end locally
+
+==== Create .env file
+Some configuration values need to be present as environment variables during runtime.
+The application loads a file  with the name `.env` during startup, if it is present.
+
+To get started copy the file `.env.sample` to `.env` and add your values.
+
+=== Generating RSA key pair
+
+For local development we need an RSA key pair for the encryption with the client.
+Use one of the following commands to create a key pair.
+The resulting files are picked automatically. But they can also be inserted into the `.env` file.
+
+[source,bash]
+----
+openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:4096
+$ openssl rsa -pubout -in private_key.pem -out public_key.pem
+----
+
+=== Scripts
+
+====  npm run start
+
+Start the built application
+
+====  npm run dev
+
+Start the application on the local machine in watch mode. This is the preferred command for local development.
+
+====  npm run build
+
+Build the application into the `build` folder.
+
+====  npm run clean
+
+Clean the `dist` folder.
+
+====  npm run lint
+
+Lint the source code.
+
+====  npm run prettier-format
+
+Have prettier format your code.
+
+====  npm run test
+
+Run your unit tests with jest.
+
+=== Environment variables used by the application
+
+There are many different environment variables used by the application.
+Most of them have default values, that can be overriden by exposing a different value as environment variable.
+All used variables can be found in the `src/config` folder.
+
+=== Commiting code changes
+
+This app uses https://typicode.github.io/husky[Husky] to trigger some actions during a commit.
+Before each commit passes automatic tests and linting is run. If any action failes, the commit failes.
+
+== Deployment
+
+The application should run in any environment that provides a Node.js runtime.
+The current configuration is suited for an OpenShift deployment. Find detailed instructions here link:./ocp_deployment[OCP Deployment].
+
+== Database Setup
+
+Dedicated documentation for the database setup can be found here link:./db[DB Setup].

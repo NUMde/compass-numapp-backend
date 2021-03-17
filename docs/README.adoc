@@ -1,0 +1,11 @@
+= COMPASS Questionnaire Response Downloader
+
+https://github.com/NUMde/compass-numapp[Main Repository]
+
+These docs will provide you with additional information on the back end.
+
+The following documentation topics ar available (as of now):
+
+* link:../ocp_deployment[OpenShift Deployment]
+* link:../db[DB Setup]
+* link:./reminder[Logic of the reminder feature]

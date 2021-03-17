@@ -1,0 +1,14 @@
+== Contributing
+
+Bug reports and pull requests are welcome on GitHub at <TODO - Add final link>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the http://contributor-covenant.org[Contributor Covenant] code of conduct.
+
+=== Submitting code changes:
+
+- Open a <TODO>/pulls[Pull Request]
+- Ensure all tests pass
+- Await code review
+
+=== Design and development principles
+
+1. As few dependencies as possible
+2. <TODO>

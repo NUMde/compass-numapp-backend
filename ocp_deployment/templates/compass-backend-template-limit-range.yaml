@@ -1,0 +1,47 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: compass-mobile-backend-template-limit-range
+  annotations:
+    description: "Template for the set up of limit ranges for the compass mobile backend and PostgreSQL database service on OpenShift."
+    tags: "compass,nodejs,limitrange"
+objects:
+- kind: LimitRange
+  apiVersion: v1
+  metadata:
+    name: resource-limit
+    labels:
+      app: ${APP_NAME}
+      app.kubernetes.io/component: ${APP_NAME}
+      app.kubernetes.io/name: ${APP_NAME}
+      app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
+      app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
+  spec:
+    limits:
+      - type: Container
+        max:
+          cpu: "2"
+          memory: "1Gi"
+      - type: "Pod"
+        max:
+          cpu: "2"
+          memory: "1Gi"
+      - type: "PersistentVolumeClaim"
+        max:
+          storage: ${VOLUME_CAPACITY}
+parameters:
+- name: APP_NAME
+  description: Name of the application
+  value: num-app
+- name: HIGH_LVL_APP_NAME
+  description: Name of the higher level application that a resource is part of
+  value: COMPASS
+- name: INSTANCE_IDENTIFIER
+  description: Unique identifier for resources
+  generate: expression
+  from: '[a-zA-Z0-9]{5}'
+- name: VOLUME_CAPACITY
+  description: Volume space available for data, e.g. 512Mi, 2Gi.
+  displayName: Volume Capacity
+  required: true
+  value: 1Gi

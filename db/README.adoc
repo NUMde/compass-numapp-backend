@@ -1,0 +1,87 @@
+:important-caption: :heavy_exclamation_mark:
+
+link:../docs[← Table of Contents]
+
+== DB scripts
+
+Put your db migration scripts here and comply with the naming rules of https://flywaydb.org/documentation/migrations#discovery[Flyway]
+
+== Steps to Set Up the Schema
+
+=== Connect to Database
+.Preconditions
+* `oc login` was called and the correct project is selected
+* DB runs on default port (5432)
+* DB deployment name is database
+
+Identify the pod that runs the DB: `oc get pod -l name=database -o name`
+
+Run following command (replace the pod name) to create a port forwarding to the remote database:
+
+`oc port-forward <pod-name> <local-port>:<remote-port>`
+
+E.g. `oc port-forward database-1-ptdq5 15432:5432`
+
+To check that everything is working run `npx flyway -c db/flyway.js info` from the project root folder.
+
+=== Apply Schema changes to DB
+
+From the project root folder run `npx flyway -c db/flyway.js migrate` (When you run Flyway the first time, it downloads some binaries and exits. Rerun the command to start the migration.) User and password can be found in the secret database-creds.
+
+The output should look like this:
+[source]
+----
+$ npx flyway -c db/flyway.js migrate
+Database user: MY_DB_USER
+Database password:
+
+Flyway Community Edition 7.5.0 by Redgate
+Database: jdbc:database://localhost:15432/compass (PostgreSQL 12.1)
+Successfully validated 2 migrations (execution time 00:00.808s)
+Creating Schema History table "public"."flyway_schema_history" ...
+Current version of schema "public": << Empty Schema >>
+Migrating schema "public" to version "001 - Setup Tables"
+Migrating schema "public" to version "002 - Initial Data"
+Successfully applied 2 migrations to schema "public" (execution time 00:20.229s)
+----
+
+The scripts will setup:
+
+* 5 tables
+* 1 api user (API_ID = "test", API_KEY = "gKdKLYG2g0-Y1EllI0-W")
+* 3 questionnaire entries with different IDs
+* 2 study users
+* 17 exemplary queue items (you won't be able to decrypt those with your key, they are just for reference)
+
+== Access DB with Admin Tool
+
+.Preconditions
+* pgAdmin 4 is installed on your local machine
+* Port forwarding is established. See <<Connect to Database>>
+
+.Connect
+. Open PGAdmin
+. Click Add new Server
+. Fill in a Server Name
+. Open tab Connection
+. 127.0.0.1:15432 as address
+. Enter Username and Password (can be found in the secret database-creds)
+. Click Save
+
+
+== Access DB with CLI
+
+.Preconditions
+* You identified the pod that runs the DB: `oc get pod -l name=database -o name`
+
+.Connect
+The database name and user can be found in the secret database-creds.
+
+[source,shell]
+----
+$ oc rsh <pod-name>
+sh-4.2$ psql <name_of_db> <name_of_db_user>
+sampledb=>
+----
+
+You can now execute regular queries.
