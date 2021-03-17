@@ -1,4 +1,4 @@
-= COMPASS Questionnaire Response Downloader
+= COMPASS Mobile Back End
 
 https://github.com/NUMde/compass-numapp[Main Repository]
 
