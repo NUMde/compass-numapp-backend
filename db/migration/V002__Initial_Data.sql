@@ -164,7 +164,7 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.12",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 mit 'Option A' beantwortet wurde",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.11 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
@@ -175,7 +175,7 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.13",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 oder 1.10.1 mit 'Option A' beantwortet wurde",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.11 oder 1.10.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
@@ -191,7 +191,7 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.14",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 und 1.10.1 mit 'Option A' beantwortet wurde",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.11 und 1.10.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
@@ -504,7 +504,7 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.12",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 mit 'Option A' beantwortet wurde",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.11 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
@@ -515,7 +515,7 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.13",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 oder 1.10.1 mit 'Option A' beantwortet wurde",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.11 oder 1.10.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
@@ -531,7 +531,7 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.14",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 und 1.10.1 mit 'Option A' beantwortet wurde",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.11 und 1.10.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
@@ -844,7 +844,7 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.12",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 mit 'Option A' beantwortet wurde",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.11 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
@@ -855,7 +855,7 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.13",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 oder 1.10.1 mit 'Option A' beantwortet wurde",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.11 oder 1.10.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
@@ -871,7 +871,7 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.14",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 und 1.10.1 mit 'Option A' beantwortet wurde",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.11 und 1.10.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{

@@ -70,7 +70,10 @@ Resources for Mobile Backend:
 * 4 Secrets for the webhooks and the git deploy key
 * 1 Config map
 
-Before you can process the template, you must set up a read-only SSH key pair to configure access for OpenShift to your Git-based SCM tool. Please note: This should not be your personal SSH key pair, but a dedicated deploy key which is used to permit read-access to the mobile backend repository.
+
+The following step can be skipped, if you use a public repository.
+
+Before you can process the template, you must set up a read-only SSH key pair to configure access for OpenShift to your Git-based SCM tool. Please note: This should not be your personal SSH key pair, but a dedicated deploy key which is used to permit read-access to the mobile back end repository.
 
 In your .ssh directory generate a key pair with:
 
@@ -95,6 +98,12 @@ $ oc new-app --file your/path/to/compass-backend-template.yaml \
 > -p "PRIVATE_KEY=$(echo "$(cat your/path/to/private_key)" | base64 )" \
 > -p "SSH_PRIVATE_KEY=$(echo "$(cat your/path/to/private_deploy_key)" | base64 )" \
 > [-p param=value] #optional
+----
+
+In case you have a public repository, use an empty string as the value for the `SSH_PRIVATE_KEY`. E.g.
+[source,shell]
+----
+\ -p "SSH_PRIVATE_KEY=$(echo "" | base64 )"
 ----
 
 [horizontal]

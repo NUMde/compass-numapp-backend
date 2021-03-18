@@ -167,7 +167,7 @@ export class COMPASSConfig {
     }
 
     /**
-     * Gets the starting index for a new interval. Example: If a user sends in a report. he/she switches to
+     * Gets the starting index for a new interval. Example: If a user sends in a report, he/she switches to
      * another track. Does this track start today (meaning now) or tomorrow morning?
      * With the defaultInterval being 0 the new track starts immediately, with 1 the track would start tomorrow.
      *
