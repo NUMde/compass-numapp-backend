@@ -371,6 +371,19 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/EnableWhenItem'
+                enableBehavior:
+                    type: string
+                    description: |
+                        Controls how multiple enableWhen values are interpreted - whether all or any must be true.
+
+                        * all - Enable the question when all the enableWhen criteria are satisfied.
+                        * any - Enable the question when any of the enableWhen criteria are satisfied.
+                    enum:
+                        - any
+                        - all
+                definition:
+                    type: string
+                    format: uri
                 answerOption:
                     type: array
                     items:
