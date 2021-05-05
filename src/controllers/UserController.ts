@@ -39,7 +39,7 @@ export class UserController {
     @Middleware([AuthorizationController.checkStudyUserLogin])
     public async getUser(req: ISecureRequest, resp: Response) {
         try {
-            const user: UserEntry = await this.userModel.getAndEventuallyUpdateUserByStudyID(
+            const user: UserEntry = await this.userModel.getAndUpdateUserByStudyID(
                 req.params.studyID
             );
             this.userModel.updateLastAction(req.params.studyID);
