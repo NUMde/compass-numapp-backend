@@ -5,7 +5,7 @@ import { Pool } from 'pg';
 
 import { Logger } from '@overnightjs/logger';
 
-import { UserEntry } from '../types';
+import { StateChangeTrigger, UserEntry } from '../types';
 import DB from '../server/DB';
 
 import { GcsStateModel } from '../services/GcsStateModel';
@@ -34,7 +34,8 @@ export class UserModel {
             const user = query_result.rows[0] as UserEntry;
 
             // calculate new state values
-            const updatedUser = this.gcsStateModel.calculateUpdatedData(user, parameters);
+            const triggerValues: StateChangeTrigger = JSON.parse(parameters);
+            const updatedUser = this.gcsStateModel.calculateUpdatedData(user, triggerValues);
 
             // persist changes
             await pool.query(
@@ -85,7 +86,7 @@ export class UserModel {
 
             let user = res.rows[0] as UserEntry;
             if (!user.start_date || (user.due_date && user.due_date < new Date())) {
-                // TODO rewrite updateUser to take a existing user object
+                // TODO rewrite updateUser to take an existing user object and not reload from the db
                 user = await this.updateUser(user.study_id);
             }
             return user;

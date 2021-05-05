@@ -3,7 +3,7 @@
  */
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { IdHelper } from '../services/IdHelper';
-import { UserEntry } from '../types';
+import { StateChangeTrigger, UserEntry } from '../types';
 import { StateModel } from './StateModel';
 
 /**
@@ -16,24 +16,28 @@ import { StateModel } from './StateModel';
  */
 export class GcsStateModel implements StateModel {
     /**
-     * Determine new state revelant data for the given user
+     * Determine new state relevant data for the given user.
      *
      * @param {UserEntry} user
-     * @param {string} parameters A stringified JSON with
+     * @param {string} parameters A stringified JSON with parameters that trigger state changes.
      * @return {*}  {UserEntry}
      * @memberof GcsStateModel
      */
-    public calculateUpdatedData(user: UserEntry, parameters: string): UserEntry {
+    public calculateUpdatedData(user: UserEntry, parameters: StateChangeTrigger): UserEntry {
         const distValues = this.calculateStateValues(user, parameters);
-        const datesAndIterations = this.calculateDatesAndRemainingIteration(
+        const datesAndIterations = this.calculateDates(
             user,
             distValues.nextInterval,
             distValues.nextDuration,
             distValues.nextStartHour,
             distValues.nextDueHour,
-            distValues.startImmediately,
-            distValues.additionalIterationsLeft
+            distValues.startImmediately
         );
+
+        // handle iteration counter for questionnaires
+        const iterationsLeft = distValues.additionalIterationsLeft
+            ? distValues.additionalIterationsLeft - 1
+            : 0;
 
         // clone the object and set updated values
         const updatedUser: UserEntry = { ...user };
@@ -41,70 +45,66 @@ export class GcsStateModel implements StateModel {
         updatedUser.current_questionnaire_id = distValues.nextQuestionnaireId;
         updatedUser.start_date = datesAndIterations.startDate;
         updatedUser.due_date = datesAndIterations.dueDate;
-        updatedUser.additional_iterations_left = datesAndIterations.additionalIterationsLeft;
         updatedUser.current_interval = distValues.nextInterval;
-
+        updatedUser.additional_iterations_left = iterationsLeft;
         return updatedUser;
     }
 
-    private calculateDatesAndRemainingIteration(
+    private calculateDates(
         userData: UserEntry,
         nextInterval: number,
         nextDuration: number,
         nextStartHour: number,
         nextDueHour: number,
-        startImmediately: boolean,
-        additionalIterationsLeft: number
+        startImmediately: boolean
     ): {
         startDate: Date;
         dueDate: Date;
-        additionalIterationsLeft: number;
     } {
-        const now = new Date();
+        const now = new Date(Date.now());
         const intervalStart = new Date(now);
-
         intervalStart.setDate(
             intervalStart.getDate() + COMPASSConfig.getDefaultIntervalStartIndex()
         );
 
+        /**
+         * TODO
+         *
+         * @param {Date} startDate
+         * @param {boolean} [startImmediately]
+         * @return {*}
+         */
         const calcTime = (startDate: Date, startImmediately?: boolean) => {
-            // short circuit for testing
-            if (COMPASSConfig.isFakeDatesUsed()) {
-                const fakeStart = new Date();
-                fakeStart.setSeconds(fakeStart.getSeconds() + 10);
+            let newStartDate: Date;
+            let newDueDate: Date;
 
-                const fakeDue = new Date(fakeStart);
-                fakeDue.setSeconds(fakeDue.getSeconds() + 30 * 60);
-                return {
-                    startDate: fakeStart,
-                    dueDate: fakeDue,
-                    additionalIterationsLeft: additionalIterationsLeft
-                        ? additionalIterationsLeft - 1
-                        : 0
-                };
+            if (COMPASSConfig.useFakeDateCalculation()) {
+                // short circuit for testing
+                // start date is set to be in 10 seconds and due date is in 30 minutes
+                newStartDate = now;
+                newStartDate.setSeconds(newStartDate.getSeconds() + 10);
+
+                newDueDate = new Date(newStartDate);
+                newDueDate.setSeconds(newDueDate.getSeconds() + 30 * 60);
+            } else {
+                newStartDate = new Date(startDate);
+                if (userData.start_date) {
+                    if (startImmediately) {
+                        newStartDate = new Date(intervalStart);
+                    } else {
+                        newStartDate.setDate(newStartDate.getDate() + nextInterval);
+                    }
+                }
+                newStartDate.setHours(nextStartHour, 0, 0, 0);
+
+                newDueDate = new Date(newStartDate);
+                newDueDate.setDate(newDueDate.getDate() + nextDuration);
+                newDueDate.setHours(nextDueHour, 0, 0, 0);
             }
-
-            let newStartDate = new Date(startDate);
-
-            if (userData.start_date) {
-                newStartDate = startImmediately
-                    ? new Date(intervalStart)
-                    : new Date(newStartDate.setDate(newStartDate.getDate() + nextInterval));
-            }
-            newStartDate = new Date(newStartDate);
-            newStartDate.setHours(nextStartHour, 0, 0, 0);
-
-            let newDueDate = new Date(newStartDate);
-            newDueDate.setDate(newDueDate.getDate() + nextDuration);
-            newDueDate.setHours(nextDueHour, 0, 0, 0);
-            newDueDate = new Date(newDueDate);
 
             return {
                 startDate: newStartDate,
-                dueDate: newDueDate,
-                additionalIterationsLeft: additionalIterationsLeft
-                    ? additionalIterationsLeft - 1
-                    : 0
+                dueDate: newDueDate
             };
         };
 
@@ -113,18 +113,14 @@ export class GcsStateModel implements StateModel {
             startImmediately
         );
 
+        // loop until the due date is in the future to get valid dates
         while (dates.dueDate < now) {
             dates = calcTime(dates.startDate);
         }
-
         return dates;
     }
 
-    private calculateStateValues(currentUser: UserEntry, parameters: string) {
-        const triggerValues: { basicTrigger?: boolean; specialTrigger?: boolean } = JSON.parse(
-            parameters
-        );
-
+    private calculateStateValues(currentUser: UserEntry, triggerValues: StateChangeTrigger) {
         // get default values
         const shortInterval = COMPASSConfig.getDefaultShortInterval();
         const shortDuration = COMPASSConfig.getDefaultShortDuration();

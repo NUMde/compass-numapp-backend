@@ -6,3 +6,4 @@ export * from './CTransfer';
 export * from './MeasurementObject';
 export * from './QueueEntry';
 export * from './UserEntry';
+export * from './StateChangeTrigger';

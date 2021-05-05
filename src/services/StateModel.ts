@@ -1,4 +1,4 @@
-import { UserEntry } from '../types';
+import { StateChangeTrigger, UserEntry } from '../types';
 
 /**
  * This interface defines all methods, that need to be implemented by a custom state model.
@@ -15,5 +15,5 @@ export interface StateModel {
      * @return {*}  {UserEntry}
      * @memberof StateModel
      */
-    calculateUpdatedData(user: UserEntry, parameters: string): UserEntry;
+    calculateUpdatedData(user: UserEntry, parameters: StateChangeTrigger): UserEntry;
 }
