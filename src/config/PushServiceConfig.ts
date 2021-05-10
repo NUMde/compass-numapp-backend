@@ -49,7 +49,7 @@ export class PushServiceConfig {
     }
 
     /**
-     * The message send as a push notification in case a user needs to upload a questionnair.
+     * The message send as a push notification in case a participant needs to upload a questionnaire.
      */
     public static getUploadMessage(): string {
         return env

@@ -12,7 +12,7 @@ CREATE TABLE apiuser
 CREATE TABLE questionnairehistory
 (
     id character varying(355) NOT NULL,
-    study_id character varying(355) NOT NULL,
+    subject_id character varying(355) NOT NULL,
     questionnaire_id character varying(355) NOT NULL,
     date_received timestamp without time zone NOT NULL,
     date_sent timestamp without time zone,
@@ -33,17 +33,17 @@ CREATE TABLE questionnaires
 CREATE TABLE queue
 (
     id character varying NOT NULL,
-    study_id character varying NOT NULL,
+    subject_id character varying NOT NULL,
     encrypted_resp text NOT NULL,
     date_sent timestamp without time zone NOT NULL,
     date_received timestamp without time zone NOT NULL,
     CONSTRAINT queue_pkey PRIMARY KEY (id)
 );
 
--- Table: studyuser
-CREATE TABLE studyuser
+-- Table: studyparticipant
+CREATE TABLE studyparticipant
 (
-    study_id character varying NOT NULL,
+    subject_id character varying NOT NULL,
     last_action timestamp without time zone,
     current_questionnaire_id character varying,
     start_date timestamp without time zone,
@@ -51,5 +51,5 @@ CREATE TABLE studyuser
     current_instance_id character varying(355),
     current_interval smallint,
     additional_iterations_left smallint,
-    CONSTRAINT studyuser_pkey PRIMARY KEY (study_id)
+    CONSTRAINT studyparticipant_pkey PRIMARY KEY (subject_id)
 );

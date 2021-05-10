@@ -50,7 +50,7 @@ The scripts will setup:
 * 5 tables
 * 1 api user (API_ID = "test", API_KEY = "gKdKLYG2g0-Y1EllI0-W")
 * 3 questionnaire entries with different IDs
-* 2 study users
+* 2 study participants
 * 17 exemplary queue items (you won't be able to decrypt those with your key, they are just for reference)
 
 == Access DB with Admin Tool

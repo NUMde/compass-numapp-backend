@@ -8,22 +8,22 @@ link:../README.adoc[← Table of Contents]
 
 ==== A - Initialer Download
 
-Trigger: User logt sich das erste mal in der App ein Aktion: Versende
+Trigger: Participant loggt sich das erste mal in der App ein Aktion: Versende
 Erinnerungstext morgens um 6 Uhr ``Es liegt ein neuer GCS-Fragebogen für
-Sie bereit'' Ende: User lädt Fragebogen runter oder vier Erinnerungen
+Sie bereit'' Ende: Participant lädt Fragebogen runter oder vier Erinnerungen
 wurden versendet / vier Tage sind vergangen
 
-DB-Zustand: Start_Date und Due_Date in User gesetzt && Due Date nicht
+DB-Zustand: Start_Date und Due_Date in Participant gesetzt && Due Date nicht
 überschritten && *kein* Eintrag in History Table
 
 ==== B - Beantworten des Fragebogens
 
-Trigger: User lädt Fragebogen runter Aktion: Versende Erinnerungstext
+Trigger: Participant lädt Fragebogen runter Aktion: Versende Erinnerungstext
 morgens um 6 Uhr ``Bitte denken Sie an das Absenden Ihres
-GCS-Fragebogens'' Ende: User lädt Fragebogen hoch oder vier Erinnerungen
+GCS-Fragebogens'' Ende: Participant lädt Fragebogen hoch oder vier Erinnerungen
 wurden versendet / vier Tage sind vergangen
 
-DB-Zustand: Start_Date und Due_Date in User gesetzt && Due Date nicht
+DB-Zustand: Start_Date und Due_Date in Participant gesetzt && Due Date nicht
 überschritten && Eintrag in History Table mit `date_sent = null`
 
 === 2 Tage Modus (Short-track)
@@ -35,10 +35,10 @@ positiven Triggerfrage wurde abgesendet
 
 Trigger: Meldebutton gedrückt Aktion: Versende Erinnerungstext morgens
 um 6 Uhr ``Bitte denken Sie an das Absenden Ihres GCS-Fragebogens''
-(Etwas andere Wortwahl!!) Ende: User lädt Fragebogen hoch oder zwei
+(Etwas andere Wortwahl!!) Ende: Participant lädt Fragebogen hoch oder zwei
 Erinnerungen wurden versendet
 
-DB-Zustand: Start_Date und Due_Date in User gesetzt && Due Date nicht
+DB-Zustand: Start_Date und Due_Date in Participant gesetzt && Due Date nicht
 überschritten && Eintrag in History Table mit `date_sent = null` (wie
 link:#b---beantworten-des-fragebogens[B], aber Achtung, da mehrere
 Einträge in History Table vorhanden)
@@ -49,10 +49,10 @@ Trigger: Fragebogen mit positiven Triggerfragen wurde abgesendet Aktion:
 Versende Erinnerungstext morgens um 6 Uhr ``Es liegt ein neuer
 GCS-Fragebogen für Sie bereit'' Versende Erinnerungstext sofort ``Es
 liegt ein neuer GCS-Fragebogen für Sie bereit'' (kann das die App nicht
-machen?) Ende: User lädt Fragebogen runter oder zwei Erinnerungen wurden
+machen?) Ende: Participant lädt Fragebogen runter oder zwei Erinnerungen wurden
 versendet
 
-DB-Zustand: Start_Date und Due_Date in User gesetzt && Due Date nicht
+DB-Zustand: Start_Date und Due_Date in Participant gesetzt && Due Date nicht
 überschritten && *kein* Eintrag in History Table (wie
 link:#a---initialer-download[A])
 
@@ -60,9 +60,9 @@ link:#a---initialer-download[A])
 
 Trigger: Fragebogen mit positiven Triggerfragen wurde abgesendet Aktion:
 Versende Erinnerungstext morgens um 6 Uhr ``Bitte denken Sie an das
-Absenden Ihres GCS-Fragebogens'' Ende: User lädt Fragebogen hoch oder
+Absenden Ihres GCS-Fragebogens'' Ende: Participant lädt Fragebogen hoch oder
 zwei Erinnerungen wurden versendet
 
-DB-Zustand: Start_Date und Due_Date in User gesetzt && Due Date nicht
+DB-Zustand: Start_Date und Due_Date in Participant gesetzt && Due Date nicht
 überschritten && Eintrag in History Table mit `date_sent = null` (wie
 link:#b---beantworten-des-fragebogens[B])

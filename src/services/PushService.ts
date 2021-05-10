@@ -53,26 +53,26 @@ export class PushService {
     }
 
     /**
-     * Trigger sending a push message to the given users. The users need to have the mobile app installed.
+     * Trigger sending a push message to the given participants. The participants need to have the mobile app installed.
      *
      * @static
      * @param {string} msg The message to send.
-     * @param {string[]} userIds The userids.
+     * @param {string[]} participantIds The participantids.
      * @return {*}  {Promise<void>}
      * @memberof PushService
      */
-    public static async send(msg: string, userIds: string[]): Promise<void> {
+    public static async send(msg: string, participantIds: string[]): Promise<void> {
         Logger.Info(' --> Entering Send');
 
         if (msg === null) {
             Logger.Warn('No message provided. Skip sending push notifications.');
             return;
         }
-        if (userIds === null || userIds.length < 1) {
-            Logger.Warn('No userid provided. Skip sending push notifications.');
+        if (participantIds === null || participantIds.length < 1) {
+            Logger.Warn('No participantid provided. Skip sending push notifications.');
             return;
         }
-        Logger.Imp(`Sending message [${msg}] to [${userIds.length}] recipients.`);
+        Logger.Imp(`Sending message [${msg}] to [${participantIds.length}] recipients.`);
 
         // break in case no push config is provided
         if (!PushServiceConfig.getAppId() || !PushServiceConfig.getApiKey()) {
@@ -121,7 +121,7 @@ export class PushService {
 
         // specify target
         // const target = PushMessageBuilder.Target.platforms([IBMPushNotification.Platform.Apple, IBMPushNotification.Platform.Google]).build();
-        const target = PushMessageBuilder.Target.userIds(userIds).build();
+        const target = PushMessageBuilder.Target.participantIds(participantIds).build();
 
         const notification = IBMPushNotification.message(message)
             .target(target)

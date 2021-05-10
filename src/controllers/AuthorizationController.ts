@@ -13,7 +13,7 @@ import { Logger } from '@overnightjs/logger';
 
 import { AuthConfig } from '../config/AuthConfig';
 import { ApiUserModel } from '../models/ApiUserModel';
-import { UserModel } from '../models/UserModel';
+import { ParticipantModel } from '../models/ParticipantModel';
 import { SecurityService } from '../services/SecurityService';
 
 const MS_PER_MINUTE = 60000;
@@ -27,28 +27,28 @@ const MS_PER_MINUTE = 60000;
 @Controller('auth')
 export class AuthorizationController {
     private static apiUserModel: ApiUserModel = new ApiUserModel();
-    private static userModel: UserModel = new UserModel();
+    private static participantModel: ParticipantModel = new ParticipantModel();
 
     /**
-     * Express middleware that checks if the study ID is valid.
+     * Express middleware that checks if the subject ID is valid.
      */
-    public static async checkStudyUserLogin(
+    public static async checkStudyParticipantLogin(
         req: ISecureRequest,
         res: Response,
         next: NextFunction
     ) {
         try {
             const bearerHeader = req.headers.authorization;
-            const studyID: string = bearerHeader
+            const subjectID: string = bearerHeader
                 ? bearerHeader.split(' ')[1]
-                : req.payload && req.payload.study_id
-                ? req.payload.study_id
-                : req.params && req.params.studyID
-                ? req.params.studyID
+                : req.payload && req.payload.subject_id
+                ? req.payload.subject_id
+                : req.params && req.params.subjectID
+                ? req.params.subjectID
                 : undefined;
 
-            const checkLoginSuccess: boolean = await AuthorizationController.userModel.checkLogin(
-                studyID
+            const checkLoginSuccess: boolean = await AuthorizationController.participantModel.checkLogin(
+                subjectID
             );
 
             return checkLoginSuccess ? next() : res.status(401).send();

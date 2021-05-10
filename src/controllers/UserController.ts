@@ -10,50 +10,50 @@ import { Controller, Get, Middleware } from '@overnightjs/core';
 import { ISecureRequest } from '@overnightjs/jwt';
 import { Logger } from '@overnightjs/logger';
 
-import { UserEntry } from '../types/UserEntry';
+import { ParticipantEntry } from '../types/ParticipantEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { PushServiceConfig } from '../config/PushServiceConfig';
-import { UserModel } from '../models/UserModel';
+import { ParticipantModel } from '../models/ParticipantModel';
 import { AuthorizationController } from './AuthorizationController';
 
 /**
- *  Endpoint class for all user related restful methods.
+ *  Endpoint class for all participant related restful methods.
  *
  * @export
- * @class UserController
+ * @class ParticipantController
  */
-@Controller('user')
-export class UserController {
-    private userModel: UserModel = new UserModel();
+@Controller('subject')
+export class ParticipantController {
+    private participantModel: ParticipantModel = new ParticipantModel();
 
     /**
-     * Retrieve the current users data.
+     * Retrieve the current subject data.
      * Is called from the client during first login and also during refreh.
      *
      * @param {ISecureRequest} req
      * @param {Response} resp
      * @return {*}
-     * @memberof UserController
+     * @memberof SubjectController
      */
-    @Get(':studyID')
-    @Middleware([AuthorizationController.checkStudyUserLogin])
-    public async getUser(req: ISecureRequest, resp: Response) {
+    @Get(':subjectID')
+    @Middleware([AuthorizationController.checkStudyParticipantLogin])
+    public async getParticipant(req: ISecureRequest, resp: Response) {
         try {
-            const user: UserEntry = await this.userModel.getAndEventuallyUpdateUserByStudyID(
-                req.params.studyID
+            const participant: ParticipantEntry = await this.participantModel.getAndEventuallyUpdateParticipantBySubjectID(
+                req.params.subjectID
             );
-            this.userModel.updateLastAction(req.params.studyID);
+            this.participantModel.updateLastAction(req.params.subjectID);
 
             const returnObject = {
-                current_instance_id: user.current_instance_id,
-                current_questionnaire_id: user.current_questionnaire_id,
-                due_date: user.due_date,
-                start_date: user.start_date,
-                study_id: user.study_id,
+                current_instance_id: participant.current_instance_id,
+                current_questionnaire_id: participant.current_questionnaire_id,
+                due_date: participant.due_date,
+                start_date: participant.start_date,
+                subject_id: participant.subject_id,
                 firstTime:
-                    user.current_questionnaire_id === COMPASSConfig.getInitialQuestionnaireId(),
-                additional_iterations_left: user.additional_iterations_left,
-                current_interval: user.current_interval,
+                participant.current_questionnaire_id === COMPASSConfig.getInitialQuestionnaireId(),
+                additional_iterations_left: participant.additional_iterations_left,
+                current_interval: participant.current_interval,
                 pushClientSecret: PushServiceConfig.getClientSecret(),
                 pushAppGUID: PushServiceConfig.getAppId(),
                 recipient_certificate_pem_string: COMPASSConfig.getRecipientCertificate()

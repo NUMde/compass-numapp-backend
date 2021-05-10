@@ -31,9 +31,8 @@ async function processLineByLine(pool) {
         // Each line in input.txt will be successively available here as `line`.
         console.log("Processing line " + i + " with content: " + line);
         try {
-            await pool.query("INSERT INTO studyuser(study_id) VALUES ($1);",
-                [line]);
-        } catch(err) {
+            await pool.query("INSERT INTO studyparticipant(subject_id) VALUES ($1);", [line]);
+        } catch (err) {
             console.log(err);
             process.exit(1);
         }

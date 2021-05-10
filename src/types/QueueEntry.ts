@@ -7,7 +7,7 @@
  */
 export interface QueueEntry {
     id: string;
-    study_id: string;
+    subject_id: string;
     encrypted_resp: string;
     date_sent: Date;
     date_received: Date;
