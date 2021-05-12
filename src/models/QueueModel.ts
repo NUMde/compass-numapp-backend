@@ -97,7 +97,7 @@ export class QueueModel {
                 const dbID =
                     req.query.surveyId +
                     '-' +
-                    req.query.appId +
+                    req.query.subjectId +
                     '-' +
                     (req.query.instanceId || COMPASSConfig.getInitialQuestionnaireId());
                 const res = await dbClient.query(

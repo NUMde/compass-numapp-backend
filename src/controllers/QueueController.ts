@@ -39,7 +39,7 @@ export class QueueController {
     public async addToQueue(req: ISecureRequest, res: Response) {
         const queueEntry: QueueEntry = {
             id: null,
-            subject_id: req.query.appId.toString(),
+            subject_id: req.query.subjectId.toString(),
             encrypted_resp: req.body.payload,
             date_sent: new Date(),
             date_received: this.generateDateReceived(req)

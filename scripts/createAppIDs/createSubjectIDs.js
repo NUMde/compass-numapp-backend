@@ -7,7 +7,7 @@ const { Pool, Client } = require("pg");
 const fs = require("fs");
 const readline = require("readline");
 
-const fileName = "APPIDForSeriendruck-Studie.csv";
+const fileName = "SUBJECTIDForSeriendruck-Studie.csv";
 
 function sleep(ms) {
     return new Promise((resolve) => {

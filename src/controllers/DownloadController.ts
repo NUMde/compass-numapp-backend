@@ -93,7 +93,7 @@ export class DownloadController {
      * @memberof DownloadController
      */
     @Delete()
-    @Middleware(AuthorizationController.checkApiParticipantLogin)
+    @Middleware(AuthorizationController.checkStudyParticipantLogin)
     public async deleteDataFromQueue(req: ISecureRequest, resp: Response) {
         try {
             if (!Array.isArray(req.body)) {
