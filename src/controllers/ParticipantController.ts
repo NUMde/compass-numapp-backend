@@ -22,7 +22,7 @@ import { AuthorizationController } from './AuthorizationController';
  * @export
  * @class ParticipantController
  */
-@Controller('subject')
+@Controller('participant')
 export class ParticipantController {
     private participantModel: ParticipantModel = new ParticipantModel();
 
