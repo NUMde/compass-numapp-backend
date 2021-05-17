@@ -8,10 +8,11 @@ import { Logger } from '@overnightjs/logger';
 import { StateChangeTrigger, UserEntry } from '../types';
 import DB from '../server/DB';
 
-import { GcsStateModel } from '../services/GcsStateModel';
-import { StateModel } from '../services/StateModel';
+import { ExampleStateModel } from './ExampleStateModel';
+import { StateModel } from './StateModel';
 export class UserModel {
-    private gcsStateModel: StateModel = new GcsStateModel();
+    // the model that determines which questionnaire to send - replace this with you custom model
+    private stateModel: StateModel = new ExampleStateModel();
 
     /**
      * Update the users current questionnaire, the start and due date and short interval usage.
@@ -35,7 +36,7 @@ export class UserModel {
 
             // calculate new state values
             const triggerValues: StateChangeTrigger = JSON.parse(parameters);
-            const updatedUser = this.gcsStateModel.calculateUpdatedData(user, triggerValues);
+            const updatedUser = this.stateModel.calculateUpdatedData(user, triggerValues);
 
             // persist changes
             await pool.query(

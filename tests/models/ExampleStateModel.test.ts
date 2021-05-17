@@ -1,12 +1,12 @@
+import { ExampleStateModel } from './../../src/models/ExampleStateModel';
 import * as dotenv from 'dotenv';
 import { COMPASSConfig } from '../../src/config/COMPASSConfig';
 
-import { GcsStateModel } from '../../src/services/GcsStateModel';
 import { StateChangeTrigger, UserEntry } from '../../src/types';
 
 describe('signing', () => {
     dotenv.config({ path: './.env' });
-    const sut = new GcsStateModel();
+    const sut = new ExampleStateModel();
     let realDateNow;
 
     beforeAll(() => {

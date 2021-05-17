@@ -7,21 +7,21 @@ import { StateChangeTrigger, UserEntry } from '../types';
 import { StateModel } from './StateModel';
 
 /**
- * Custom model specific for the GCS state chart.
- * It uses four different questionnaires that are send to the used depending on some conditions.
+ * Example model based on the GCS state chart.
+ * It uses four different questionnaires that are send to the user depending on some conditions.
  *
  * @export
- * @class GcsStateModel
+ * @class ExampleStateModel
  * @implements {StateModel}
  */
-export class GcsStateModel implements StateModel {
+export class ExampleStateModel implements StateModel {
     /**
      * Determine new state relevant data for the given user.
      *
      * @param {UserEntry} user
      * @param {string} parameters A stringified JSON with parameters that trigger state changes.
      * @return {*}  {UserEntry}
-     * @memberof GcsStateModel
+     * @memberof ExampleStateModel
      */
     public calculateUpdatedData(user: UserEntry, parameters: StateChangeTrigger): UserEntry {
         const distValues = this.calculateStateValues(user, parameters);
