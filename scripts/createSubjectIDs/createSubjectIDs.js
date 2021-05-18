@@ -7,7 +7,7 @@ const { Pool, Client } = require("pg");
 const fs = require("fs");
 const readline = require("readline");
 
-const fileName = "SUBJECTIDForSeriendruck-Studie.csv";
+const fileName = "SUBJECTID_input.txt";
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -23,7 +23,7 @@ async function processLineByLine(pool) {
         crlfDelay: Infinity,
     });
     // Note: we use the crlfDelay option to recognize all instances of CR LF
-    // ('\r\n') in input.txt as a single line break.
+    // ('\r\n') in SUBJECTID_input.txt as a single line break.
 
     let i = 1;
 
