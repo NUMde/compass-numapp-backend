@@ -1,13 +1,13 @@
 = Addition of Study Participants
 
-Study participants must be registered in the database with their study id in order to gain access to the app.
-The script in this folder can be used for this purpose.It established a connection to the database and inserts the study ids into the table "studyparticipant".
+Study participants must be registered in the database with their subject id in order to gain access to the app.
+The script in this folder can be used for this purpose. It establishes a connection to the database and inserts the subject ids into the table "studyparticipant".
 
 == Prerequisites
 
-Before you can execute the creation script you require a text file named "SUBJECTID_input.txt"  with the study ids that you wish to register. These are the identifiers which you provide to the study participants in the form of QR-codes. The file should be located in the same folder as the creation script. The file name is referenced in the script by the constant named _fileName_. Change this value if your file has another name.
+Before you can execute the creation script you require a text file named "SUBJECTID_input.txt"  with the subject ids that you wish to register. These are the identifiers which you provide to the study participants in the form of QR-codes. The file should be located in the same folder as the creation script. The file name is referenced in the script by the constant named _fileName_. Change this value if your file has another name.
 
-Provide the list of study ids in the file "SUBJECTID_input.txt", separated by single (!) line breaks.
+Provide the list of subject ids in the file "SUBJECTID_input.txt", separated by single (!) line breaks.
 
 The content of the file could look like this:
 
@@ -20,7 +20,7 @@ f55bb4cb-bdae-4ec0-ad31-c12b3426c8bc
 8d7b202e-7fad-4578-a154-70043e2364c9
 ----
 
-Apart from the list of study ids, you require a _.env_ file which contains the required values for the database connection:DB_USERNAME, DB_HOST, DB_DB, DB_PASSWORD, DB_PORT, DB_USE_SSL. To get started copy the file `.env.sample` to `.env` and add your values. Read the link:../../db/README.adoc[database documentation] for further information on how to locally connect to your database.
+Apart from the list of subject ids, you require a _.env_ file which contains the required values for the database connection:DB_USERNAME, DB_HOST, DB_DB, DB_PASSWORD, DB_PORT, DB_USE_SSL. To get started copy the file `.env.sample` to `.env` and add your values. Read the link:../../db/README.adoc[database documentation] for further information on how to locally connect to your database.
 
 == Script Execution
 
@@ -37,4 +37,4 @@ Run the script:
 node createSubjectIDs.js
 ----
 
-This will iterate over the the input document line by line and add the study ids to your database.
+This will iterate over the the input document line by line and add the subject ids to your database.
