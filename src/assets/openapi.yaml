@@ -230,31 +230,9 @@ components:
                 currentPage:
                     type: number
                 cTransferList:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/CTransfer'
-        CTransfer:
-            type: object
-            properties:
-                UUID:
-                    type: string
-                    example: 534772d7-b62d-4050-ab2f-f052933c325f
-                AppId:
-                    type: string
-                JSON:
-                    type: string
-                    description: The encrypted Questionnaire Response
-                AbsendeDatum:
-                    type: string
-                    format: date-time
-                ErhaltenDatum:
-                    type: string
-                    format: date-time
-                Signature:
                     type: string
                     description: >-
-                        'RSA-SHA256' Signature of whole CTransfer object, without Signature
-                        property.
+                        'RSA-SHA256' Signature of object containing UUID, Subject ID, encrypted questionnaire response, dispatch date, reception date.'
         DeleteUUIDsParam:
             type: array
             items:
