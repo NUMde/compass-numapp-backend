@@ -30,20 +30,20 @@ export class QuestionnaireController {
      * @memberof QuestionnaireController
      */
     @Get(':questionnaireId')
-    @Middleware([AuthorizationController.checkStudyUserLogin])
+    @Middleware([AuthorizationController.checkStudyParticipantLogin])
     public async getQuestionnaire(req: ISecureRequest, res: Response) {
         const bearerHeader = req.headers.authorization;
-        const studyID: string = bearerHeader
+        const subjectID: string = bearerHeader
             ? bearerHeader.split(' ')[1]
-            : req.payload && req.payload.study_id
-            ? req.payload.study_id
-            : req.params && req.params.studyID
-            ? req.params.studyID
+            : req.payload && req.payload.subject_id
+            ? req.payload.subject_id
+            : req.params && req.params.subjectID
+            ? req.params.subjectID
             : undefined;
 
         const questionnaireId = req.params.questionnaireId;
 
-        this.questionnaireModel.getQuestionnaire(studyID, questionnaireId).then(
+        this.questionnaireModel.getQuestionnaire(subjectID, questionnaireId).then(
             (resp) => res.status(200).json(resp),
             (err) => {
                 if (err.response) {

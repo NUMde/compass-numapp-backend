@@ -8,8 +8,8 @@ servers:
 tags:
     - name: health
       description: Healthcheck
-    - name: user
-      description: User Operations
+    - name: participant
+      description: Study Participant Operations
     - name: auth
       description: Authentication for Download APIs
     - name: questionnaire
@@ -64,7 +64,7 @@ paths:
                   required: true
                 - name: appId
                   in: query
-                  description: StudyID
+                  description: SubjectID
                   schema:
                       type: string
                   required: true
@@ -121,26 +121,26 @@ paths:
                                 $ref: '#/components/schemas/Health'
                 '503':
                     $ref: '#/components/responses/503ServerError'
-    '/user/{studyId}':
+    '/participant/{subjectId}':
         get:
             tags:
-                - user
-            summary: Get current user information
-            operationId: getUser
+                - participant
+            summary: Get current participant information
+            operationId: getParticipant
             parameters:
-                - name: studyId
+                - name: subjectId
                   in: path
-                  description: Study ID
+                  description: Subject ID
                   schema:
                       type: string
                   required: true
             responses:
                 '200':
-                    description: Study user information
+                    description: Subject information
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/User'
+                                $ref: '#/components/schemas/Participant'
                 '500':
                     $ref: '#/components/responses/500ServerError'
             security:
@@ -266,7 +266,7 @@ components:
                 payload:
                     type: string
                     description: 'encrypted, base'
-        User:
+        Participant:
             type: object
             properties:
                 current_instance_id:
@@ -281,12 +281,12 @@ components:
                 start_date:
                     type: string
                     description: Start Date of the Questionnaire
-                study_id:
+                subject_id:
                     type: string
-                    description: Study ID given by QR Code
+                    description: Subject ID given by QR Code
                 firstTime:
                     type: boolean
-                    description: Marks if the user has already send in a questionnaire
+                    description: Marks if the participant has already send in a questionnaire
         Health:
             type: object
             properties:
@@ -436,7 +436,7 @@ components:
             scheme: bearer
             bearerFormat: string
             description: |
-                Study ID to identify the user.
+                Subject ID to identify the participant.
         DownloadAuthentication:
             type: http
             scheme: bearer

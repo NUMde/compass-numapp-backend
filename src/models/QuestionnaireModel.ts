@@ -5,7 +5,7 @@
 import { Logger } from '@overnightjs/logger';
 
 import { COMPASSConfig } from '../config/COMPASSConfig';
-import { UserModel } from '../models/UserModel';
+import { ParticipantModel } from '../models/ParticipantModel';
 import DB from '../server/DB';
 
 /**
@@ -15,23 +15,23 @@ import DB from '../server/DB';
  * @class QuestionnaireModel
  */
 export class QuestionnaireModel {
-    private userModel: UserModel = new UserModel();
+    private participantModel: ParticipantModel = new ParticipantModel();
 
     /**
      * Retrieve the questionnaire with the requested ID and create a log entry in the questionnairehistory table.
      *
-     * @param {string} studyID
+     * @param {string} subjectID
      * @param {string} questionnaireId
      * @return {*}  {Promise<string>}
      * @memberof QuestionnaireModel
      */
-    public async getQuestionnaire(studyID: string, questionnaireId: string): Promise<string> {
+    public async getQuestionnaire(subjectID: string, questionnaireId: string): Promise<string> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
 
         try {
-            const user = await this.userModel.getAndEventuallyUpdateUserByStudyID(studyID);
+            const participant = await this.participantModel.getAndEventuallyUpdateParticipantBySubjectID(subjectID);
             const res = await dbClient.query('SELECT body FROM questionnaires WHERE id = $1', [
                 questionnaireId
             ]);
@@ -39,18 +39,18 @@ export class QuestionnaireModel {
             const dbId =
                 questionnaireId +
                 '-' +
-                studyID +
+                subjectID +
                 '-' +
-                (user.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
+                (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
             await dbClient.query(
-                'INSERT INTO questionnairehistory(id, study_id, questionnaire_id, date_received, date_sent, instance_id) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING;',
+                'INSERT INTO questionnairehistory(id, subject_id, questionnaire_id, date_received, date_sent, instance_id) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING;',
                 [
                     dbId,
-                    studyID,
+                    subjectID,
                     questionnaireId,
                     new Date(),
                     null,
-                    user.current_instance_id || COMPASSConfig.getInitialQuestionnaireId()
+                    participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId()
                 ]
             );
 

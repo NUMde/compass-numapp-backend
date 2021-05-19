@@ -29,7 +29,7 @@ export class COMPASSConfig {
     }
 
     /**
-     * Get the default duration for a regular questionnaire. This determines how many days the user has to complete the questionnaire after the start of an interval.
+     * Get the default duration for a regular questionnaire. This determines how many days the participant has to complete the questionnaire after the start of an interval.
      *
      * @static
      * @return {*}  {number}
@@ -167,7 +167,7 @@ export class COMPASSConfig {
     }
 
     /**
-     * Gets the starting index for a new interval. Example: If a user sends in a report, he/she switches to
+     * Gets the starting index for a new interval. Example: If a participant sends in a report, he/she switches to
      * another track. Does this track start today (meaning now) or tomorrow morning?
      * With the defaultInterval being 0 the new track starts immediately, with 1 the track would start tomorrow.
      *

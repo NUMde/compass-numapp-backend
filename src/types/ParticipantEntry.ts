@@ -3,10 +3,10 @@
  */
 
 /**
- * Represents an entry in the "studyuser" table.
+ * Represents an entry in the "studyparticipant" table.
  */
-export interface UserEntry {
-    study_id: string;
+export interface ParticipantEntry {
+    subject_id: string;
     last_action: Date;
     current_questionnaire_id: string;
     start_date: Date;

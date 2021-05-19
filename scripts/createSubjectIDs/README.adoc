@@ -1,0 +1,40 @@
+= Addition of Study Participants
+
+Study participants must be registered in the database with their subject id in order to gain access to the app.
+The script in this folder can be used for this purpose. It establishes a connection to the database and inserts the subject ids into the table "studyparticipant".
+
+== Prerequisites
+
+Before you can execute the creation script you require a text file named "SUBJECTID_input.txt"  with the subject ids that you wish to register. These are the identifiers which you provide to the study participants in the form of QR-codes. The file should be located in the same folder as the creation script. The file name is referenced in the script by the constant named _fileName_. Change this value if your file has another name.
+
+Provide the list of subject ids in the file "SUBJECTID_input.txt", separated by single (!) line breaks.
+
+The content of the file could look like this:
+
+[source]
+----
+96329187-8b46-48b3-894f-9a89d9a7ae0c
+105a4c05-aa44-4ae1-9803-16e62c174c0d
+7160c75c-a9be-48ba-bb77-73a8aea21f74
+f55bb4cb-bdae-4ec0-ad31-c12b3426c8bc
+8d7b202e-7fad-4578-a154-70043e2364c9
+----
+
+Apart from the list of subject ids, you require a _.env_ file which contains the required values for the database connection:DB_USERNAME, DB_HOST, DB_DB, DB_PASSWORD, DB_PORT, DB_USE_SSL. To get started copy the file `.env.sample` to `.env` and add your values. Read the link:../../db/README.adoc[database documentation] for further information on how to locally connect to your database.
+
+== Script Execution
+
+Navigate into the _createSubjectIDs_ folder:
+
+[source,shell]
+----
+cd /your/path/to/compass-numapp-backend/scripts/createSubjectIDs
+----
+
+Run the script:
+[source,shell]
+----
+node createSubjectIDs.js
+----
+
+This will iterate over the the input document line by line and add the subject ids to your database.

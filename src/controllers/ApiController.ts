@@ -12,7 +12,7 @@ import { AuthorizationController } from './AuthorizationController';
 import { DownloadController } from './DownloadController';
 import { QuestionnaireController } from './QuestionnaireController';
 import { QueueController } from './QueueController';
-import { UserController } from './UserController';
+import { ParticipantController } from './ParticipantController';
 
 /**
  * Parent controller
@@ -24,14 +24,14 @@ import { UserController } from './UserController';
 @ClassOptions({ mergeParams: true })
 @ClassErrorMiddleware((err, req, res) => {
     if (err.name === 'UnauthorizedError') {
-        res.status(401).send({ error: 'invalid_studyid' });
+        res.status(401).send({ error: 'invalid_subjectid' });
         throw err;
     }
 })
 @ChildControllers([
     new AuthorizationController(),
     new DownloadController(),
-    new UserController(),
+    new ParticipantController(),
     new QueueController(),
     new QuestionnaireController()
 ])

@@ -8,7 +8,7 @@ import { Logger } from '@overnightjs/logger';
 
 import { QueueEntry } from '../types/QueueEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
-import { UserModel } from '../models/UserModel';
+import { ParticipantModel } from '../models/ParticipantModel';
 import DB from '../server/DB';
 import { IdHelper } from '../services/IdHelper';
 
@@ -19,7 +19,7 @@ import { IdHelper } from '../services/IdHelper';
  * @class QueueModel
  */
 export class QueueModel {
-    private userModel: UserModel = new UserModel();
+    private participantModel: ParticipantModel = new ParticipantModel();
 
     /**
      * Retrieve study data from the queue.
@@ -97,7 +97,7 @@ export class QueueModel {
                 const dbID =
                     req.query.surveyId +
                     '-' +
-                    req.query.appId +
+                    req.query.subjectId +
                     '-' +
                     (req.query.instanceId || COMPASSConfig.getInitialQuestionnaireId());
                 const res = await dbClient.query(
@@ -109,10 +109,10 @@ export class QueueModel {
                     return;
                 } else {
                     await dbClient.query(
-                        'INSERT INTO queue(id, study_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
+                        'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
                         [
                             IdHelper.createID(),
-                            queueEntry.study_id,
+                            queueEntry.subject_id,
                             queueEntry.encrypted_resp,
                             queueEntry.date_sent,
                             res.rows[0].date_received
@@ -124,26 +124,26 @@ export class QueueModel {
                         [queueEntry.date_sent, dbID]
                     );
 
-                    await this.userModel.updateUser(
-                        queueEntry.study_id,
+                    await this.participantModel.updateParticipant(
+                        queueEntry.subject_id,
                         req.query.updateValues as string
                     );
                     return;
                 }
             } else {
                 await dbClient.query(
-                    'INSERT INTO queue(id, study_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
+                    'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
                     [
                         IdHelper.createID(),
-                        queueEntry.study_id,
+                        queueEntry.subject_id,
                         queueEntry.encrypted_resp,
                         queueEntry.date_sent,
                         queueEntry.date_received
                     ]
                 );
 
-                await this.userModel.updateUser(
-                    queueEntry.study_id,
+                await this.participantModel.updateParticipant(
+                    queueEntry.subject_id,
                     req.query.updateValues as string
                 );
                 return;

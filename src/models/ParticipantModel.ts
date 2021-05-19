@@ -5,14 +5,14 @@ import { Pool } from 'pg';
 
 import { Logger } from '@overnightjs/logger';
 
-import { UserEntry } from '../types/UserEntry';
+import { ParticipantEntry } from '../types/ParticipantEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import DB from '../server/DB';
 import { IdHelper } from '../services/IdHelper';
 
-export class UserModel {
+export class ParticipantModel {
     private async updateTime(
-        user_update_data: UserEntry,
+        participant_update_data: ParticipantEntry,
         next_interval: number,
         next_duration: number,
         next_start_hour: number,
@@ -46,7 +46,7 @@ export class UserModel {
 
             let _new_start_date = new Date(_start_date);
 
-            if (user_update_data.start_date) {
+            if (participant_update_data.start_date) {
                 _new_start_date = startImmediately
                     ? new Date(interval_start)
                     : new Date(_new_start_date.setDate(_new_start_date.getDate() + next_interval));
@@ -69,7 +69,7 @@ export class UserModel {
         };
 
         let dates = calcTime(
-            user_update_data.start_date ? new Date(user_update_data.start_date) : interval_start,
+            participant_update_data.start_date ? new Date(participant_update_data.start_date) : interval_start,
             start_immediately
         );
 
@@ -78,7 +78,7 @@ export class UserModel {
         return dates;
     }
 
-    private async updateDistributionValues(user_update_data: UserEntry, parameters: string) {
+    private async updateDistributionValues(participant_update_data: ParticipantEntry, parameters: string) {
         const _parameters = JSON.parse(parameters);
 
         const short_interval = COMPASSConfig.getDefaultShortInterval();
@@ -96,13 +96,13 @@ export class UserModel {
         const iteration_count = COMPASSConfig.getDefaultIterationCount();
 
         if (
-            user_update_data.additional_iterations_left > 0 &&
-            user_update_data.current_questionnaire_id === short_limited_questionnaire_id
+            participant_update_data.additional_iterations_left > 0 &&
+            participant_update_data.current_questionnaire_id === short_limited_questionnaire_id
         ) {
             const next_duration =
-                user_update_data.current_interval === short_interval ? short_duration : duration;
+            participant_update_data.current_interval === short_interval ? short_duration : duration;
 
-            const shortmode = user_update_data.current_interval === interval;
+            const shortmode = participant_update_data.current_interval === interval;
 
             const next_start_hour = shortmode ? short_start_hour : start_hour;
 
@@ -110,12 +110,12 @@ export class UserModel {
 
             const start_immediately = false;
 
-            const additional_iterations_left = user_update_data.additional_iterations_left;
+            const additional_iterations_left = participant_update_data.additional_iterations_left;
 
             return [
-                user_update_data.current_interval,
+                participant_update_data.current_interval,
                 next_duration,
-                user_update_data.current_questionnaire_id,
+                participant_update_data.current_questionnaire_id,
                 next_start_hour,
                 next_due_hour,
                 start_immediately,
@@ -132,7 +132,7 @@ export class UserModel {
                 ? short_limited_questionnaire_id
                 : switch_to_short_interval
                 ? short_questionnaire_id
-                : !user_update_data.due_date
+                : !participant_update_data.due_date
                 ? initial_questionnaire_id
                 : default_questionnaire_id;
 
@@ -157,22 +157,22 @@ export class UserModel {
     }
 
     /**
-     * Update the users current questionnaire, the start and due date and short interval usage.
+     * Update the participants current questionnaire, the start and due date and short interval usage.
      *
-     * @param studyId The user id
+     * @param subjectId The participant id
      * @param parameters Parameters as json
      */
-    public async updateUser(studyId: string, parameters = '{}'): Promise<UserEntry> {
+    public async updateParticipant(subjectId: string, parameters = '{}'): Promise<ParticipantEntry> {
         const pool: Pool = DB.getPool();
 
         try {
-            const query_result = await pool.query('SELECT * FROM studyuser WHERE study_id = $1', [
-                studyId
+            const query_result = await pool.query('SELECT * FROM studyparticipant WHERE subject_id = $1', [
+                subjectId
             ]);
 
-            if (query_result.rows.length !== 1) throw new Error('study_id_not_found');
+            if (query_result.rows.length !== 1) throw new Error('subject_id_not_found');
 
-            let user_update_data = query_result.rows[0] as UserEntry;
+            let participant_update_data = query_result.rows[0] as ParticipantEntry;
 
             const [
                 next_interval,
@@ -182,14 +182,14 @@ export class UserModel {
                 next_due_hour,
                 start_immediately,
                 additional_iterations_left
-            ] = await this.updateDistributionValues(user_update_data, parameters);
+            ] = await this.updateDistributionValues(participant_update_data, parameters);
 
-            user_update_data = {
-                ...user_update_data,
+            participant_update_data = {
+                ...participant_update_data,
                 current_instance_id: IdHelper.createID(),
                 current_questionnaire_id,
                 ...(await this.updateTime(
-                    user_update_data,
+                    participant_update_data,
                     next_interval,
                     next_duration,
                     next_start_hour,
@@ -198,28 +198,28 @@ export class UserModel {
                     additional_iterations_left
                 )),
                 current_interval: next_interval
-            } as UserEntry;
+            } as ParticipantEntry;
 
             await pool.query(
-                'UPDATE studyuser SET current_questionnaire_id = $1, start_date = $2, due_date = $3, current_instance_id = $4, current_interval = $5, additional_iterations_left = $6 WHERE study_id = $7;',
+                'UPDATE studyparticipant SET current_questionnaire_id = $1, start_date = $2, due_date = $3, current_instance_id = $4, current_interval = $5, additional_iterations_left = $6 WHERE subject_id = $7;',
                 [
-                    user_update_data.current_questionnaire_id,
-                    new Date(user_update_data.start_date),
-                    new Date(user_update_data.due_date),
-                    user_update_data.current_instance_id,
+                    participant_update_data.current_questionnaire_id,
+                    new Date(participant_update_data.start_date),
+                    new Date(participant_update_data.due_date),
+                    participant_update_data.current_instance_id,
                     next_interval,
-                    user_update_data.additional_iterations_left,
-                    user_update_data.study_id
+                    participant_update_data.additional_iterations_left,
+                    participant_update_data.subject_id
                 ]
             );
 
             return {
-                current_instance_id: user_update_data.current_instance_id,
-                current_questionnaire_id: user_update_data.current_questionnaire_id,
-                due_date: new Date(user_update_data.due_date),
-                start_date: new Date(user_update_data.start_date),
-                study_id: user_update_data.study_id
-            } as UserEntry;
+                current_instance_id: participant_update_data.current_instance_id,
+                current_questionnaire_id: participant_update_data.current_questionnaire_id,
+                due_date: new Date(participant_update_data.due_date),
+                start_date: new Date(participant_update_data.start_date),
+                subject_id: participant_update_data.subject_id
+            } as ParticipantEntry;
         } catch (err) {
             Logger.Err(err);
             throw err;
@@ -227,23 +227,23 @@ export class UserModel {
     }
 
     /**
-     * Retreieve the user from the database and eventually update the users data in case due_date ist outdated or start_date is not set.
+     * Retreieve the participant from the database and eventually update the participants data in case due_date ist outdated or start_date is not set.
      *
-     * @param studyID The user id
+     * @param subjectID The participant id
      */
-    public async getAndEventuallyUpdateUserByStudyID(studyID: string): Promise<UserEntry> {
+    public async getAndEventuallyUpdateParticipantBySubjectID(subjectID: string): Promise<ParticipantEntry> {
         const pool: Pool = DB.getPool();
 
         try {
-            const res = await pool.query('SELECT * FROM studyuser WHERE study_id = $1', [studyID]);
+            const res = await pool.query('SELECT * FROM studyparticipant WHERE subject_id = $1', [subjectID]);
 
             if (res.rows.length !== 1) {
-                throw new Error('study_id_not_found');
+                throw new Error('subject_id_not_found');
             }
 
             let result = res.rows[0];
             if (!result.start_date || (result.due_date && result.due_date < new Date())) {
-                result = await this.updateUser(result.study_id);
+                result = await this.updateParticipant(result.subject_id);
             }
             return result;
         } catch (err) {
@@ -253,15 +253,15 @@ export class UserModel {
     }
 
     /**
-     * Update the last action field of the user
-     * @param studyID The user id
+     * Update the last action field of the participant
+     * @param subjectID The participant id
      */
-    public async updateLastAction(studyID: string): Promise<void> {
+    public async updateLastAction(subjectID: string): Promise<void> {
         try {
             const pool: Pool = DB.getPool();
-            await pool.query('UPDATE studyuser SET last_action = $1 WHERE study_id = $2;', [
+            await pool.query('UPDATE studyparticipant SET last_action = $1 WHERE subject_id = $2;', [
                 new Date(),
-                studyID
+                subjectID
             ]);
             return;
         } catch (err) {
@@ -271,14 +271,14 @@ export class UserModel {
     }
 
     /**
-     * Check if the user exists in the database.
-     * @param studyID The user id
+     * Check if the participant exists in the database.
+     * @param subjectID The participant id
      */
-    public async checkLogin(studyID: string): Promise<boolean> {
+    public async checkLogin(subjectID: string): Promise<boolean> {
         try {
             const pool: Pool = DB.getPool();
-            const res = await pool.query('SELECT study_id FROM studyuser WHERE study_id = $1', [
-                studyID
+            const res = await pool.query('SELECT subject_id FROM studyparticipant WHERE subject_id = $1', [
+                subjectID
             ]);
             if (res.rows.length !== 1) {
                 return false;
@@ -292,22 +292,22 @@ export class UserModel {
     }
 
     /**
-     * Retrieve all study ids / user ids for which a questionnair is available for download.
+     * Retrieve all subject ids / participant ids for which a questionnair is available for download.
      *
-     * @param referenceDate The reference date used to determine matching user ids
+     * @param referenceDate The reference date used to determine matching participant ids
      */
-    public async getUsersWithAvailableQuestionnairs(referenceDate: Date): Promise<string[]> {
-        // conditions - Start_Date and Due_Date in study_user is set && Due_Date is not reached && no entry in History table present
+    public async getParticipantsWithAvailableQuestionnairs(referenceDate: Date): Promise<string[]> {
+        // conditions - Start_Date and Due_Date in study_participant is set && Due_Date is not reached && no entry in History table present
         try {
             const pool: Pool = DB.getPool();
             const dateParam = this.convertDateToQueryString(referenceDate);
             const res = await pool.query(
                 `SELECT
-                    S.STUDY_ID
+                    S.SUBJECT_ID
                 FROM
-                    STUDYUSER S
+                    STUDYPARTICIPANT S
                 LEFT JOIN QUESTIONNAIREHISTORY Q ON
-                    S.STUDY_ID = Q.STUDY_ID
+                    S.SUBJECT_ID = Q.SUBJECT_ID
                     AND S.CURRENT_QUESTIONNAIRE_ID = Q.QUESTIONNAIRE_ID
                     AND S.CURRENT_INSTANCE_ID = Q.INSTANCE_ID
                 WHERE
@@ -317,7 +317,7 @@ export class UserModel {
                 `,
                 [dateParam]
             );
-            return res.rows.map((user) => user.study_id);
+            return res.rows.map((participant) => participant.subject_id);
         } catch (err) {
             Logger.Err(err);
             throw err;
@@ -325,32 +325,32 @@ export class UserModel {
     }
 
     /**
-     * Retrieve all study ids / user ids for which a questionnair is available for download.
+     * Retrieve all subject ids / participant ids for which a questionnair is available for download.
      *
-     * @param referenceDate The reference date used to determine matching user ids
+     * @param referenceDate The reference date used to determine matching participant ids
      */
-    public async getUsersWithPendingUploads(referenceDate: Date): Promise<string[]> {
-        // conditions - Start_Date and Due_Date in study_user is set && Due_Date is not reached && one entry in History table with date_sent == null is present
+    public async getParticipantsWithPendingUploads(referenceDate: Date): Promise<string[]> {
+        // conditions - Start_Date and Due_Date in study_participant is set && Due_Date is not reached && one entry in History table with date_sent == null is present
         try {
             const pool: Pool = DB.getPool();
             const dateParam = this.convertDateToQueryString(referenceDate);
             const res = await pool.query(
                 `SELECT
-                    S.STUDY_ID
+                    S.SUBJECT_ID
                 FROM
-                    STUDYUSER S,
+                    STUDYPARTICIPANT S,
                     QUESTIONNAIREHISTORY Q
                 WHERE
                     S.START_DATE <= $1
                     AND S.DUE_DATE >= $1
-                    AND Q.STUDY_ID = S.STUDY_ID
+                    AND Q.SUBJECT_ID = S.SUBJECT_ID
                     AND Q.QUESTIONNAIRE_ID = S.CURRENT_QUESTIONNAIRE_ID
                     AND Q.INSTANCE_ID = S.CURRENT_INSTANCE_ID
                     AND Q.DATE_SENT IS NULL;
                 `,
                 [dateParam]
             );
-            return res.rows.map((user) => user.study_id);
+            return res.rows.map((participant) => participant.subject_id);
         } catch (err) {
             Logger.Err(err);
             throw err;
