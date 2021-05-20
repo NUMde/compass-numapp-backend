@@ -39,7 +39,7 @@ export class ParticipantController {
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
     public async getParticipant(req: ISecureRequest, resp: Response) {
         try {
-            const participant: ParticipantEntry = await this.participantModel.getAndEventuallyUpdateParticipantBySubjectID(
+            const participant: ParticipantEntry = await this.participantModel.getAndUpdateParticipantBySubjectID(
                 req.params.subjectID
             );
             this.participantModel.updateLastAction(req.params.subjectID);
@@ -51,7 +51,8 @@ export class ParticipantController {
                 start_date: participant.start_date,
                 subject_id: participant.subject_id,
                 firstTime:
-                participant.current_questionnaire_id === COMPASSConfig.getInitialQuestionnaireId(),
+                    participant.current_questionnaire_id ===
+                    COMPASSConfig.getInitialQuestionnaireId(),
                 additional_iterations_left: participant.additional_iterations_left,
                 current_interval: participant.current_interval,
                 pushClientSecret: PushServiceConfig.getClientSecret(),

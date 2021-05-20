@@ -52,7 +52,9 @@ export class CronJobNotification extends AbstractCronJob {
 
         // Reminder - upload questionnair
         try {
-            const participantsWithPendingUploads = await this.participantModel.getParticipantsWithPendingUploads(now);
+            const participantsWithPendingUploads = await this.participantModel.getParticipantsWithPendingUploads(
+                now
+            );
             const uploadMsg = PushServiceConfig.getUploadMessage();
             await PushService.send(uploadMsg, participantsWithPendingUploads);
         } catch (error) {

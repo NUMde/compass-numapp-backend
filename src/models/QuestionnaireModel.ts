@@ -31,7 +31,9 @@ export class QuestionnaireModel {
         const dbClient = await DB.getPool().connect();
 
         try {
-            const participant = await this.participantModel.getAndEventuallyUpdateParticipantBySubjectID(subjectID);
+            const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
+                subjectID
+            );
             const res = await dbClient.query('SELECT body FROM questionnaires WHERE id = $1', [
                 questionnaireId
             ]);

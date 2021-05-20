@@ -94,6 +94,7 @@ export class QueueModel {
 
         try {
             if (req.query.type === COMPASSConfig.getQuestionnaireResponseType()) {
+                // a questionnaire response is send from the client
                 const dbID =
                     req.query.surveyId +
                     '-' +
@@ -131,6 +132,7 @@ export class QueueModel {
                     return;
                 }
             } else {
+                // a report is send from the client
                 await dbClient.query(
                     'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
                     [

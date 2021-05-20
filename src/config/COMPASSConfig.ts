@@ -42,6 +42,7 @@ export class COMPASSConfig {
     /**
      * Gets the default interval of the short track.
      *
+     * Defaults to 2
      * @static
      * @return {*}  {number}
      * @memberof COMPASSConfig
@@ -171,6 +172,8 @@ export class COMPASSConfig {
      * another track. Does this track start today (meaning now) or tomorrow morning?
      * With the defaultInterval being 0 the new track starts immediately, with 1 the track would start tomorrow.
      *
+     * Defaults to 1.
+     *
      * @static
      * @return {*}  {number}
      * @memberof COMPASSConfig
@@ -198,7 +201,7 @@ export class COMPASSConfig {
     /**
      * Flag to toogle fake date calculation to ease testing.
      */
-    public static isFakeDatesUsed(): boolean {
+    public static useFakeDateCalculation(): boolean {
         return env.get('COMPASS_USE_FAKE_DATES').default('false').asBoolStrict();
     }
 
