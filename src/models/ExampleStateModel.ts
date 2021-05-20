@@ -8,7 +8,7 @@ import { StateModel } from './StateModel';
 
 /**
  * Example model based on the GCS state chart.
- * It uses four different questionnaires that are send to the user depending on some conditions.
+ * It uses four different questionnaires that are send to the participant depending on some conditions.
  *
  * @export
  * @class ExampleStateModel
@@ -16,20 +16,20 @@ import { StateModel } from './StateModel';
  */
 export class ExampleStateModel implements StateModel {
     /**
-     * Determine new state relevant data for the given user.
+     * Determine new state relevant data for the given participant.
      *
-     * @param {UserEntry} user
+     * @param {ParticipantEntry} participant
      * @param {string} parameters A stringified JSON with parameters that trigger state changes.
-     * @return {*}  {UserEntry}
+     * @return {*}  {ParticipantEntry}
      * @memberof ExampleStateModel
      */
     public calculateUpdatedData(
-        user: ParticipantEntry,
+        participant: ParticipantEntry,
         parameters: StateChangeTrigger
     ): ParticipantEntry {
-        const distValues = this.calculateStateValues(user, parameters);
+        const distValues = this.calculateStateValues(participant, parameters);
         const datesAndIterations = this.calculateDates(
-            user,
+            participant,
             distValues.nextInterval,
             distValues.nextDuration,
             distValues.nextStartHour,
@@ -43,18 +43,18 @@ export class ExampleStateModel implements StateModel {
             : 0;
 
         // clone the object and set updated values
-        const updatedUser: ParticipantEntry = { ...user };
-        updatedUser.current_instance_id = IdHelper.createID();
-        updatedUser.current_questionnaire_id = distValues.nextQuestionnaireId;
-        updatedUser.start_date = datesAndIterations.startDate;
-        updatedUser.due_date = datesAndIterations.dueDate;
-        updatedUser.current_interval = distValues.nextInterval;
-        updatedUser.additional_iterations_left = iterationsLeft;
-        return updatedUser;
+        const updatedParticipant: ParticipantEntry = { ...participant };
+        updatedParticipant.current_instance_id = IdHelper.createID();
+        updatedParticipant.current_questionnaire_id = distValues.nextQuestionnaireId;
+        updatedParticipant.start_date = datesAndIterations.startDate;
+        updatedParticipant.due_date = datesAndIterations.dueDate;
+        updatedParticipant.current_interval = distValues.nextInterval;
+        updatedParticipant.additional_iterations_left = iterationsLeft;
+        return updatedParticipant;
     }
 
     private calculateDates(
-        userData: ParticipantEntry,
+        participantData: ParticipantEntry,
         nextInterval: number,
         nextDuration: number,
         nextStartHour: number,
@@ -91,7 +91,7 @@ export class ExampleStateModel implements StateModel {
                 newDueDate.setSeconds(newDueDate.getSeconds() + 30 * 60);
             } else {
                 newStartDate = new Date(startDate);
-                if (userData.start_date) {
+                if (participantData.start_date) {
                     if (startImmediately) {
                         newStartDate = new Date(intervalStart);
                     } else {
@@ -112,7 +112,7 @@ export class ExampleStateModel implements StateModel {
         };
 
         let dates = calcTime(
-            userData.start_date ? new Date(userData.start_date) : intervalStart,
+            participantData.start_date ? new Date(participantData.start_date) : intervalStart,
             startImmediately
         );
 
@@ -123,7 +123,10 @@ export class ExampleStateModel implements StateModel {
         return dates;
     }
 
-    private calculateStateValues(currentUser: ParticipantEntry, triggerValues: StateChangeTrigger) {
+    private calculateStateValues(
+        currentParticipant: ParticipantEntry,
+        triggerValues: StateChangeTrigger
+    ) {
         // get default values
         const shortInterval = COMPASSConfig.getDefaultShortInterval();
         const shortDuration = COMPASSConfig.getDefaultShortDuration();
@@ -143,35 +146,37 @@ export class ExampleStateModel implements StateModel {
         const iterationCount = COMPASSConfig.getDefaultIterationCount();
 
         if (
-            currentUser.additional_iterations_left > 0 &&
-            currentUser.current_questionnaire_id === shortLimitedQuestionnaireId
+            currentParticipant.additional_iterations_left > 0 &&
+            currentParticipant.current_questionnaire_id === shortLimitedQuestionnaireId
         ) {
-            // User is on short track with limited interval and has iterations left
+            // Study participant is on short track with limited interval and has iterations left
             const nextDuration =
-                currentUser.current_interval === shortInterval ? shortDuration : regularDuration;
-            const enableShortmode = currentUser.current_interval === regularInterval;
+                currentParticipant.current_interval === shortInterval
+                    ? shortDuration
+                    : regularDuration;
+            const enableShortmode = currentParticipant.current_interval === regularInterval;
             const nextStartHour = enableShortmode ? shortStartHour : regularStartHour;
             const nextDueHour = enableShortmode ? shortDueHour : regularDueHour;
             const startImmediately = false;
-            const additionalIterationsLeft = currentUser.additional_iterations_left;
+            const additionalIterationsLeft = currentParticipant.additional_iterations_left;
 
             return {
-                nextInterval: currentUser.current_interval,
+                nextInterval: currentParticipant.current_interval,
                 nextDuration: nextDuration,
-                nextQuestionnaireId: currentUser.current_questionnaire_id,
+                nextQuestionnaireId: currentParticipant.current_questionnaire_id,
                 nextStartHour: nextStartHour,
                 nextDueHour: nextDueHour,
                 startImmediately: startImmediately,
                 additionalIterationsLeft: additionalIterationsLeft
             };
         } else {
-            // determine next questionnaire that will be delivered to the user
+            // determine next questionnaire that will be delivered to the study participant
             let nextQuestionnaireId: string;
             if (triggerValues.specialTrigger) {
                 nextQuestionnaireId = shortLimitedQuestionnaireId;
             } else if (triggerValues.basicTrigger) {
                 nextQuestionnaireId = shortQuestionnaireId;
-            } else if (!currentUser.due_date) {
+            } else if (!currentParticipant.due_date) {
                 nextQuestionnaireId = initialQuestionnaireId;
             } else {
                 nextQuestionnaireId = defaultQuestionnaireId;
