@@ -5,6 +5,12 @@ import { SecurityService } from '../../src/services/SecurityService';
 describe('signing', () => {
     dotenv.config({ path: './.env' });
 
+    // disable console output of the PerformanceLogger
+    beforeEach(() => {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        jest.spyOn(console, 'log').mockImplementation(() => jest.fn());
+    });
+
     it('signAndVerify', () => {
         const value = { name: 'KEY', sound: 'VALUE' };
         const newSign = SecurityService.sign({ key: value });

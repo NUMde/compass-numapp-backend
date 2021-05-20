@@ -8,4 +8,6 @@ The following documentation topics ar available (as of now):
 
 * link:../ocp_deployment[OpenShift Deployment]
 * link:../db[DB Setup]
+* link:../scripts/createSubjectIDs[Addition of new study participants]
 * link:./reminder[Logic of the reminder feature]
+* link:./customization[Distribution logic of the questionnaires]

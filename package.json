@@ -2,7 +2,7 @@
     "name": "compass-backend",
     "version": "1.0.0",
     "description": "compass-backend",
-    "main": "index.ts",
+    "main": "app.ts",
     "private": true,
     "dependencies": {
         "@cloudnative/health-connect": "^2.1.0",
@@ -56,7 +56,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://eu-de.git.cloud.ibm.com/num/compass/compass-backend"
+        "url": "https://github.com/NUMde/compass-numapp-backend.git"
     },
     "author": "IBM Corp.",
     "contributors": [
@@ -70,9 +70,9 @@
         }
     ],
     "scripts": {
-        "start": "node build/index.js",
-        "dev": "nodemon src/index.ts",
-        "dev:debug": "nodemon --inspect src/index.ts",
+        "start": "node build/app.js",
+        "dev": "nodemon src/app.ts",
+        "dev:debug": "nodemon --inspect src/app.ts",
         "dev:watch": "./node_modules/nodemon/bin/nodemon.js -e ts  --exec \"npm run build:src\"",
         "build": "run-s -ls clean build:src build:static",
         "build:src": "tsc",

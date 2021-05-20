@@ -5,7 +5,7 @@
 import { Logger } from '@overnightjs/logger';
 import { PushServiceConfig } from '../../config/PushServiceConfig';
 
-import { UserModel } from '../../models/UserModel';
+import { ParticipantModel } from '../../models/ParticipantModel';
 import { PerformanceLogger } from '../../services/PerformanceLogger';
 import { PushService } from '../../services/PushService';
 import { AbstractCronJob } from './AbstractCronJob';
@@ -18,7 +18,7 @@ import { AbstractCronJob } from './AbstractCronJob';
  * @extends {AbstractCronJob}
  */
 export class CronJobNotification extends AbstractCronJob {
-    private userModel: UserModel = new UserModel();
+    private participantModel: ParticipantModel = new ParticipantModel();
 
     constructor() {
         super('0 6 * * *'); // at 6:00 Local Time (GMT+02:00)
@@ -41,20 +41,22 @@ export class CronJobNotification extends AbstractCronJob {
 
         // Reminder - download questionnair
         try {
-            const usersWithNewQuestionnairs = await this.userModel.getUsersWithAvailableQuestionnairs(
+            const participantsWithNewQuestionnairs = await this.participantModel.getParticipantsWithAvailableQuestionnairs(
                 now
             );
             const downloadMsg = PushServiceConfig.getDownloadMessage();
-            await PushService.send(downloadMsg, usersWithNewQuestionnairs);
+            await PushService.send(downloadMsg, participantsWithNewQuestionnairs);
         } catch (error) {
             Logger.Err(error, true);
         }
 
         // Reminder - upload questionnair
         try {
-            const usersWithPendingUploads = await this.userModel.getUsersWithPendingUploads(now);
+            const participantsWithPendingUploads = await this.participantModel.getParticipantsWithPendingUploads(
+                now
+            );
             const uploadMsg = PushServiceConfig.getUploadMessage();
-            await PushService.send(uploadMsg, usersWithPendingUploads);
+            await PushService.send(uploadMsg, participantsWithPendingUploads);
         } catch (error) {
             Logger.Err(error, true);
         }

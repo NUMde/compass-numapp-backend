@@ -64,7 +64,7 @@ build
 **/.DS_store
 
 # CSV file in scripts folder
-scripts/createAppIDs/*.csv
+scripts/createSubjectIDs/*.csv
 
 # Local test file
 test.ts

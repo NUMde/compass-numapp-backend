@@ -29,7 +29,7 @@ export class COMPASSConfig {
     }
 
     /**
-     * Get the default duration for a regular questionnaire. This determines how many days the user has to complete the questionnaire after the start of an interval.
+     * Get the default duration for a regular questionnaire. This determines how many days the participant has to complete the questionnaire after the start of an interval.
      *
      * @static
      * @return {*}  {number}
@@ -42,6 +42,7 @@ export class COMPASSConfig {
     /**
      * Gets the default interval of the short track.
      *
+     * Defaults to 2
      * @static
      * @return {*}  {number}
      * @memberof COMPASSConfig
@@ -167,9 +168,11 @@ export class COMPASSConfig {
     }
 
     /**
-     * Gets the starting index for a new interval. Example: If a user sends in a report, he/she switches to
+     * Gets the starting index for a new interval. Example: If a participant sends in a report, he/she switches to
      * another track. Does this track start today (meaning now) or tomorrow morning?
      * With the defaultInterval being 0 the new track starts immediately, with 1 the track would start tomorrow.
+     *
+     * Defaults to 1.
      *
      * @static
      * @return {*}  {number}
@@ -198,7 +201,7 @@ export class COMPASSConfig {
     /**
      * Flag to toogle fake date calculation to ease testing.
      */
-    public static isFakeDatesUsed(): boolean {
+    public static useFakeDateCalculation(): boolean {
         return env.get('COMPASS_USE_FAKE_DATES').default('false').asBoolStrict();
     }
 

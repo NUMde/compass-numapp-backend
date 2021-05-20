@@ -7,7 +7,7 @@
  */
 export interface CTransfer {
     UUID: string;
-    AppId: string;
+    SubjectId: string;
     JSON: string;
     AbsendeDatum: Date;
     ErhaltenDatum: Date;

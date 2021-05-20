@@ -74,7 +74,7 @@ export class DownloadController {
         for (const queueEntry of queueEntries) {
             const cTransfer: CTransfer = {
                 UUID: queueEntry.id,
-                AppId: queueEntry.study_id,
+                SubjectId: queueEntry.subject_id,
                 JSON: queueEntry.encrypted_resp,
                 AbsendeDatum: queueEntry.date_sent,
                 ErhaltenDatum: queueEntry.date_received
@@ -93,7 +93,7 @@ export class DownloadController {
      * @memberof DownloadController
      */
     @Delete()
-    @Middleware(AuthorizationController.checkApiUserLogin)
+    @Middleware(AuthorizationController.checkStudyParticipantLogin)
     public async deleteDataFromQueue(req: ISecureRequest, resp: Response) {
         try {
             if (!Array.isArray(req.body)) {

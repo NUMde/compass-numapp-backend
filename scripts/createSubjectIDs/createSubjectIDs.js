@@ -7,7 +7,7 @@ const { Pool, Client } = require("pg");
 const fs = require("fs");
 const readline = require("readline");
 
-const fileName = "APPIDForSeriendruck-Studie.csv";
+const fileName = "SUBJECTID_input.txt";
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -23,7 +23,7 @@ async function processLineByLine(pool) {
         crlfDelay: Infinity,
     });
     // Note: we use the crlfDelay option to recognize all instances of CR LF
-    // ('\r\n') in input.txt as a single line break.
+    // ('\r\n') in SUBJECTID_input.txt as a single line break.
 
     let i = 1;
 
@@ -31,9 +31,8 @@ async function processLineByLine(pool) {
         // Each line in input.txt will be successively available here as `line`.
         console.log("Processing line " + i + " with content: " + line);
         try {
-            await pool.query("INSERT INTO studyuser(study_id) VALUES ($1);",
-                [line]);
-        } catch(err) {
+            await pool.query("INSERT INTO studyparticipant(subject_id) VALUES ($1);", [line]);
+        } catch (err) {
             console.log(err);
             process.exit(1);
         }
