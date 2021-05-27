@@ -62,7 +62,7 @@ paths:
                   schema:
                       type: string
                   required: true
-                - name: appId
+                - name: subjectId
                   in: query
                   description: SubjectID
                   schema:

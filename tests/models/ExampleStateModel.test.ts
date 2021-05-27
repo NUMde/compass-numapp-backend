@@ -2,7 +2,7 @@ import { ExampleStateModel } from './../../src/models/ExampleStateModel';
 import * as dotenv from 'dotenv';
 import { COMPASSConfig } from '../../src/config/COMPASSConfig';
 
-import { StateChangeTrigger, UserEntry } from '../../src/types';
+import { StateChangeTrigger, ParticipantEntry } from '../../src/types';
 
 describe('signing', () => {
     dotenv.config({ path: './.env' });
@@ -20,8 +20,8 @@ describe('signing', () => {
 
     it('mustGoToInitialState', () => {
         // given
-        const user: UserEntry = {
-            study_id: '1',
+        const user: ParticipantEntry = {
+            subject_id: '1',
             last_action: null,
             current_questionnaire_id: '',
             start_date: null,
@@ -36,7 +36,7 @@ describe('signing', () => {
         const result = sut.calculateUpdatedData(user, parameters);
 
         // then
-        expect(result.study_id).toBe('1');
+        expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(COMPASSConfig.getInitialQuestionnaireId());
         expect(result.start_date.toISOString()).toBe('2019-10-31T05:00:00.000Z');
@@ -47,8 +47,8 @@ describe('signing', () => {
 
     it('mustGoToDefaultState', () => {
         // given
-        const user: UserEntry = {
-            study_id: '1',
+        const user: ParticipantEntry = {
+            subject_id: '1',
             last_action: null,
             current_questionnaire_id: COMPASSConfig.getInitialQuestionnaireId(),
             start_date: null,
@@ -63,7 +63,7 @@ describe('signing', () => {
         const result = sut.calculateUpdatedData(user, parameters);
 
         // then
-        expect(result.study_id).toBe('1');
+        expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(COMPASSConfig.getDefaultQuestionnaireId());
         expect(result.start_date.toISOString()).toBe('2019-10-31T05:00:00.000Z');
@@ -75,8 +75,8 @@ describe('signing', () => {
 
     it('mustGoToShortTrackState', () => {
         // given
-        const user: UserEntry = {
-            study_id: '1',
+        const user: ParticipantEntry = {
+            subject_id: '1',
             last_action: null,
             current_questionnaire_id: COMPASSConfig.getInitialQuestionnaireId(),
             start_date: null,
@@ -91,7 +91,7 @@ describe('signing', () => {
         const result = sut.calculateUpdatedData(user, parameters);
 
         // then
-        expect(result.study_id).toBe('1');
+        expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(
             COMPASSConfig.getDefaultShortQuestionnaireId()
@@ -105,8 +105,8 @@ describe('signing', () => {
 
     it('mustGoToShortTrackState', () => {
         // given
-        const user: UserEntry = {
-            study_id: '1',
+        const user: ParticipantEntry = {
+            subject_id: '1',
             last_action: null,
             current_questionnaire_id: COMPASSConfig.getInitialQuestionnaireId(),
             start_date: null,
@@ -121,7 +121,7 @@ describe('signing', () => {
         const result = sut.calculateUpdatedData(user, parameters);
 
         // then
-        expect(result.study_id).toBe('1');
+        expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(
             COMPASSConfig.getDefaultShortLimitedQuestionnaireId()
