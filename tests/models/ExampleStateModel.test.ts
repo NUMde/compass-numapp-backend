@@ -47,7 +47,6 @@ describe('signing', () => {
 
         const expectedDueDate = new Date(expectedStartDate);
         expectedDueDate.setDate(expectedStartDate.getDate() + COMPASSConfig.getDefaultDuration());
-
         expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
 
         expect(result.subject_id).toBe('1');
@@ -86,8 +85,8 @@ describe('signing', () => {
 
         const expectedDueDate = new Date(expectedStartDate);
         expectedDueDate.setDate(expectedStartDate.getDate() + COMPASSConfig.getDefaultDuration());
-
         expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
+
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(COMPASSConfig.getDefaultQuestionnaireId());
@@ -138,7 +137,7 @@ describe('signing', () => {
         expect(result.start_date.toISOString()).toBe(expectedStartDate.toISOString());
         expect(result.due_date.toISOString()).toBe(expectedDueDate.toISOString());
         expect(result.current_instance_id).toBeTruthy();
-        expect(result.current_interval).toBe(2);
+        expect(result.current_interval).toBe(COMPASSConfig.getDefaultShortInterval());
         expect(result.additional_iterations_left).toBe(0);
     });
 
@@ -160,15 +159,29 @@ describe('signing', () => {
         const result = sut.calculateUpdatedData(user, parameters);
 
         // then
+        //set up expected values
+        const expectedStartDate = new Date(initialDate);
+        expectedStartDate.setDate(
+            initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex()
+        );
+        expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
+
+        const expectedDueDate = new Date(expectedStartDate);
+        expectedDueDate.setDate(
+            expectedStartDate.getDate() + COMPASSConfig.getDefaultShortDuration()
+        );
+        expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(
             COMPASSConfig.getDefaultShortLimitedQuestionnaireId()
         );
-        expect(result.start_date.toISOString()).toBe('2019-10-31T05:00:00.000Z');
-        expect(result.due_date.toISOString()).toBe('2019-11-01T17:00:00.000Z');
+        expect(result.start_date.toISOString()).toBe(expectedStartDate.toISOString());
+        expect(result.due_date.toISOString()).toBe(expectedDueDate.toISOString());
         expect(result.current_instance_id).toBeTruthy();
-        expect(result.current_interval).toBe(2);
-        expect(result.additional_iterations_left).toBe(4);
+        expect(result.current_interval).toBe(COMPASSConfig.getDefaultShortInterval());
+        expect(result.additional_iterations_left).toBe(
+            COMPASSConfig.getDefaultIterationCount() - 1
+        );
     });
 });
