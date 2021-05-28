@@ -88,7 +88,9 @@ Please do not set a passphrase for this SSH key, as this will prevent OpenShift 
 
 Insert the newly created public key in the deploy keys section of your Git-repository. Check out the documentation on how this is done for https://docs.github.com/en/free-pro-team@latest/developers/overview/managing-deploy-keys[GitHub] and https://docs.gitlab.com/ee/user/project/deploy_keys/[GitLab].
 
-You can now apply the compass-backend-template and create the resources stated above via:
+You can now apply the compass-backend-template and create the resources stated above via the command below. When using a Windows machine preferably run the command in the Git Bash or Commander in order to prevent problems with the Linux commands cat and base64.
+
+:
 [source,shell]
 ----
 $ oc new-app --file your/path/to/compass-backend-template.yaml \
