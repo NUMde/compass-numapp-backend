@@ -8,6 +8,7 @@ describe('signing', () => {
     dotenv.config({ path: './.env' });
     const sut = new ExampleStateModel();
     let realDateNow;
+    const initialDate = new Date(1572393600000);
 
     beforeAll(() => {
         realDateNow = Date.now.bind(global.Date);
@@ -36,12 +37,25 @@ describe('signing', () => {
         const result = sut.calculateUpdatedData(user, parameters);
 
         // then
+
+        //set up expected values
+        const expectedStartDate = new Date(initialDate);
+        expectedStartDate.setDate(
+            initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex()
+        );
+        expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
+
+        const expectedDueDate = new Date(expectedStartDate);
+        expectedDueDate.setDate(expectedStartDate.getDate() + COMPASSConfig.getDefaultDuration());
+
+        expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
+
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(COMPASSConfig.getInitialQuestionnaireId());
-        expect(result.start_date.toISOString()).toBe('2019-10-31T05:00:00.000Z');
-        expect(result.due_date.toISOString()).toBe('2019-11-03T17:00:00.000Z');
-        expect(result.current_interval).toBe(7);
+        expect(result.start_date.toISOString()).toBe(expectedStartDate.toISOString());
+        expect(result.due_date.toISOString()).toBe(expectedDueDate.toISOString());
+        expect(result.current_interval).toBe(COMPASSConfig.getDefaultInterval());
         expect(result.additional_iterations_left).toBe(0);
     });
 
@@ -63,13 +77,24 @@ describe('signing', () => {
         const result = sut.calculateUpdatedData(user, parameters);
 
         // then
+        //set up expected values
+        const expectedStartDate = new Date(initialDate);
+        expectedStartDate.setDate(
+            initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex()
+        );
+        expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
+
+        const expectedDueDate = new Date(expectedStartDate);
+        expectedDueDate.setDate(expectedStartDate.getDate() + COMPASSConfig.getDefaultDuration());
+
+        expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(COMPASSConfig.getDefaultQuestionnaireId());
-        expect(result.start_date.toISOString()).toBe('2019-10-31T05:00:00.000Z');
-        expect(result.due_date.toISOString()).toBe('2019-11-03T17:00:00.000Z');
+        expect(result.start_date.toISOString()).toBe(expectedStartDate.toISOString());
+        expect(result.due_date.toISOString()).toBe(expectedDueDate.toISOString());
         expect(result.current_instance_id).toBeTruthy();
-        expect(result.current_interval).toBe(7);
+        expect(result.current_interval).toBe(COMPASSConfig.getDefaultInterval());
         expect(result.additional_iterations_left).toBe(0);
     });
 
@@ -91,13 +116,27 @@ describe('signing', () => {
         const result = sut.calculateUpdatedData(user, parameters);
 
         // then
+        //set up expected values
+        const expectedStartDate = new Date(initialDate);
+        expectedStartDate.setDate(
+            initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex()
+        );
+        expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
+
+        const expectedDueDate = new Date(expectedStartDate);
+        expectedDueDate.setDate(
+            expectedStartDate.getDate() + COMPASSConfig.getDefaultShortDuration()
+        );
+
+        expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
+
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(
             COMPASSConfig.getDefaultShortQuestionnaireId()
         );
-        expect(result.start_date.toISOString()).toBe('2019-10-31T05:00:00.000Z');
-        expect(result.due_date.toISOString()).toBe('2019-11-01T17:00:00.000Z');
+        expect(result.start_date.toISOString()).toBe(expectedStartDate.toISOString());
+        expect(result.due_date.toISOString()).toBe(expectedDueDate.toISOString());
         expect(result.current_instance_id).toBeTruthy();
         expect(result.current_interval).toBe(2);
         expect(result.additional_iterations_left).toBe(0);
