@@ -10,9 +10,9 @@ export interface StateModel {
     /**
      * Determine new state revelant data for the given user
      *
-     * @param {UserEntry} user
+     * @param {ParticipantEntry} user
      * @param {string} parameters
-     * @return {*}  {UserEntry}
+     * @return {*}  {ParticipantEntry}
      * @memberof StateModel
      */
     calculateUpdatedData(user: ParticipantEntry, parameters: StateChangeTrigger): ParticipantEntry;
