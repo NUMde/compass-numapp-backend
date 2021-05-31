@@ -167,7 +167,7 @@ objects:
     COMPASS_PRIVATE_KEY: ${PRIVATE_KEY}
     COMPASS_PUBLIC_KEY: ${PUBLIC_KEY}
   type: Opaque
-  - kind: Secret
+- kind: Secret
   apiVersion: v1
   metadata:
     name: mobile-backend-push-config
@@ -398,7 +398,7 @@ parameters:
 - name: PUBLIC_KEY
   description: Personal public Key for encryption functions
   required: true
-  - name: PUSH_CLIENT_SECRET
+- name: PUSH_CLIENT_SECRET
   displayName: Push Service Client Secret
   description: The client secret to register at the push service. (optional)
   value: ''
@@ -410,7 +410,7 @@ parameters:
   displayName: Push Service APP ID
   description: App Id for the push service. (optional)
   value: ''
-  - name: VOLUME_CAPACITY
+- name: VOLUME_CAPACITY
   description: Volume space available for data, e.g. 512Mi, 2Gi.
   displayName: Volume Capacity
   required: true
