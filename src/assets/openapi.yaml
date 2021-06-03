@@ -353,7 +353,8 @@ components:
                     type: string
                     description: |
                         Controls how multiple enableWhen values are interpreted - whether all or any must be true.
-                        This element must be specified if more than one enableWhen item is provided.
+                        This element should be specified if more than one enableWhen item is provided.
+                        If not set it defaults to 'all'.
 
                         * all - Enable the question when all the enableWhen criteria are satisfied.
                         * any - Enable the question when any of the enableWhen criteria are satisfied.
@@ -399,7 +400,7 @@ components:
                     description: 'Used, if referenced question is of type choice.'
             description: |
                 Only allow data when the defined condition is true.
-                Multiple enableWhen conditions require the usage of the EnableWhenBehavior.
+                The EnableWhenBehavior should be set, when there are multiple enableWhen conditions.
         AnswerOptionItem:
             type: object
             properties:
