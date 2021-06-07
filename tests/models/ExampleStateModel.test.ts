@@ -39,15 +39,11 @@ describe('signing', () => {
         // then
 
         //set up expected values
-        const expectedStartDate = new Date(initialDate);
-        expectedStartDate.setDate(
-            initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex()
+        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedDueDate = setUpExpectedDueDate(
+            expectedStartDate,
+            COMPASSConfig.getDefaultDuration()
         );
-        expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
-
-        const expectedDueDate = new Date(expectedStartDate);
-        expectedDueDate.setDate(expectedStartDate.getDate() + COMPASSConfig.getDefaultDuration());
-        expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
 
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
@@ -77,15 +73,11 @@ describe('signing', () => {
 
         // then
         //set up expected values
-        const expectedStartDate = new Date(initialDate);
-        expectedStartDate.setDate(
-            initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex()
+        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedDueDate = setUpExpectedDueDate(
+            expectedStartDate,
+            COMPASSConfig.getDefaultDuration()
         );
-        expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
-
-        const expectedDueDate = new Date(expectedStartDate);
-        expectedDueDate.setDate(expectedStartDate.getDate() + COMPASSConfig.getDefaultDuration());
-        expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
 
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
@@ -116,18 +108,11 @@ describe('signing', () => {
 
         // then
         //set up expected values
-        const expectedStartDate = new Date(initialDate);
-        expectedStartDate.setDate(
-            initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex()
+        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedDueDate = setUpExpectedDueDate(
+            expectedStartDate,
+            COMPASSConfig.getDefaultShortDuration()
         );
-        expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
-
-        const expectedDueDate = new Date(expectedStartDate);
-        expectedDueDate.setDate(
-            expectedStartDate.getDate() + COMPASSConfig.getDefaultShortDuration()
-        );
-
-        expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
 
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
@@ -160,17 +145,11 @@ describe('signing', () => {
 
         // then
         //set up expected values
-        const expectedStartDate = new Date(initialDate);
-        expectedStartDate.setDate(
-            initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex()
+        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedDueDate = setUpExpectedDueDate(
+            expectedStartDate,
+            COMPASSConfig.getDefaultShortDuration()
         );
-        expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
-
-        const expectedDueDate = new Date(expectedStartDate);
-        expectedDueDate.setDate(
-            expectedStartDate.getDate() + COMPASSConfig.getDefaultShortDuration()
-        );
-        expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
         expect(result.current_questionnaire_id).toBe(
@@ -185,3 +164,27 @@ describe('signing', () => {
         );
     });
 });
+
+/**
+ * calculate expected start date based on given initial date
+ *
+ * @param {Date} initialDate the initial date
+ */
+const setUpExpectedStartDate = (initialDate: Date) => {
+    const expectedStartDate = new Date(initialDate);
+    expectedStartDate.setDate(initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex());
+    expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
+    return expectedStartDate;
+};
+/**
+ * calculate expected due date based on given start date and duration
+ *
+ * @param {Date} startDate the given start date
+ * @param {number} duration the duration of the current interval
+ */
+const setUpExpectedDueDate = (startDate: Date, duration: number) => {
+    const expectedDueDate = new Date(startDate);
+    expectedDueDate.setDate(startDate.getDate() + duration);
+    expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
+    return expectedDueDate;
+};
