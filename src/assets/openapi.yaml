@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
     title: COMPASS NUM-APP Mobile Backend
     description: COMPASS NUM-APP Mobile Backend API
-    version: 0.1.0
+    version: 0.1.1
 servers:
     - url: 'http://localhost:8080/api'
 tags:
@@ -353,6 +353,8 @@ components:
                     type: string
                     description: |
                         Controls how multiple enableWhen values are interpreted - whether all or any must be true.
+                        This element should be specified if more than one enableWhen item is provided.
+                        If not set it defaults to 'all'.
 
                         * all - Enable the question when all the enableWhen criteria are satisfied.
                         * any - Enable the question when any of the enableWhen criteria are satisfied.
@@ -396,7 +398,9 @@ components:
                 answerString:
                     type: string
                     description: 'Used, if referenced question is of type choice.'
-            description: Only allow data when
+            description: |
+                Only allow data when the defined condition is true.
+                The EnableWhenBehavior should be set, when there are multiple enableWhen conditions.
         AnswerOptionItem:
             type: object
             properties:
