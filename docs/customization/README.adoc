@@ -7,7 +7,7 @@ link:../README.adoc[← Table of Contents]
 === Current Model
 
 The current model that is used by the application is defined in link:../../../src/models/ExampleStateModel.ts[ExampleStateModel.ts].
-It was definded by the GCS project and uses four different questionnaires that are send to the study participant based on specific rules.
+It was defined by the GCS project and uses four different questionnaires that are send to the study participant based on specific rules.
 
 The following image shows the different questionnaires and under what condition each one is send to the participants.
 --

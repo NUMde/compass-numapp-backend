@@ -77,7 +77,7 @@ export class ParticipantModel {
     }
 
     /**
-     * Retreieve the participant from the database and eventually update the participants data in case due_date ist outdated or start_date is not set.
+     * Retrieve the participant from the database and eventually update the participants data in case due_date ist outdated or start_date is not set.
      *
      * @param subjectID The participant id
      */
@@ -149,7 +149,7 @@ export class ParticipantModel {
     }
 
     /**
-     * Retrieve all subject ids / participant ids for which a questionnair is available for download.
+     * Retrieve all subject ids / participant ids for which a questionnaire is available for download.
      *
      * @param referenceDate The reference date used to determine matching participant ids
      */
@@ -182,7 +182,7 @@ export class ParticipantModel {
     }
 
     /**
-     * Retrieve all subject ids / participant ids for which a questionnair is available for download.
+     * Retrieve all subject ids / participant ids for which a questionnaire is available for download.
      *
      * @param referenceDate The reference date used to determine matching participant ids
      */

@@ -39,18 +39,18 @@ export class CronJobNotification extends AbstractCronJob {
         const now = new Date();
         now.setUTCHours(6, 0, 0, 0);
 
-        // Reminder - download questionnair
+        // Reminder - download questionnaire
         try {
-            const participantsWithNewQuestionnairs = await this.participantModel.getParticipantsWithAvailableQuestionnairs(
+            const participantsWithNewQuestionnaires = await this.participantModel.getParticipantsWithAvailableQuestionnairs(
                 now
             );
             const downloadMsg = PushServiceConfig.getDownloadMessage();
-            await PushService.send(downloadMsg, participantsWithNewQuestionnairs);
+            await PushService.send(downloadMsg, participantsWithNewQuestionnaires);
         } catch (error) {
             Logger.Err(error, true);
         }
 
-        // Reminder - upload questionnair
+        // Reminder - upload questionnaire
         try {
             const participantsWithPendingUploads = await this.participantModel.getParticipantsWithPendingUploads(
                 now

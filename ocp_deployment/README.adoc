@@ -140,7 +140,7 @@ $ oc new-app --file your/path/to/compass-backend-template-limit-range.yaml \
 [#dbSetup]
 ==== Database Setup
 
-After you have created the database and mobile backend ressources you can setup the database.
+After you have created the database and mobile backend resources you can setup the database.
 Follow the documentation in the db/migration directory.
 
 [#productionDeployment]
@@ -154,7 +154,7 @@ Two deployment types are suggested for the mobile backend. Both are visualized i
 
 image:images/Deployment.png[Alt Deployment]
 
-IMPORTANT: For both types it is strongly recommended to setup limit ranges for the resource consumtioon. Refer to the end of the<<mbSetup>> on how to do this.
+IMPORTANT: For both types it is strongly recommended to setup limit ranges for the resource consumption. Refer to the end of the<<mbSetup>> on how to do this.
 
 ===== Preferred Method
 
