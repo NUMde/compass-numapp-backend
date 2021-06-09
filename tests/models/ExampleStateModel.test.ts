@@ -39,10 +39,14 @@ describe('signing', () => {
         // then
 
         //set up expected values
-        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedStartDate = setUpExpectedStartDate(
+            initialDate,
+            COMPASSConfig.getDefaultStartHour()
+        );
         const expectedDueDate = setUpExpectedDueDate(
             expectedStartDate,
-            COMPASSConfig.getDefaultDuration()
+            COMPASSConfig.getDefaultDuration(),
+            COMPASSConfig.getDefaultDueHour()
         );
 
         expect(result.subject_id).toBe('1');
@@ -73,10 +77,14 @@ describe('signing', () => {
 
         // then
         //set up expected values
-        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedStartDate = setUpExpectedStartDate(
+            initialDate,
+            COMPASSConfig.getDefaultStartHour()
+        );
         const expectedDueDate = setUpExpectedDueDate(
             expectedStartDate,
-            COMPASSConfig.getDefaultDuration()
+            COMPASSConfig.getDefaultDuration(),
+            COMPASSConfig.getDefaultDueHour()
         );
 
         expect(result.subject_id).toBe('1');
@@ -108,10 +116,14 @@ describe('signing', () => {
 
         // then
         //set up expected values
-        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedStartDate = setUpExpectedStartDate(
+            initialDate,
+            COMPASSConfig.getDefaultShortStartHour()
+        );
         const expectedDueDate = setUpExpectedDueDate(
             expectedStartDate,
-            COMPASSConfig.getDefaultShortDuration()
+            COMPASSConfig.getDefaultShortDuration(),
+            COMPASSConfig.getDefaultShortDueHour()
         );
 
         expect(result.subject_id).toBe('1');
@@ -145,10 +157,14 @@ describe('signing', () => {
 
         // then
         //set up expected values
-        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedStartDate = setUpExpectedStartDate(
+            initialDate,
+            COMPASSConfig.getDefaultShortStartHour()
+        );
         const expectedDueDate = setUpExpectedDueDate(
             expectedStartDate,
-            COMPASSConfig.getDefaultShortDuration()
+            COMPASSConfig.getDefaultShortDuration(),
+            COMPASSConfig.getDefaultShortDueHour()
         );
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
@@ -170,10 +186,10 @@ describe('signing', () => {
  *
  * @param {Date} initialDate the initial date
  */
-const setUpExpectedStartDate = (initialDate: Date) => {
+const setUpExpectedStartDate = (initialDate: Date, startHour: number) => {
     const expectedStartDate = new Date(initialDate);
     expectedStartDate.setDate(initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex());
-    expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
+    expectedStartDate.setHours(startHour);
     return expectedStartDate;
 };
 /**
@@ -182,9 +198,9 @@ const setUpExpectedStartDate = (initialDate: Date) => {
  * @param {Date} startDate the given start date
  * @param {number} duration the duration of the current interval
  */
-const setUpExpectedDueDate = (startDate: Date, duration: number) => {
+const setUpExpectedDueDate = (startDate: Date, duration: number, dueHour: number) => {
     const expectedDueDate = new Date(startDate);
     expectedDueDate.setDate(startDate.getDate() + duration);
-    expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
+    expectedDueDate.setHours(dueHour);
     return expectedDueDate;
 };
