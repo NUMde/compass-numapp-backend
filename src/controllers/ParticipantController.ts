@@ -49,7 +49,7 @@ export class ParticipantController {
                 current_questionnaire_id: participant.current_questionnaire_id,
                 due_date: participant.due_date,
                 start_date: participant.start_date,
-                subject_id: participant.subject_id,
+                subjectId: participant.subject_id,
                 firstTime:
                     participant.current_questionnaire_id ===
                     COMPASSConfig.getInitialQuestionnaireId(),

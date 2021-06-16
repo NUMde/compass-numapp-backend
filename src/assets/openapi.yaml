@@ -281,7 +281,7 @@ components:
                 start_date:
                     type: string
                     description: Start Date of the Questionnaire
-                subject_id:
+                subjectId:
                     type: string
                     description: Subject ID given by QR Code
                 firstTime:
