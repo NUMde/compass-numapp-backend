@@ -68,12 +68,10 @@ INSERT INTO questionnaires (id,body) VALUES
                 "extension": [{
                         "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
                         "valueCodeableConcept": {
-                            "CodeableConcept": {
-                                "coding": [{
-                                    "system": "http://hl7.org/fhir/questionnaire-item-control",
-                                    "code": "slider"
-                                }]
-                            }
+                            "coding": [{
+                                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                                "code": "slider"
+                            }]
                         }
                     },
                     {
@@ -408,12 +406,10 @@ INSERT INTO questionnaires (id,body) VALUES
                 "extension": [{
                         "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
                         "valueCodeableConcept": {
-                            "CodeableConcept": {
-                                "coding": [{
-                                    "system": "http://hl7.org/fhir/questionnaire-item-control",
-                                    "code": "slider"
-                                }]
-                            }
+                            "coding": [{
+                                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                                "code": "slider"
+                            }]
                         }
                     },
                     {
@@ -748,12 +744,10 @@ INSERT INTO questionnaires (id,body) VALUES
                 "extension": [{
                         "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
                         "valueCodeableConcept": {
-                            "CodeableConcept": {
-                                "coding": [{
-                                    "system": "http://hl7.org/fhir/questionnaire-item-control",
-                                    "code": "slider"
-                                }]
-                            }
+                            "coding": [{
+                                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                                "code": "slider"
+                            }]
                         }
                     },
                     {
