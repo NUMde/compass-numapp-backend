@@ -109,12 +109,11 @@ In case you have a public repository, use an empty string as the value for the `
 \ -p "SSH_PRIVATE_KEY=$(echo "" | base64 )"
 ----
 
-The certificate is optional, so you can just leave this parameter out, if for example you set it in the frontend, i.e. the app
-
 [horizontal]
 APP_GIT_URL:: "Clone with SSH" link to the Git-repository
-PRIVATE_KEY:: Private SSH key of mobile backend corresponding to PUBLIC_KEY, needed for signature creation of encrypted documents in backend
 PUBLIC_KEY:: Public SSH key of mobile backend corresponding to PRIVATE_KEY, primarily used for testing purposes for signature verification.
+PRIVATE_KEY:: Private SSH key of mobile backend corresponding to PUBLIC_KEY, needed for signature creation of encrypted documents in backend
+CERTIFICATE:: The Certificate used for the encryption of the questionnaire responses by the NUM app. This is optional, so you can just leave this parameter out, if for example you set it in the frontend, i.e. the app
 SSH_PRIVATE_KEY:: Dedicated private deploy key added to your Git-repository for authentication to deploy a (private) repository to OpenShift
 
 You obtain more information on the template  parameters via the following command:
@@ -170,6 +169,7 @@ $ oc new-app --file your/path/to/compass-backend-template-prod.yaml \
 > -n your_openshift_project_name
 > -p "PUBLIC_KEY=$(echo "$(cat your/path/to/public_key)" | base64 )" \
 > -p "PRIVATE_KEY=$(echo "$(cat your/path/to/private_key)" | base64 )" \
+> -p "CERTIFICATE=$(echo "$(cat your/path/to/certificate)" base64 )"
 > [-p param=value] #optional
 ----
 
