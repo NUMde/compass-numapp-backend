@@ -20,6 +20,7 @@
 **v1.1.3 (2021-06-14)**
 ------------------------------------
 * Removed unnecessary level for valueCodeableConcept to ensure standard compliance
+
 **v1.1.2 (2021-06-08)**
 ------------------------------------
 * Merge pull request #11 from NUMde/generify-tests
@@ -69,6 +70,7 @@
 ------------------------------------
 * Renamed folder
 * Addition of documentation on how to add study IDs
+
 **v1.0.3 (2021-05-17)**
 ------------------------------------
 * Reworked based on Review comments
