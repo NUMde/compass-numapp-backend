@@ -48,22 +48,22 @@ class ExpressServer extends Server {
     }
 
     private setupControllers(): void {
-        const ctlrInstances = [];
+        const ctrlInstances = [];
         for (const name in controllers) {
             // eslint-disable-next-line no-prototype-builtins
             if (controllers.hasOwnProperty(name)) {
                 const controller = controllers[name];
-                ctlrInstances.push(new controller());
+                ctrlInstances.push(new controller());
             }
         }
-        super.addControllers(ctlrInstances);
+        super.addControllers(ctrlInstances);
     }
 
     /**
      * The start methods. It performs following steps
      * - Startup express server
      * - Open a DB connection
-     * - Create a healt endpoint for probing
+     * - Create a health endpoint for probing
      * - Start Swagger UI for API documentation
      *
      * In case of issues, like failing DB connection, this method exits the running process.
@@ -81,8 +81,8 @@ class ExpressServer extends Server {
                 await swaggerUI.start();
 
                 // setup cloud health endpoints
-                const healthcheck = new HealthChecker();
-                this.app.use('/health', HealthEndpoint(healthcheck));
+                const healthCheck = new HealthChecker();
+                this.app.use('/health', HealthEndpoint(healthCheck));
                 CustomRoutes.addRoute('GET', '/health');
 
                 this.logRegisteredRoutes();

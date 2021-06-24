@@ -118,7 +118,7 @@ export class SecurityService {
                 );
             } catch (err) {
                 Logger.Err(
-                    '[SecurityService.decryptLogin][key_decription_failed] ' + JSON.stringify(err)
+                    '[SecurityService.decryptLogin][key_decryption_failed] ' + JSON.stringify(err)
                 );
                 throw new Error('key_decryption_failed');
             }
@@ -133,9 +133,9 @@ export class SecurityService {
 
             return decrypted;
         } catch (err) {
-            if (err !== 'key_decription_failed') {
+            if (err !== 'key_decryption_failed') {
                 Logger.Err(
-                    '[SecurityService.decryptLogin][decription_failed] ' + JSON.stringify(err)
+                    '[SecurityService.decryptLogin][decryption_failed] ' + JSON.stringify(err)
                 );
             }
             throw new Error('decryption_failed');

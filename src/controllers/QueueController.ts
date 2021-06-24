@@ -26,7 +26,7 @@ export class QueueController {
 
     /**
      * Add entries to the queue. It is called during following events from the client:
-     * 1. A questionnair is send
+     * 1. A questionnaire is sent
      * 2. A positive result is reported
      * 3. Symptoms are reported
      *

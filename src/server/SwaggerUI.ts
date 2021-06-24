@@ -19,7 +19,7 @@ export class SwaggerUI {
     constructor(private app: Application) {}
 
     /**
-     * Expose a route with the OpenApi documenation of this application.
+     * Expose a route with the OpenApi documentation of this application.
      *
      * @memberof SwaggerUI
      */

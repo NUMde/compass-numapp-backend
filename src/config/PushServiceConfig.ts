@@ -11,7 +11,7 @@ import * as env from 'env-var';
  */
 export class PushServiceConfig {
     /**
-     * The api key to authenticate against the used Cloud Push Service isntance.
+     * The api key to authenticate against the used Cloud Push Service instance.
      */
     public static getApiKey(): string {
         return env.get('PUSH_API_KEY').default('').asString();
@@ -39,7 +39,7 @@ export class PushServiceConfig {
     }
 
     /**
-     * The message send as a push notification in case of newly available questionnairs.
+     * The message send as a push notification in case of newly available questionnaires.
      */
     public static getDownloadMessage(): string {
         return env

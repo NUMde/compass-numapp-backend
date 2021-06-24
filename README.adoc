@@ -84,13 +84,13 @@ Run your unit tests with jest.
 === Environment variables used by the application
 
 There are many different environment variables used by the application.
-Most of them have default values, that can be overriden by exposing a different value as environment variable.
+Most of them have default values, that can be overridden by exposing a different value as environment variable.
 All used variables can be found in the `src/config` folder.
 
-=== Commiting code changes
+=== Committing code changes
 
 This app uses https://typicode.github.io/husky[Husky] to trigger some actions during a commit.
-Before each commit passes automatic tests and linting is run. If any action failes, the commit failes.
+Before each commit passes automatic tests and linting is run. If any action fails, the commit fails.
 
 == Deployment
 

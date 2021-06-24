@@ -154,9 +154,9 @@ export class ExampleStateModel implements StateModel {
                 currentParticipant.current_interval === shortInterval
                     ? shortDuration
                     : regularDuration;
-            const enableShortmode = currentParticipant.current_interval === regularInterval;
-            const nextStartHour = enableShortmode ? shortStartHour : regularStartHour;
-            const nextDueHour = enableShortmode ? shortDueHour : regularDueHour;
+            const enableShortMode = currentParticipant.current_interval === regularInterval;
+            const nextStartHour = enableShortMode ? shortStartHour : regularStartHour;
+            const nextDueHour = enableShortMode ? shortDueHour : regularDueHour;
             const startImmediately = false;
             const additionalIterationsLeft = currentParticipant.additional_iterations_left;
 
