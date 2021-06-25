@@ -8,7 +8,7 @@ import { StateChangeTrigger, ParticipantEntry } from '../types';
  */
 export interface StateModel {
     /**
-     * Determine new state revelant data for the given user
+     * Determine new state relevant data for the given user
      *
      * @param {ParticipantEntry} user
      * @param {string} parameters
