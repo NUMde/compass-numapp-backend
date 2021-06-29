@@ -4,9 +4,11 @@
 import {
     ChildControllers,
     ClassErrorMiddleware,
+    ClassMiddleware,
     ClassOptions,
     Controller
 } from '@overnightjs/core';
+import cors from 'cors';
 
 import { AuthorizationController } from './AuthorizationController';
 import { DownloadController } from './DownloadController';
@@ -22,6 +24,7 @@ import { ParticipantController } from './ParticipantController';
  */
 @Controller('api')
 @ClassOptions({ mergeParams: true })
+@ClassMiddleware(cors())
 @ClassErrorMiddleware((err, req, res) => {
     if (err.name === 'UnauthorizedError') {
         res.status(401).send({ error: 'invalid_subjectid' });
