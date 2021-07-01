@@ -149,7 +149,7 @@ export class ParticipantModel {
     }
 
     /**
-     * Retrieve all subject ids / participant ids for which a questionnaire is available for download.
+     * Retrieve all device tokens for which a questionnaire is available for download.
      *
      * @param referenceDate The reference date used to determine matching participant ids
      */
@@ -160,7 +160,7 @@ export class ParticipantModel {
             const dateParam = this.convertDateToQueryString(referenceDate);
             const res = await pool.query(
                 `select
-                    s.subject_id
+                    s.registration_token
                 from
                     studyparticipant s
                 left join questionnairehistory q on
@@ -174,7 +174,7 @@ export class ParticipantModel {
                 `,
                 [dateParam]
             );
-            return res.rows.map((participant) => participant.subject_id);
+            return res.rows.map((participant) => participant.registration_token);
         } catch (err) {
             Logger.Err(err);
             throw err;
@@ -182,7 +182,7 @@ export class ParticipantModel {
     }
 
     /**
-     * Retrieve all subject ids / participant ids for which a questionnaire is available for download.
+     * Retrieve all device tokens for which a questionnaire is available for download.
      *
      * @param referenceDate The reference date used to determine matching participant ids
      */
@@ -193,7 +193,7 @@ export class ParticipantModel {
             const dateParam = this.convertDateToQueryString(referenceDate);
             const res = await pool.query(
                 `select
-                    s.subject_id
+                    s.registration_token
                 from
                     studyparticipant s,
                     questionnairehistory q
@@ -207,7 +207,27 @@ export class ParticipantModel {
                 `,
                 [dateParam]
             );
-            return res.rows.map((participant) => participant.subject_id);
+            return res.rows.map((participant) => participant.registration_token);
+        } catch (err) {
+            Logger.Err(err);
+            throw err;
+        }
+    }
+
+    /**
+     * Store the device registration token for the given participant.
+     *
+     * @param {string} subjectID The ID of the participant.
+     * @param {*} token The device token to store.
+     */
+    public async updateDeviceToken(subjectID: string, token: string): Promise<void> {
+        try {
+            const pool: Pool = DB.getPool();
+            await pool.query(
+                'update studyparticipant set registration_token = $1 where subject_id = $2;',
+                [token, subjectID]
+            );
+            return;
         } catch (err) {
             Logger.Err(err);
             throw err;

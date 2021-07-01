@@ -1,3 +1,4 @@
+import { Post } from '@overnightjs/core';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
@@ -12,7 +13,6 @@ import { Logger } from '@overnightjs/logger';
 
 import { ParticipantEntry } from '../types/ParticipantEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
-import { PushServiceConfig } from '../config/PushServiceConfig';
 import { ParticipantModel } from '../models/ParticipantModel';
 import { AuthorizationController } from './AuthorizationController';
 
@@ -29,11 +29,6 @@ export class ParticipantController {
     /**
      * Retrieve the current subject data.
      * Is called from the client during first login and also during refresh.
-     *
-     * @param {ISecureRequest} req
-     * @param {Response} resp
-     * @return {*}
-     * @memberof SubjectController
      */
     @Get(':subjectID')
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
@@ -55,11 +50,33 @@ export class ParticipantController {
                     COMPASSConfig.getInitialQuestionnaireId(),
                 additional_iterations_left: participant.additional_iterations_left,
                 current_interval: participant.current_interval,
-                pushClientSecret: PushServiceConfig.getClientSecret(),
-                pushAppGUID: PushServiceConfig.getAppId(),
                 recipient_certificate_pem_string: COMPASSConfig.getRecipientCertificate()
             };
             return resp.status(200).json(returnObject);
+        } catch (err) {
+            Logger.Err(err, true);
+            return resp.sendStatus(500);
+        }
+    }
+
+    /**
+     * Updates the device registration token that is used for the Firebase cloud messaging service.
+     * Is called from the client, when the token is changed on the device.
+     */
+    @Post('update-device-token/:subjectID')
+    @Middleware([AuthorizationController.checkStudyParticipantLogin])
+    public async updateDeviceTokenForParticipant(req: ISecureRequest, resp: Response) {
+        try {
+            // validate parameter
+            if (!req.params.subjectID || !req.body.token) {
+                return resp.status(400).send({ error: 'missing_data' });
+            }
+            await this.participantModel.updateDeviceToken(
+                req.params.subjectID,
+                req.body.token.toString()
+            );
+
+            return resp.sendStatus(204);
         } catch (err) {
             Logger.Err(err, true);
             return resp.sendStatus(500);

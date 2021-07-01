@@ -19,6 +19,7 @@ import { AbstractCronJob } from './AbstractCronJob';
  */
 export class CronJobNotification extends AbstractCronJob {
     private participantModel: ParticipantModel = new ParticipantModel();
+    private pushService: PushService = new PushService();
 
     constructor() {
         super('0 6 * * *'); // at 6:00 Local Time (GMT+02:00)
@@ -45,7 +46,7 @@ export class CronJobNotification extends AbstractCronJob {
                 now
             );
             const downloadMsg = PushServiceConfig.getDownloadMessage();
-            await PushService.send(downloadMsg, participantsWithNewQuestionnaires);
+            await this.pushService.send(downloadMsg, participantsWithNewQuestionnaires);
         } catch (error) {
             Logger.Err(error, true);
         }
@@ -56,7 +57,7 @@ export class CronJobNotification extends AbstractCronJob {
                 now
             );
             const uploadMsg = PushServiceConfig.getUploadMessage();
-            await PushService.send(uploadMsg, participantsWithPendingUploads);
+            await this.pushService.send(uploadMsg, participantsWithPendingUploads);
         } catch (error) {
             Logger.Err(error, true);
         }
