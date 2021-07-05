@@ -28,7 +28,7 @@ export class ParticipantController {
 
     /**
      * Retrieve the current subject data.
-     * Is called from the client during first login and also during refreh.
+     * Is called from the client during first login and also during refresh.
      *
      * @param {ISecureRequest} req
      * @param {Response} resp

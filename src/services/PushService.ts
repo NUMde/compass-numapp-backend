@@ -21,9 +21,9 @@ import type { Response } from 'request';
 export class PushService {
     private static authenticateAsync(myPushNotifications: PushNotificationsWithApiKey) {
         return new Promise((resolve, reject) => {
-            myPushNotifications.getAuthToken((hastoken, accessToken) => {
-                Logger.Info('hastoken: ' + hastoken);
-                if (hastoken) {
+            myPushNotifications.getAuthToken((hasToken, accessToken) => {
+                Logger.Info('hasToken: ' + hasToken);
+                if (hasToken) {
                     resolve(accessToken);
                 } else {
                     reject();
@@ -98,14 +98,14 @@ export class PushService {
             .sound('default')
             .build();
 
-        // Also timetolive setting is provided which specifies how long (in seconds)
+        // Also timeToLive setting is provided which specifies how long (in seconds)
         // The message should be kept in FCM storage if the device is offline.
         const fcm = PushMessageBuilder.FCM.collapseKey('ping')
             .interactiveCategory('Accept')
             .delayWhileIdle(true)
             .androidTitle(msg)
             .priority(IBMPushNotification.FCMPriority.DEFAULT)
-            // time to live is 1d as it will be superseeded by the next msg
+            // time to live is 1d as it will be superseded by the next msg
             .timeToLive(86400.0)
             .sync(true)
             .visibility(IBMPushNotification.Visibility.PUBLIC)
