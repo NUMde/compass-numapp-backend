@@ -1,6 +1,19 @@
 **Changelog**
 ====================================
-**v1.1.5 (2021-06-16)**
+**v1.0.17 (2021-06-29)**
+------------------------------------
+* Merge pull request #19 from jonathan-reisdorf/cors
+(Add cors support for Webapp)
+
+**v1.0.16 (2021-06-24)**
+------------------------------------
+* Merge pull request #13 from NUMde/generify-tests.
+Add hour as parameter for calucation of dates
+* Merge pull request #12 from NUMde/fix-spelling
+(fix spelling)
+* Add cors support for Webapp
+
+**v1.0.15 (2021-06-16)**
 ------------------------------------
 * Update dependencies
 * Merge branch 'main' of github.com:NUMde/compass-numapp-backend
@@ -9,7 +22,7 @@
 * Merge pull request #16 from mahvaezi/main
 (subject_id to subjectId)
 
-**v1.1.4 (2021-06-15)**
+**v1.0.14 (2021-06-15)**
 ------------------------------------
 * Changing subject_id to subjectId
 * Merge pull request #15 from NUMde/fix_questionnaire_structure
@@ -17,22 +30,22 @@
 * Debug Configuration for Unit-Tests
 * Merge branch 'NUMde:main' into main
 
-**v1.1.3 (2021-06-14)**
+**v1.0.13 (2021-06-14)**
 ------------------------------------
 * Removed unnecessary level for valueCodeableConcept to ensure standard compliance
 
-**v1.1.2 (2021-06-08)**
+**v1.0.12 (2021-06-08)**
 ------------------------------------
 * Merge pull request #11 from NUMde/generify-tests
 ,Generify tests
 
-**v1.1.1 (2021-06-07)**
+**v1.0.11 (2021-06-07)**
 ------------------------------------
 * Merge pull request #8 from lenzch/add-fhir-config-in-api-file
 ,Add fhir config in api file
 * Move calculation of dates in on method
 
-**v1.1.0 (2021-06-03)**
+**v1.0.10 (2021-06-03)**
 ------------------------------------
 * Made the API doc more specific
 
