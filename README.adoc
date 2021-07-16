@@ -51,6 +51,20 @@ $ openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:4
 $ openssl rsa -pubout -in private_key.pem -out public_key.pem
 ----
 
+==== Generating certificate
+
+To submit the private key to the client, a certificate must be created.
+To create a self-signed certificate, which will be valid for 1 year, use the following command:
+
+[source,bash]
+----
+$ openssl req -x509 -days 365 -new -out self-signed-certificate.pem -key private_key.pem
+----
+
+The certificate must be put in the .env file. If no certificate is provided, the native app will default to a built-in
+one (defined in src/config/appConfig.js).
+
+
 === Scripts
 
 ====  npm run start
