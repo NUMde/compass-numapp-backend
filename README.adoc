@@ -53,7 +53,7 @@ $ openssl rsa -pubout -in private_key.pem -out public_key.pem
 
 ==== Generating certificate
 
-To submit the private key to the client, a certificate must be created.
+To submit the public key to the client, a certificate must be created.
 To create a self-signed certificate, which will be valid for 1 year, use the following command:
 
 [source,bash]
