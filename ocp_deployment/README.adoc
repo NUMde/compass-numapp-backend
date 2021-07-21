@@ -103,18 +103,12 @@ $ oc new-app --file your/path/to/compass-backend-template.yaml \
 > [-p param=value] #optional
 ----
 
-In case you have a public repository, use an empty string as the value for the `SSH_PRIVATE_KEY`. E.g.
-[source,shell]
-----
-\ -p "SSH_PRIVATE_KEY=$(echo "" | base64 )"
-----
-
 [horizontal]
-APP_GIT_URL:: "Clone with SSH" link to the Git-repository
+APP_GIT_URL:: "Clone with SSH" link to the Git-repository. If your repository is public, you can also use the https link
 PUBLIC_KEY:: Public SSH key of mobile backend corresponding to PRIVATE_KEY, primarily used for testing purposes for signature verification.
 PRIVATE_KEY:: Private SSH key of mobile backend corresponding to PUBLIC_KEY, needed for signature creation of encrypted documents in backend
 CERTIFICATE:: The Certificate used for the encryption of the questionnaire responses by the NUM app. This is optional, so you can just leave this parameter out, if for example you set it in the frontend, i.e. the app
-SSH_PRIVATE_KEY:: Dedicated private deploy key added to your Git-repository for authentication to deploy a (private) repository to OpenShift
+SSH_PRIVATE_KEY:: Dedicated private deploy key added to your Git-repository for authentication to deploy a private repository to OpenShift. In case the repository is public, you can omit this parameter.
 
 You obtain more information on the template  parameters via the following command:
 [source,shell]
@@ -142,7 +136,7 @@ $ oc new-app --file your/path/to/compass-backend-template-limit-range.yaml \
 [#dbSetup]
 ==== Database Setup
 
-After you have created the database and mobile backend ressources you can setup the database.
+After you have created the database and mobile backend resources you can setup the database.
 Follow the documentation in the db/migration directory.
 
 [#productionDeployment]
@@ -156,7 +150,7 @@ Two deployment types are suggested for the mobile backend. Both are visualized i
 
 image:images/Deployment.png[Alt Deployment]
 
-IMPORTANT: For both types it is strongly recommended to setup limit ranges for the resource consumtioon. Refer to the end of the<<mbSetup>> on how to do this.
+IMPORTANT: For both types it is strongly recommended to setup limit ranges for the resource consumption. Refer to the end of the<<mbSetup>> on how to do this.
 
 ===== Preferred Method
 
