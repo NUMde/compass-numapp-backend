@@ -169,7 +169,7 @@ $ oc new-app --file your/path/to/compass-backend-template-prod.yaml \
 > -n your_openshift_project_name
 > -p "PUBLIC_KEY=$(echo "$(cat your/path/to/public_key)" | base64 )" \
 > -p "PRIVATE_KEY=$(echo "$(cat your/path/to/private_key)" | base64 )" \
-> -p "CERTIFICATE=$(echo "$(cat your/path/to/certificate)" base64 )"
+> -p "CERTIFICATE=$(echo "$(cat your/path/to/certificate)" | base64 )"
 > [-p param=value] #optional
 ----
 
