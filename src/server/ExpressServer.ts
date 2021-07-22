@@ -1,9 +1,8 @@
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
-import * as bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 
 import { HealthChecker, HealthEndpoint } from '@cloudnative/health-connect';
 import { Server } from '@overnightjs/core';
@@ -41,8 +40,8 @@ class ExpressServer extends Server {
             this.app.enable('trust proxy');
         }
 
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: true }));
+        this.app.use(express.json({ limit: '1mb' }));
+        this.app.use(express.urlencoded({ extended: true }));
 
         this.setupControllers();
     }
