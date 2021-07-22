@@ -11,31 +11,12 @@ import * as env from 'env-var';
  */
 export class PushServiceConfig {
     /**
-     * The api key to authenticate against the used Cloud Push Service instance.
+     * The (relative) path to the configuration file for the Firebase Admin API.
+     * See: https://cloud.google.com/docs/authentication/production
+     * and: https://firebase.google.com/docs/cloud-messaging/auth-server#provide-credentials-manually
      */
-    public static getApiKey(): string {
-        return env.get('PUSH_API_KEY').default('').asString();
-    }
-
-    /**
-     * The application id of the Cloud Push Service instance.
-     */
-    public static getAppId(): string {
-        return env.get('PUSH_APP_ID').default('').asString();
-    }
-
-    /**
-     * The secret used by the client/app to register with the Cloud Push Service.
-     */
-    public static getClientSecret(): string {
-        return env.get('PUSH_CLIENT_SECRET').default('').asString();
-    }
-
-    /**
-     * The channel id used for android push messages. Must match the settings in the Cloud Push Service.
-     */
-    public static getAndroidChannel(): string {
-        return env.get('PUSH_ANDROID_CHANNEL').default('Channel1').asString();
+    public static getCredentialFile(): string {
+        return env.get('GOOGLE_APPLICATION_CREDENTIALS').default('').asString();
     }
 
     /**

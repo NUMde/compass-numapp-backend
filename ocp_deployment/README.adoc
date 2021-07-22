@@ -84,13 +84,10 @@ $ ssh-keygen -o -a 100 -t ed25519 -f FileName -C "Comment" -N ''
 
 Please do not set a passphrase for this SSH key, as this will prevent OpenShift from building successfully. (https://docs.openshift.com/online/pro/dev_guide/builds/build_inputs.html[details])
 
-
-
 Insert the newly created public key in the deploy keys section of your Git-repository. Check out the documentation on how this is done for https://docs.github.com/en/free-pro-team@latest/developers/overview/managing-deploy-keys[GitHub] and https://docs.gitlab.com/ee/user/project/deploy_keys/[GitLab].
 
 You can now apply the compass-backend-template and create the resources stated above via the command below. When using a Windows machine preferably run the command in the Git Bash or Commander in order to prevent problems with the Linux commands cat and base64.
 
-:
 [source,shell]
 ----
 $ oc new-app --file your/path/to/compass-backend-template.yaml \
@@ -154,7 +151,7 @@ Two deployment types are suggested for the mobile backend. Both are visualized i
 
 image:images/Deployment.png[Alt Deployment]
 
-IMPORTANT: For both types it is strongly recommended to setup limit ranges for the resource consumption. Refer to the end of the<<mbSetup>> on how to do this.
+IMPORTANT: For both types it is strongly recommended to setup limit ranges for the resource consumption. Refer to the end of the <<mbSetup>> on how to do this.
 
 ===== Preferred Method
 
@@ -229,6 +226,54 @@ $ oc start-build bc/name_of_your_bc -n <your_project_name>
 
 Refer to <<dbSetup>>.
 
+==== Push Service Credentials (FCM)
+
+Step 1. Create service account credentials for Firebase Cloud Messaging by following the steps outlined here: https://firebase.google.com/docs/cloud-messaging/auth-server#provide-credentials-manually and download the service account ".json"
+
+Step 2. We will create a secret with the file as content.
+First we need to encode the file content:
+[source,shell]
+----
+$ base64 -i ~/path/to/downloads/credentials.json
+----
+
+Step 3. Import the secret into your OpenShift project.
+Replace the string "BASE64_CREDENTIAL_STRING" in file "ocp_deployment/templates/google-services-secret.yaml" with the encoded content
+
+Step 4. Deploy the secret to the cluster:
+[source,shell]
+----
+$ oc create -f google-services-secret.yaml
+----
+
+Step5. Update Deployment Config to use the secret as file.
+For example:
+[source,yaml]
+----
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: mobile-backend
+spec:
+
+  template:
+    spec:
+      containers:
+        - resources: {}
+        ...
+          env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /opt/app-root/secrets/google-services.json
+          volumeMounts:
+            - name: secrets
+              mountPath: /opt/app-root/secrets
+              readOnly: true
+      volumes:
+        - name: secrets
+          secret:
+            secretName: google-services-secret
+----
+
 [#troubleshooting]
 === Troubleshooting
 
@@ -240,6 +285,8 @@ Refer to <<dbSetup>>.
 "dquote>":: A double quote character (") is not properly closed. Only use pairs of quote characters and check for wrong character formats (“) which can occur during copy-paste processes.
 
 Wiping Project Resources:: To re-run "oc new-app", make sure all resources are deleted properly. Delete all resources using the OpenShift UI in Administrator view, or use "oc delete all -all" and "oc delete secrets -all" and verify every resource is deleted in the UI. You may have to manually remove Persistent Volume Claims (PVC) and Config Maps.
+
+
 
 [#furtherInformation]
 === Further Information
