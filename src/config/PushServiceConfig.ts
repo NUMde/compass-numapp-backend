@@ -10,8 +10,6 @@ import * as env from 'env-var';
  * @class PushServiceConfig
  */
 export class PushServiceConfig {
-    // TODO remove unused properties
-
     /**
      * The (relative) path to the configuration file for the Firebase Admin API.
      * See: https://cloud.google.com/docs/authentication/production

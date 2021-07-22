@@ -60,7 +60,7 @@ export class PushService {
             ttl: 86400 // time to live is 1d as it will be superseded by the next msg
         };
 
-        // TODO check if title needs to be set
+        // TODO Adjust as needed for a new iOS app
         const apns: admin.messaging.ApnsConfig = {
             payload: {
                 aps: {
@@ -71,14 +71,6 @@ export class PushService {
                 }
             }
         };
-
-        /* const apns = PushMessageBuilder.APNs.badge(1)
-                    .interactiveCategory('Accept')
-                    .iosActionKey('Ok')
-                    .type(IBMPushNotification.APNsType.DEFAULT)
-                    .title(msg)
-                    .sound('default')
-                    .build();*/
 
         this.chunkArray(registrationTokens, 500).forEach(async (chunk) => {
             // build message

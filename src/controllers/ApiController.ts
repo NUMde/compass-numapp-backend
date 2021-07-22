@@ -1,4 +1,3 @@
-import { TestController } from './TestController';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
@@ -37,7 +36,6 @@ import { ParticipantController } from './ParticipantController';
     new DownloadController(),
     new ParticipantController(),
     new QueueController(),
-    new QuestionnaireController(),
-    new TestController()
+    new QuestionnaireController()
 ])
-export class ApiController { }
+export class ApiController {}
