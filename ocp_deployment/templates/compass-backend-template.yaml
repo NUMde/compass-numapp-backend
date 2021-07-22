@@ -546,7 +546,8 @@ parameters:
       value: ''
     - name: SSH_PRIVATE_KEY
       description: Private Key for access to Git via ssh
-      value: ''
+      #Placeholder; base64 encoded empty string
+      value: 'Cg=='
     - name: VOLUME_CAPACITY
       description: Volume space available for data, e.g. 512Mi, 2Gi.
       displayName: Volume Capacity
