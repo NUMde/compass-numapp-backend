@@ -1,5 +1,44 @@
 **Changelog**
 ====================================
+**v1.0.24 (2021-07-28)**
+------------------------------------
+* Removed open-choice question from questionnaire
+* Removed open-choice question from questionnaire
+* Merge pull request #25 from NUMde/fix_questionnaire_structure. Fixed questionnaire structure
+
+**v1.0.23 (2021-07-22)**
+------------------------------------
+* #20: Cleanup
+* Increase size limit of uploaded JSON content
+* Merge pull request #21 from lenzch/main. Use Firebase Cloud Messaging for Push
+* Merge pull request #24 from NUMde/increase-json-size-limit. Increase size limit of uploaded JSON content
+
+**v1.0.22 (2021-07-19)**
+------------------------------------
+* of course not the private key but the public key is submitted to the client
+* Merge pull request #23 from JohannesOehm/main. Adding information on how to generate and embed certificate
+
+**v1.0.21 (2021-07-16)**
+------------------------------------
+* Adding information on how to generate and embed certificate
+
+**v1.0.20 (2021-07-05)**
+------------------------------------
+* Merge branch 'NUMde:main' into main
+* add the last commits to the changelog
+* Merge branch 'main' of https://github.com/NUMde/compass-numapp-backend Merge with NUM
+* Merge pull request #18 from mahvaezi/main (Add Changelog)
+* Merge branch 'main' of https://github.com/NUMde/compass-numapp-backend (Merge with Main after add Changelog)
+* Merge pull request #22 from mahvaezi/main. Add changes from last commits to changelog.md
+
+**v1.0.19 (2021-07-02)**
+------------------------------------
+* #20: Document OC setup for FCM
+
+**v1.0.18 (2021-07-01)**
+------------------------------------
+* #20: Use Firebase Cloud Messaging for Push-Notification (to send the participant messages)
+
 **v1.0.17 (2021-06-29)**
 ------------------------------------
 * Merge pull request #19 from jonathan-reisdorf/cors
