@@ -105,39 +105,23 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.9",
-                "text": "Das ist eine Multiple-Choice-Abfrage",
-                "type": "open-choice",
-                "required": true,
-                "answerOption": [{
-                        "valueString": "Option A"
-                    },
-                    {
-                        "valueString": "Option B"
-                    },
-                    {
-                        "valueString": "Option C"
-                    }
-                ]
-            },
-            {
-                "linkId": "1.10",
                 "text": "Das ist eine alternative Art eine Multiple-Choice-Abfrage abzubilden",
                 "type": "group",
                 "required": true,
                 "item": [{
-                        "linkId": "1.10.1",
+                        "linkId": "1.9.1",
                         "text": "Option A",
                         "type": "boolean",
                         "required": true
                     },
                     {
-                        "linkId": "1.10.2",
+                        "linkId": "1.9.2",
                         "text": "Option B",
                         "type": "boolean",
                         "required": true
                     },
                     {
-                        "linkId": "1.10.3",
+                        "linkId": "1.9.3",
                         "text": "Option C",
                         "type": "boolean",
                         "required": true
@@ -145,7 +129,7 @@ INSERT INTO questionnaires (id,body) VALUES
                 ]
             },
             {
-                "linkId": "1.11",
+                "linkId": "1.10",
                 "text": "Das ist eine Single-Choice-Abfrage",
                 "type": "choice",
                 "required": true,
@@ -161,57 +145,81 @@ INSERT INTO questionnaires (id,body) VALUES
                 ]
             },
             {
-                "linkId": "1.12",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 mit \"Option A\" beantwortet wurde",
+                "linkId": "1.11",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.10 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
-                    "question": "1.11",
+                    "question": "1.10",
                     "operator": "=",
                     "answerString": "Option A"
                 }]
             },
             {
-                "linkId": "1.13",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 oder 1.10.1 mit \"Option A\" beantwortet wurde",
+                "linkId": "1.12",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.10 oder 1.9.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
-                    "question": "1.10.1",
+                    "question": "1.9.1",
                     "operator": "=",
                     "answerBoolean": true
                 }, {
-                    "question": "1.11",
+                    "question": "1.10",
                     "operator": "=",
                     "answerString": "Option A"
                 }],
                 "enableBehavior": "any"
             },
             {
-                "linkId": "1.14",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 und 1.10.1 mit \"Option A\" beantwortet wurde",
+                "linkId": "1.13",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.10 und 1.9.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
-                    "question": "1.10.1",
+                    "question": "1.9.1",
                     "operator": "=",
                     "answerBoolean": true
                 }, {
-                    "question": "1.11",
+                    "question": "1.10",
                     "operator": "=",
                     "answerString": "Option A"
                 }],
                 "enableBehavior": "all"
             },
             {
-                "linkId": "1.15",
+                "linkId": "1.14",
                 "text": "Bedingte Abfrage mit answerDecimal",
                 "type": "group",
                 "required": true,
                 "item": [{
-                        "linkId": "1.15.1",
+                        "linkId": "1.14.1",
                         "text": "Abfrage Dezimalzahl (erwartet = 1.5)",
                         "type": "decimal",
+                        "required": true
+                    },
+                    {
+                        "linkId": "1.14.2",
+                        "text": "Diese Frage wird nur bei erwarteter Eingabe angezeigt",
+                        "type": "string",
+                        "required": true,
+                        "enableWhen": [{
+                            "question": "1.14.1",
+                            "operator": "=",
+                            "answerDecimal": 1.5
+                        }]
+                    }
+                ]
+            },
+            {
+                "linkId": "1.15",
+                "text": "Bedingte Abfrage mit answerInteger",
+                "type": "group",
+                "required": true,
+                "item": [{
+                        "linkId": "1.15.1",
+                        "text": "Abfrage Ganzzahl (erwartet = 1)",
+                        "type": "integer",
                         "required": true
                     },
                     {
@@ -222,20 +230,20 @@ INSERT INTO questionnaires (id,body) VALUES
                         "enableWhen": [{
                             "question": "1.15.1",
                             "operator": "=",
-                            "answerDecimal": 1.5
+                            "answerInteger": 1
                         }]
                     }
                 ]
             },
             {
                 "linkId": "1.16",
-                "text": "Bedingte Abfrage mit answerInteger",
+                "text": "Bedingte Abfrage mit answerDate",
                 "type": "group",
                 "required": true,
                 "item": [{
                         "linkId": "1.16.1",
-                        "text": "Abfrage Ganzzahl (erwartet = 1)",
-                        "type": "integer",
+                        "text": "Abfrage Datum (erwartet = 01.01.2021)",
+                        "type": "date",
                         "required": true
                     },
                     {
@@ -246,44 +254,20 @@ INSERT INTO questionnaires (id,body) VALUES
                         "enableWhen": [{
                             "question": "1.16.1",
                             "operator": "=",
-                            "answerInteger": 1
-                        }]
-                    }
-                ]
-            },
-            {
-                "linkId": "1.17",
-                "text": "Bedingte Abfrage mit answerDate",
-                "type": "group",
-                "required": true,
-                "item": [{
-                        "linkId": "1.17.1",
-                        "text": "Abfrage Datum (erwartet = 01.01.2021)",
-                        "type": "date",
-                        "required": true
-                    },
-                    {
-                        "linkId": "1.17.2",
-                        "text": "Diese Frage wird nur bei erwarteter Eingabe angezeigt",
-                        "type": "string",
-                        "required": true,
-                        "enableWhen": [{
-                            "question": "1.17.1",
-                            "operator": "=",
                             "answerDate": "2021-01-01"
                         }]
                     }
                 ]
             },
             {
-                "linkId": "1.18",
+                "linkId": "1.17",
                 "text": "Das ist eine Frage mit Definition",
                 "type": "string",
                 "required": true,
                 "definition": "http://loinc.org/example#uri"
             },
             {
-                "linkId": "1.19",
+                "linkId": "1.18",
                 "text": "Das ist eine Frage mit max. Eingabelänge von 10 Zeichen",
                 "type": "string",
                 "required": true,
@@ -443,39 +427,23 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.9",
-                "text": "Das ist eine Multiple-Choice-Abfrage",
-                "type": "open-choice",
-                "required": true,
-                "answerOption": [{
-                        "valueString": "Option A"
-                    },
-                    {
-                        "valueString": "Option B"
-                    },
-                    {
-                        "valueString": "Option C"
-                    }
-                ]
-            },
-            {
-                "linkId": "1.10",
                 "text": "Das ist eine alternative Art eine Multiple-Choice-Abfrage abzubilden",
                 "type": "group",
                 "required": true,
                 "item": [{
-                        "linkId": "1.10.1",
+                        "linkId": "1.9.1",
                         "text": "Option A",
                         "type": "boolean",
                         "required": true
                     },
                     {
-                        "linkId": "1.10.2",
+                        "linkId": "1.9.2",
                         "text": "Option B",
                         "type": "boolean",
                         "required": true
                     },
                     {
-                        "linkId": "1.10.3",
+                        "linkId": "1.9.3",
                         "text": "Option C",
                         "type": "boolean",
                         "required": true
@@ -483,7 +451,7 @@ INSERT INTO questionnaires (id,body) VALUES
                 ]
             },
             {
-                "linkId": "1.11",
+                "linkId": "1.10",
                 "text": "Das ist eine Single-Choice-Abfrage",
                 "type": "choice",
                 "required": true,
@@ -499,57 +467,81 @@ INSERT INTO questionnaires (id,body) VALUES
                 ]
             },
             {
-                "linkId": "1.12",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 mit \"Option A\" beantwortet wurde",
+                "linkId": "1.11",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.10 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
-                    "question": "1.11",
+                    "question": "1.10",
                     "operator": "=",
                     "answerString": "Option A"
                 }]
             },
             {
-                "linkId": "1.13",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 oder 1.10.1 mit \"Option A\" beantwortet wurde",
+                "linkId": "1.12",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.10 oder 1.9.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
-                    "question": "1.10.1",
+                    "question": "1.9.1",
                     "operator": "=",
                     "answerBoolean": true
                 }, {
-                    "question": "1.11",
+                    "question": "1.10",
                     "operator": "=",
                     "answerString": "Option A"
                 }],
                 "enableBehavior": "any"
             },
             {
-                "linkId": "1.14",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 und 1.10.1 mit \"Option A\" beantwortet wurde",
+                "linkId": "1.13",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.10 und 1.9.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
-                    "question": "1.10.1",
+                    "question": "1.9.1",
                     "operator": "=",
                     "answerBoolean": true
                 }, {
-                    "question": "1.11",
+                    "question": "1.10",
                     "operator": "=",
                     "answerString": "Option A"
                 }],
                 "enableBehavior": "all"
             },
             {
-                "linkId": "1.15",
+                "linkId": "1.14",
                 "text": "Bedingte Abfrage mit answerDecimal",
                 "type": "group",
                 "required": true,
                 "item": [{
-                        "linkId": "1.15.1",
+                        "linkId": "1.14.1",
                         "text": "Abfrage Dezimalzahl (erwartet = 1.5)",
                         "type": "decimal",
+                        "required": true
+                    },
+                    {
+                        "linkId": "1.14.2",
+                        "text": "Diese Frage wird nur bei erwarteter Eingabe angezeigt",
+                        "type": "string",
+                        "required": true,
+                        "enableWhen": [{
+                            "question": "1.14.1",
+                            "operator": "=",
+                            "answerDecimal": 1.5
+                        }]
+                    }
+                ]
+            },
+            {
+                "linkId": "1.15",
+                "text": "Bedingte Abfrage mit answerInteger",
+                "type": "group",
+                "required": true,
+                "item": [{
+                        "linkId": "1.15.1",
+                        "text": "Abfrage Ganzzahl (erwartet = 1)",
+                        "type": "integer",
                         "required": true
                     },
                     {
@@ -560,20 +552,20 @@ INSERT INTO questionnaires (id,body) VALUES
                         "enableWhen": [{
                             "question": "1.15.1",
                             "operator": "=",
-                            "answerDecimal": 1.5
+                            "answerInteger": 1
                         }]
                     }
                 ]
             },
             {
                 "linkId": "1.16",
-                "text": "Bedingte Abfrage mit answerInteger",
+                "text": "Bedingte Abfrage mit answerDate",
                 "type": "group",
                 "required": true,
                 "item": [{
                         "linkId": "1.16.1",
-                        "text": "Abfrage Ganzzahl (erwartet = 1)",
-                        "type": "integer",
+                        "text": "Abfrage Datum (erwartet = 01.01.2021)",
+                        "type": "date",
                         "required": true
                     },
                     {
@@ -584,44 +576,20 @@ INSERT INTO questionnaires (id,body) VALUES
                         "enableWhen": [{
                             "question": "1.16.1",
                             "operator": "=",
-                            "answerInteger": 1
-                        }]
-                    }
-                ]
-            },
-            {
-                "linkId": "1.17",
-                "text": "Bedingte Abfrage mit answerDate",
-                "type": "group",
-                "required": true,
-                "item": [{
-                        "linkId": "1.17.1",
-                        "text": "Abfrage Datum (erwartet = 01.01.2021)",
-                        "type": "date",
-                        "required": true
-                    },
-                    {
-                        "linkId": "1.17.2",
-                        "text": "Diese Frage wird nur bei erwarteter Eingabe angezeigt",
-                        "type": "string",
-                        "required": true,
-                        "enableWhen": [{
-                            "question": "1.17.1",
-                            "operator": "=",
                             "answerDate": "2021-01-01"
                         }]
                     }
                 ]
             },
             {
-                "linkId": "1.18",
+                "linkId": "1.17",
                 "text": "Das ist eine Frage mit Definition",
                 "type": "string",
                 "required": true,
                 "definition": "http://loinc.org/example#uri"
             },
             {
-                "linkId": "1.19",
+                "linkId": "1.18",
                 "text": "Das ist eine Frage mit max. Eingabelänge von 10 Zeichen",
                 "type": "string",
                 "required": true,
@@ -781,39 +749,23 @@ INSERT INTO questionnaires (id,body) VALUES
             },
             {
                 "linkId": "1.9",
-                "text": "Das ist eine Multiple-Choice-Abfrage",
-                "type": "open-choice",
-                "required": true,
-                "answerOption": [{
-                        "valueString": "Option A"
-                    },
-                    {
-                        "valueString": "Option B"
-                    },
-                    {
-                        "valueString": "Option C"
-                    }
-                ]
-            },
-            {
-                "linkId": "1.10",
                 "text": "Das ist eine alternative Art eine Multiple-Choice-Abfrage abzubilden",
                 "type": "group",
                 "required": true,
                 "item": [{
-                        "linkId": "1.10.1",
+                        "linkId": "1.9.1",
                         "text": "Option A",
                         "type": "boolean",
                         "required": true
                     },
                     {
-                        "linkId": "1.10.2",
+                        "linkId": "1.9.2",
                         "text": "Option B",
                         "type": "boolean",
                         "required": true
                     },
                     {
-                        "linkId": "1.10.3",
+                        "linkId": "1.9.3",
                         "text": "Option C",
                         "type": "boolean",
                         "required": true
@@ -821,7 +773,7 @@ INSERT INTO questionnaires (id,body) VALUES
                 ]
             },
             {
-                "linkId": "1.11",
+                "linkId": "1.10",
                 "text": "Das ist eine Single-Choice-Abfrage",
                 "type": "choice",
                 "required": true,
@@ -837,57 +789,81 @@ INSERT INTO questionnaires (id,body) VALUES
                 ]
             },
             {
-                "linkId": "1.12",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 mit \"Option A\" beantwortet wurde",
+                "linkId": "1.11",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.10 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
-                    "question": "1.11",
+                    "question": "1.10",
                     "operator": "=",
                     "answerString": "Option A"
                 }]
             },
             {
-                "linkId": "1.13",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 oder 1.10.1 mit \"Option A\" beantwortet wurde",
+                "linkId": "1.12",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.10 oder 1.9.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
-                    "question": "1.10.1",
+                    "question": "1.9.1",
                     "operator": "=",
                     "answerBoolean": true
                 }, {
-                    "question": "1.11",
+                    "question": "1.10",
                     "operator": "=",
                     "answerString": "Option A"
                 }],
                 "enableBehavior": "any"
             },
             {
-                "linkId": "1.14",
-                "text": "Diese Frage wird nur angezeigt, wenn 1.11 und 1.10.1 mit \"Option A\" beantwortet wurde",
+                "linkId": "1.13",
+                "text": "Diese Frage wird nur angezeigt, wenn 1.10 und 1.9.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
                 "required": true,
                 "enableWhen": [{
-                    "question": "1.10.1",
+                    "question": "1.9.1",
                     "operator": "=",
                     "answerBoolean": true
                 }, {
-                    "question": "1.11",
+                    "question": "1.10",
                     "operator": "=",
                     "answerString": "Option A"
                 }],
                 "enableBehavior": "all"
             },
             {
-                "linkId": "1.15",
+                "linkId": "1.14",
                 "text": "Bedingte Abfrage mit answerDecimal",
                 "type": "group",
                 "required": true,
                 "item": [{
-                        "linkId": "1.15.1",
+                        "linkId": "1.14.1",
                         "text": "Abfrage Dezimalzahl (erwartet = 1.5)",
                         "type": "decimal",
+                        "required": true
+                    },
+                    {
+                        "linkId": "1.14.2",
+                        "text": "Diese Frage wird nur bei erwarteter Eingabe angezeigt",
+                        "type": "string",
+                        "required": true,
+                        "enableWhen": [{
+                            "question": "1.14.1",
+                            "operator": "=",
+                            "answerDecimal": 1.5
+                        }]
+                    }
+                ]
+            },
+            {
+                "linkId": "1.15",
+                "text": "Bedingte Abfrage mit answerInteger",
+                "type": "group",
+                "required": true,
+                "item": [{
+                        "linkId": "1.15.1",
+                        "text": "Abfrage Ganzzahl (erwartet = 1)",
+                        "type": "integer",
                         "required": true
                     },
                     {
@@ -898,20 +874,20 @@ INSERT INTO questionnaires (id,body) VALUES
                         "enableWhen": [{
                             "question": "1.15.1",
                             "operator": "=",
-                            "answerDecimal": 1.5
+                            "answerInteger": 1
                         }]
                     }
                 ]
             },
             {
                 "linkId": "1.16",
-                "text": "Bedingte Abfrage mit answerInteger",
+                "text": "Bedingte Abfrage mit answerDate",
                 "type": "group",
                 "required": true,
                 "item": [{
                         "linkId": "1.16.1",
-                        "text": "Abfrage Ganzzahl (erwartet = 1)",
-                        "type": "integer",
+                        "text": "Abfrage Datum (erwartet = 01.01.2021)",
+                        "type": "date",
                         "required": true
                     },
                     {
@@ -922,44 +898,20 @@ INSERT INTO questionnaires (id,body) VALUES
                         "enableWhen": [{
                             "question": "1.16.1",
                             "operator": "=",
-                            "answerInteger": 1
-                        }]
-                    }
-                ]
-            },
-            {
-                "linkId": "1.17",
-                "text": "Bedingte Abfrage mit answerDate",
-                "type": "group",
-                "required": true,
-                "item": [{
-                        "linkId": "1.17.1",
-                        "text": "Abfrage Datum (erwartet = 01.01.2021)",
-                        "type": "date",
-                        "required": true
-                    },
-                    {
-                        "linkId": "1.17.2",
-                        "text": "Diese Frage wird nur bei erwarteter Eingabe angezeigt",
-                        "type": "string",
-                        "required": true,
-                        "enableWhen": [{
-                            "question": "1.17.1",
-                            "operator": "=",
                             "answerDate": "2021-01-01"
                         }]
                     }
                 ]
             },
             {
-                "linkId": "1.18",
+                "linkId": "1.17",
                 "text": "Das ist eine Frage mit Definition",
                 "type": "string",
                 "required": true,
                 "definition": "http://loinc.org/example#uri"
             },
             {
-                "linkId": "1.19",
+                "linkId": "1.18",
                 "text": "Das ist eine Frage mit max. Eingabelänge von 10 Zeichen",
                 "type": "string",
                 "required": true,
