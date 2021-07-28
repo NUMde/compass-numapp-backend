@@ -156,7 +156,6 @@ INSERT INTO questionnaires (id,body) VALUES
                 }]
             },
             {
-                "linkId": "1.13",
                 "linkId": "1.12",
                 "text": "Diese Frage wird nur angezeigt, wenn 1.10 oder 1.9.1 mit \"Option A\" beantwortet wurde",
                 "type": "string",
