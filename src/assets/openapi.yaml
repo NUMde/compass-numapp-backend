@@ -18,6 +18,8 @@ tags:
       description: Queue Operations
     - name: download
       description: API to download data from Queue
+    - name: subjectIdentities
+      description: API to manage subjectIdentities based on orscf standard
 paths:
     '/questionnaire/{questionnaireId}':
         get:
@@ -218,6 +220,37 @@ paths:
                                 $ref: '#/components/schemas/DeletedRowCount'
                 '500':
                     $ref: '#/components/responses/500ServerError'
+    '/subjectIdentities/addNew':
+        post:
+            tags:
+                - subjectIdentities
+            summary: Add new subject identity
+            operationId: postSubjectidentity
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SubjectIdentity'
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    return:
+                                        type: boolean
+                                        description: the method-result of the executed operation
+
+                '400':
+                    $ref: '#/components/responses/400BadRequest'
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '409':
+                    $ref: '#/components/responses/409Conflict'    
+                '500':
+                    $ref: '#/components/responses/500ServerError'
 components:
     schemas:
         DownloadAnswer:
@@ -377,6 +410,15 @@ components:
             description: "This is the same object as `QuestionnaireItem`. Workaround for Swagger bug. Swagger can't display recursive structures. See https://github.com/swagger-api/swagger-ui/issues/3325"
             allOf:
                 - $ref: '#/components/schemas/QuestionnaireItem'
+        SubjectIdentity:
+            type: object
+            properties:
+                subjectIdentity:
+                    type: object
+                    properties:
+                        recordId:
+                            type: string
+                            description: Identifier for new subject
         EnableWhenItem:
             required:
                 - operator
@@ -448,13 +490,15 @@ components:
             description: Access token for the Download API
     responses:
         400BadRequest:
-            description: Bad Request - URL parameter is missing
+            description: Bad Request - (URL) parameter is missing
         401NotAuthenticated:
             description: Not Authenticated - No valid authentication data was supplied
         403NotAuthorized:
             description: Unauthorized - No valid authorization header was supplied
         404NotFound:
             description: Not Found - Requested data does not exist
+        409Conflict:
+            description: Conflict - Resource already exists
         500ServerError:
             description: Internal Server Error
         503ServerError:
