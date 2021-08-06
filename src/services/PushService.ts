@@ -4,7 +4,7 @@ import { PushServiceConfig } from '../config/PushServiceConfig';
  */
 import * as admin from 'firebase-admin';
 
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 /**
  * Adapter for the Firebase Cloud Messaging service.

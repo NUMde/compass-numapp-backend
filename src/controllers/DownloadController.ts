@@ -8,7 +8,7 @@ import { Response } from 'express';
 
 import { Controller, Delete, Get, Middleware } from '@overnightjs/core';
 import { ISecureRequest } from '@overnightjs/jwt';
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { CTransfer } from '../types/CTransfer';
 import { QueueEntry } from '../types/QueueEntry';

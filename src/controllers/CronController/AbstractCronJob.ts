@@ -4,7 +4,7 @@
 
 import { CronJob } from 'cron';
 
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 /**
  * A base class for all cron jobs.

@@ -9,7 +9,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import { Controller, Post } from '@overnightjs/core';
 import { ISecureRequest } from '@overnightjs/jwt';
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { AuthConfig } from '../config/AuthConfig';
 import { ApiUserModel } from '../models/ApiUserModel';

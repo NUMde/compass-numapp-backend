@@ -4,7 +4,7 @@
 import { Pool } from 'pg';
 
 import { ISecureRequest } from '@overnightjs/jwt';
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { QueueEntry } from '../types/QueueEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';

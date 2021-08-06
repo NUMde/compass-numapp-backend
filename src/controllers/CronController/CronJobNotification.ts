@@ -2,7 +2,7 @@
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 import { PushServiceConfig } from '../../config/PushServiceConfig';
 
 import { ParticipantModel } from '../../models/ParticipantModel';

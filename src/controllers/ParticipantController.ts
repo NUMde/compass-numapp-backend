@@ -9,7 +9,7 @@ import { Response } from 'express';
 
 import { Controller, Get, Middleware } from '@overnightjs/core';
 import { ISecureRequest } from '@overnightjs/jwt';
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { ParticipantEntry } from '../types/ParticipantEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
