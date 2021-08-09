@@ -40,12 +40,9 @@ export class SubjectIdentitiesController {
                 });
             }
 
-            try {
-                var subjectIdentityExistence: boolean = await this.subjectIdentityModel.getSubjectIdentityExistence(
-                    req.body.subjectIdentity.recordId
-                );
-            } catch { //no action required as participant doesn't exist
-            }
+            const subjectIdentityExistence: boolean = await this.subjectIdentityModel.getSubjectIdentityExistence(
+                req.body.subjectIdentity.recordId
+            );
 
             if (subjectIdentityExistence) {
                 return resp.status(409).send({
