@@ -8,7 +8,6 @@ import { timingSafeEqual } from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 
 import { Controller, Post } from '@overnightjs/core';
-import { ISecureRequest } from '@overnightjs/jwt';
 import Logger from 'jet-logger';
 
 import { AuthConfig } from '../config/AuthConfig';
@@ -33,7 +32,7 @@ export class AuthorizationController {
      * Express middleware that checks if the subject ID is valid.
      */
     public static async checkStudyParticipantLogin(
-        req: ISecureRequest,
+        req: Request,
         res: Response,
         next: NextFunction
     ) {
@@ -41,8 +40,6 @@ export class AuthorizationController {
             const bearerHeader = req.headers.authorization;
             const subjectID: string = bearerHeader
                 ? bearerHeader.split(' ')[1]
-                : req.payload && req.payload.subject_id
-                ? req.payload.subject_id
                 : req.params && req.params.subjectID
                 ? req.params.subjectID
                 : undefined;
@@ -61,24 +58,23 @@ export class AuthorizationController {
     /**
      * Express middleware that checks if the API user's access token is valid.
      */
-    public static async checkApiUserLogin(req: Request, res: Response, next: NextFunction) {
+    public static async checkApiUserLogin(
+        _req: Request,
+        payload: {
+            api_id: string;
+        },
+        done: (err: { name: string }, revoked: boolean) => void
+    ) {
         try {
-            AuthConfig.getMiddleware()(req, res, async () => {
-                const securedReq = req as ISecureRequest;
-                if (securedReq.payload == null || typeof securedReq.payload.api_id !== 'string') {
-                    return res.status(401).send();
-                }
-
-                const apiId: string = securedReq.payload.api_id;
-                const loginSuccess = await AuthorizationController.apiUserModel.checkIfExists(
-                    apiId
-                );
-
-                return loginSuccess ? next() : res.status(401).send();
-            });
+            const success = await AuthorizationController.apiUserModel.checkIfExists(
+                payload.api_id
+            );
+            if (success) {
+                return done(null, false);
+            } else return done({ name: 'UnauthorizedApiUser; Not found' }, true);
         } catch (err) {
             Logger.Err(err);
-            return res.status(500).send();
+            return done({ name: 'InternalError' }, true);
         }
     }
 
@@ -125,7 +121,7 @@ export class AuthorizationController {
 
             const credsDate = new Date(credentials.CurrentDate);
 
-            if (AuthConfig.getEnableTimeCheckForAPIAuth()) {
+            if (AuthConfig.enableTimeCheckForAPIAuth) {
                 if (credsDate < timeMinus2Mins || credsDate > timePlus2Mins) {
                     return res.status(401).send();
                 }
@@ -146,7 +142,8 @@ export class AuthorizationController {
             );
 
             if (apiKeysMatching) {
-                const accessToken = AuthConfig.getJwtManager().jwt({
+                // create accessToken which is a jwt containing the api_id as payload
+                const accessToken = AuthConfig.sign({
                     api_id: apiUser.api_id
                 });
 
