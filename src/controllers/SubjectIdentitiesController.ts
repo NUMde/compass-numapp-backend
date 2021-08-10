@@ -1,18 +1,18 @@
-import { Post } from '@overnightjs/core';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
-import { Controller, Middleware } from '@overnightjs/core';
-import { ISecureRequest } from '@overnightjs/jwt';
-import { Logger } from '@overnightjs/logger';
+import { Post, Controller, ClassMiddleware } from '@overnightjs/core';
+import Logger from 'jet-logger';
 
 import { SubjectIdentitiesModel } from '../models/SubjectIdentitiesModel';
 import { AuthorizationController } from './AuthorizationController';
+import jwt from 'express-jwt';
+import { AuthConfig } from '../config/AuthConfig';
 
 /**
  *  Endpoint class for all subjectId management related restful methods.
@@ -21,6 +21,14 @@ import { AuthorizationController } from './AuthorizationController';
  * @class SubjectIdentitiesController
  */
 @Controller('subjectIdentities')
+@ClassMiddleware(
+    jwt({
+        secret: AuthConfig.jwtSecret,
+        algorithms: ['HS256'],
+        requestProperty: 'payload',
+        isRevoked: AuthorizationController.checkApiUserLogin
+    })
+)
 export class SubjectIdentitiesController {
     private subjectIdentityModel: SubjectIdentitiesModel = new SubjectIdentitiesModel();
 
@@ -29,8 +37,7 @@ export class SubjectIdentitiesController {
      * Is called by API user to register a new subject which will then get access to app by their id.
      */
     @Post('addNew')
-    @Middleware([AuthorizationController.checkApiUserLogin])
-    public async addSubjectIdentity(req: ISecureRequest, resp: Response) {
+    public async addSubjectIdentity(req: Request, resp: Response) {
         try {
             // validate parameter existence
             if (!req.body.subjectIdentity || !req.body.subjectIdentity.recordId) {
