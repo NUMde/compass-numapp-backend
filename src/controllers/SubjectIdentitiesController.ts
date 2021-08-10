@@ -7,13 +7,12 @@ import { Post } from '@overnightjs/core';
 
 import { Response } from 'express';
 
-import { Controller, Get, Middleware } from '@overnightjs/core';
+import { Controller, Middleware } from '@overnightjs/core';
 import { ISecureRequest } from '@overnightjs/jwt';
 import { Logger } from '@overnightjs/logger';
 
 import { SubjectIdentitiesModel } from '../models/SubjectIdentitiesModel';
 import { AuthorizationController } from './AuthorizationController';
-import { runInNewContext } from 'node:vm';
 
 /**
  *  Endpoint class for all subjectId management related restful methods.
