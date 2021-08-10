@@ -19,7 +19,7 @@ export class SubjectIdentitiesModel {
             ]);
 
             if (res.rows.length !== 1) {
-                return false
+                return false;
             }
             return true;
         } catch (err) {
@@ -35,7 +35,7 @@ export class SubjectIdentitiesModel {
     public async addNewSubjectIdentity(subjectID: string): Promise<void> {
         try {
             const pool: Pool = DB.getPool();
-            await pool.query("INSERT INTO studyparticipant(subject_id) VALUES ($1);", [subjectID]);
+            await pool.query('INSERT INTO studyparticipant(subject_id) VALUES ($1);', [subjectID]);
         } catch (err) {
             Logger.Err(err);
             throw err;

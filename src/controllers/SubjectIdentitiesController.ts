@@ -32,7 +32,7 @@ export class SubjectIdentitiesController {
     @Middleware([AuthorizationController.checkApiUserLogin])
     public async addSubjectIdentity(req: ISecureRequest, resp: Response) {
         try {
-            // validate parameter existance
+            // validate parameter existence
             if (!req.body.subjectIdentity || !req.body.subjectIdentity.recordId) {
                 return resp.status(400).send({
                     error: 'missing_data'
