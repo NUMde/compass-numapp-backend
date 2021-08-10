@@ -15,6 +15,7 @@ import { DownloadController } from './DownloadController';
 import { QuestionnaireController } from './QuestionnaireController';
 import { QueueController } from './QueueController';
 import { ParticipantController } from './ParticipantController';
+import { SubjectIdentitiesController } from './SubjectIdentitiesController';
 
 /**
  * Parent controller
@@ -43,6 +44,7 @@ import { ParticipantController } from './ParticipantController';
     new DownloadController(),
     new ParticipantController(),
     new QueueController(),
-    new QuestionnaireController()
+    new QuestionnaireController(),
+    new SubjectIdentitiesController()
 ])
 export class ApiController {}
