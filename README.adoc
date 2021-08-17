@@ -15,6 +15,8 @@ This repository provides the source code for the mobile back end of the link:htt
 The mobile back end provides study data for the NUM-App in form of link:https://www.hl7.org/fhir/questionnaire.html[FHIR Questionnaires]. It also stores the study data that is uploaded from the mobile app.
 Additionally it makes the collected data accessible for other parties.
 
+You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here]. 
+
 == Development
 
 === Local Setup
