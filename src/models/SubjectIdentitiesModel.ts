@@ -2,11 +2,10 @@
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 import { Pool } from 'pg';
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 import DB from '../server/DB';
 
 export class SubjectIdentitiesModel {
-
     /**
      * Verify if participant exists in database.
      * @param subjectID The participant id

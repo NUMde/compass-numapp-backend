@@ -6,7 +6,7 @@ import express, { Request, Response } from 'express';
 
 import { HealthChecker, HealthEndpoint } from '@cloudnative/health-connect';
 import { Server } from '@overnightjs/core';
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { Environment } from '../config/Environment';
 import * as controllers from '../controllers';

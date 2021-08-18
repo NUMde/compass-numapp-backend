@@ -3,56 +3,26 @@
  */
 import { randomBytes } from 'crypto';
 import * as env from 'env-var';
-import { RequestHandler } from 'express';
 
-import { JwtManager } from '@overnightjs/jwt';
+import * as jwtManager from 'jsonwebtoken';
 
 /**
  * Config holder for the authentication logic.
  */
-export class AuthConfig {
-    private static jwtManager: JwtManager | undefined;
+const AuthConfig = {
+    // the json webtoken secret which is either read from an environment variable (if set) or randomly generated
+    jwtSecret: env.get('JWT_SECRET').default(randomBytes(256).toString('base64')).asString(),
 
-    private static getJwtSecret(): string {
-        return env.get('JWT_SECRET').default(randomBytes(256).toString('base64')).asString();
-    }
+    // Flag to toggle a time check for the API authentication
+    enableTimeCheckForAPIAuth: env.get('AUTH_USE_API_TIME_CHECK').default('true').asBoolStrict(),
 
-    /**
-     * Flag to enable/disable a time check for the API authentication.
-     *
-     * @return {*}  {boolean} Defaults to true, if not changed in environment.
-     * @memberof AuthConfig
-     */
-    public static getEnableTimeCheckForAPIAuth(): boolean {
-        return env.get('AUTH_USE_API_TIME_CHECK').default('true').asBoolStrict();
+    //create json webtoken from payload and secret with validity of 30 minutes
+    sign: (payload: Record<string, unknown>): string => {
+        return jwtManager.sign(payload, AuthConfig.jwtSecret, {
+            algorithm: 'HS256',
+            expiresIn: '30m'
+        });
     }
+};
 
-    /**
-     * Expose the middleware from the JwtManager.
-     * It handles JWT header and extracts data from token into the payload object from request.
-     *
-     * @static
-     * @return {*}  {RequestHandler}
-     * @memberof AuthConfig
-     */
-    public static getMiddleware(): RequestHandler {
-        if (AuthConfig.jwtManager === undefined) {
-            AuthConfig.jwtManager = new JwtManager(AuthConfig.getJwtSecret(), '30m');
-        }
-        return AuthConfig.jwtManager.middleware;
-    }
-
-    /**
-     * Expose the JwtManger.
-     *
-     * @static
-     * @return {*}  {JwtManager}
-     * @memberof AuthConfig
-     */
-    public static getJwtManager(): JwtManager {
-        if (AuthConfig.jwtManager === undefined) {
-            AuthConfig.jwtManager = new JwtManager(AuthConfig.getJwtSecret(), '30m');
-        }
-        return AuthConfig.jwtManager;
-    }
-}
+export { AuthConfig };

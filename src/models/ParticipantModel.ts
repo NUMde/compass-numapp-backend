@@ -3,7 +3,7 @@
  */
 import { Pool } from 'pg';
 
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { StateChangeTrigger, ParticipantEntry } from '../types';
 import DB from '../server/DB';

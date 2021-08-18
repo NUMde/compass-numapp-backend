@@ -27,9 +27,16 @@ import { SubjectIdentitiesController } from './SubjectIdentitiesController';
 @ClassOptions({ mergeParams: true })
 @ClassMiddleware(cors())
 @ClassErrorMiddleware((err, req, res) => {
-    if (err.name === 'UnauthorizedError') {
-        res.status(401).send({ error: 'invalid_subjectid' });
-        throw err;
+    switch (err) {
+        case 'UnauthorizedError':
+            res.status(401).send({ error: 'invalid subjectID' });
+            throw err;
+        case 'UnauthorizedApiUser':
+            res.status(401).send({ error: 'unauthorized access' });
+            throw err;
+        case 'InternalError':
+            res.status(500).send({ error: 'internal error' });
+            throw err;
     }
 })
 @ChildControllers([

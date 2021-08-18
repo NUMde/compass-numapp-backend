@@ -3,8 +3,8 @@
  */
 import { Pool } from 'pg';
 
-import { ISecureRequest } from '@overnightjs/jwt';
-import { Logger } from '@overnightjs/logger';
+import { Request } from 'express';
+import Logger from 'jet-logger';
 
 import { QueueEntry } from '../types/QueueEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
@@ -83,11 +83,11 @@ export class QueueModel {
      * Add study data to the queue.
      *
      * @param {QueueEntry} queueEntry
-     * @param {ISecureRequest} req
+     * @param {Request} req
      * @return {*}
      * @memberof QueueModel
      */
-    public async addDataToQueue(queueEntry: QueueEntry, req: ISecureRequest): Promise<void> {
+    public async addDataToQueue(queueEntry: QueueEntry, req: Request): Promise<void> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose of the client (it will be undefined)
         const dbClient = await DB.getPool().connect();

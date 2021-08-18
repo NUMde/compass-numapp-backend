@@ -4,25 +4,36 @@
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import jwt from 'express-jwt';
 
-import { Controller, Delete, Get, Middleware } from '@overnightjs/core';
-import { ISecureRequest } from '@overnightjs/jwt';
-import { Logger } from '@overnightjs/logger';
+import { ClassMiddleware, Controller, Delete, Get } from '@overnightjs/core';
+import Logger from 'jet-logger';
 
 import { CTransfer } from '../types/CTransfer';
 import { QueueEntry } from '../types/QueueEntry';
 import { QueueModel } from '../models/QueueModel';
 import { SecurityService } from '../services/SecurityService';
 import { AuthorizationController } from './AuthorizationController';
+import { AuthConfig } from './../config/AuthConfig';
 
 /**
  * Endpoint class for all download related restful methods.
+ *
+ * All routes use a middleware which checks if the header of the request contains a valid JWT with valid authentication data
  *
  * @export
  * @class DownloadController
  */
 @Controller('download')
+@ClassMiddleware(
+    jwt({
+        secret: AuthConfig.jwtSecret,
+        algorithms: ['HS256'],
+        requestProperty: 'payload',
+        isRevoked: AuthorizationController.checkApiUserLogin
+    })
+)
 export class DownloadController {
     private queueModel: QueueModel = new QueueModel();
 
@@ -31,14 +42,13 @@ export class DownloadController {
     /**
      * Provide study data to the caller.
      *
-     * @param {ISecureRequest} req
+     * @param {Request} req
      * @param {Response} resp
      * @return {*}
      * @memberof DownloadController
      */
     @Get()
-    @Middleware(AuthorizationController.checkApiUserLogin)
-    public async getAvailableDataFromQueue(req: ISecureRequest, resp: Response) {
+    public async getAvailableDataFromQueue(req: Request, resp: Response) {
         try {
             const page: number = req.query.page ? parseInt(req.query.page.toString(), 10) : 1;
             if (page < 1) {
@@ -87,14 +97,13 @@ export class DownloadController {
     /**
      * Delete study data from the download queue.
      *
-     * @param {ISecureRequest} req
+     * @param {Request} req
      * @param {Response} resp
      * @return {*}
      * @memberof DownloadController
      */
     @Delete()
-    @Middleware(AuthorizationController.checkStudyParticipantLogin)
-    public async deleteDataFromQueue(req: ISecureRequest, resp: Response) {
+    public async deleteDataFromQueue(req: Request, resp: Response) {
         try {
             if (!Array.isArray(req.body)) {
                 return resp.sendStatus(400);
