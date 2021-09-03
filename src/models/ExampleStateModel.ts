@@ -172,9 +172,9 @@ export class ExampleStateModel implements StateModel {
         } else {
             // determine next questionnaire that will be delivered to the study participant
             let nextQuestionnaireId: string;
-            if (triggerValues.specialTrigger) {
+            if (triggerValues.specialTrigger && triggerValues.specialTrigger === true) {
                 nextQuestionnaireId = shortLimitedQuestionnaireId;
-            } else if (triggerValues.basicTrigger) {
+            } else if (triggerValues.basicTrigger && triggerValues.basicTrigger === true) {
                 nextQuestionnaireId = shortQuestionnaireId;
             } else if (!currentParticipant.due_date) {
                 nextQuestionnaireId = initialQuestionnaireId;
