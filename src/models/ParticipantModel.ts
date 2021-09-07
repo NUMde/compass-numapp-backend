@@ -70,8 +70,7 @@ export class ParticipantModel {
                     updatedParticipant.subject_id
                 ]
             );
-            participant.subject_participation = updatedParticipant.subject_participation;
-            return participant;
+            return updatedParticipant;
         } catch (err) {
             Logger.Err(err);
             throw err;
