@@ -51,5 +51,8 @@ CREATE TABLE studyparticipant
     current_instance_id character varying(355),
     current_interval smallint,
     additional_iterations_left smallint,
+    subject_participation character varying(9) DEFAULT 'on-study',
+    general_study_end_date DATE DEFAULT '9999-12-31',
+    personal_study_end_date DATE DEFAULT '9999-12-31',
     CONSTRAINT studyparticipant_pkey PRIMARY KEY (subject_id)
 );
