@@ -55,7 +55,7 @@ export class ParticipantModel {
                     current_instance_id = $4,
                     current_interval = $5,
                     additional_iterations_left = $6,
-                    subject_participation = $7
+                    status = $7
                 where
                     subject_id = $8
                 `,
@@ -66,7 +66,7 @@ export class ParticipantModel {
                     updatedParticipant.current_instance_id,
                     updatedParticipant.current_interval,
                     updatedParticipant.additional_iterations_left,
-                    updatedParticipant.subject_participation,
+                    updatedParticipant.status,
                     updatedParticipant.subject_id
                 ]
             );
@@ -97,7 +97,7 @@ export class ParticipantModel {
             if (
                 !participant.start_date ||
                 (participant.due_date && participant.due_date < new Date()) ||
-                (participant.subject_participation == ParticipationStatus['OnStudy'] &&
+                (participant.status == ParticipationStatus['OnStudy'] &&
                     (participant.personal_study_end_date < new Date() ||
                         participant.general_study_end_date < new Date()))
             ) {
@@ -174,7 +174,7 @@ export class ParticipantModel {
                     q.id is null
                     and s.start_date <= $1
                     and s.due_date >= $1
-                    and s.subject_participation = $2
+                    and s.status = $2
                 `,
                 [dateParam, ParticipationStatus['OnStudy']]
             );
@@ -208,7 +208,7 @@ export class ParticipantModel {
                     and q.questionnaire_id = s.current_questionnaire_id
                     and q.instance_id = s.current_instance_id
                     and q.date_sent is null
-                    and s.subject_participation = $2
+                    and s.status = $2
                 `,
                 [dateParam, ParticipationStatus['OnStudy']]
             );

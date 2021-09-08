@@ -18,7 +18,7 @@ export interface ParticipantEntry {
     current_instance_id: string;
     current_interval: number;
     additional_iterations_left: number;
-    subject_participation: ParticipationStatus;
+    status: ParticipationStatus;
     general_study_end_date: Date;
     personal_study_end_date: Date;
 }

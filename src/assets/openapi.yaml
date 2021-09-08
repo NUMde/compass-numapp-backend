@@ -320,7 +320,7 @@ components:
                 firstTime:
                     type: boolean
                     description: Marks if the participant has already send in a questionnaire
-                subject_participation:
+                status:
                     type: string
                     enum:
                         - on-study

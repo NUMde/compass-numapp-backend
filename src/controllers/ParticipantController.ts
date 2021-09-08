@@ -51,7 +51,7 @@ export class ParticipantController {
                 additional_iterations_left: participant.additional_iterations_left,
                 current_interval: participant.current_interval,
                 recipient_certificate_pem_string: COMPASSConfig.getRecipientCertificate(),
-                subject_participation: participant.subject_participation,
+                status: participant.status,
                 general_study_end_date: participant.general_study_end_date,
                 personal_study_end_date: participant.personal_study_end_date
             };

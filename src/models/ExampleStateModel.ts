@@ -57,7 +57,7 @@ export class ExampleStateModel implements StateModel {
         updatedParticipant.due_date = datesAndIterations.dueDate;
         updatedParticipant.current_interval = distValues.nextInterval;
         updatedParticipant.additional_iterations_left = iterationsLeft;
-        updatedParticipant.subject_participation = participationStatus;
+        updatedParticipant.status = participationStatus;
         return updatedParticipant;
     }
 
