@@ -6,7 +6,6 @@ import { Logger } from '@overnightjs/logger';
 import DB from '../server/DB';
 
 export class SubjectIdentitiesModel {
-
     /**
      * Verify if participant exists in database.
      * @param subjectID The participant id

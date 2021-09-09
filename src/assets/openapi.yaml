@@ -21,6 +21,39 @@ tags:
     - name: subjectIdentities
       description: API to manage subjectIdentities based on orscf standard
 paths:
+    '/questionnaire':
+        get:
+            tags:
+                - questionnaire
+            summary: Get a specific questionnaire by version and url
+            operationId: getQuestionnaireByUrlAndVersion
+            parameters:
+                -   name: url
+                    in: query
+                    description: Questionnaire.url value
+                    schema:
+                        type: string
+                    required: true
+                -   name: version
+                    in: query
+                    description: Questionnaire.version value
+                    schema:
+                        type: string
+                    required: true
+            responses:
+                '200':
+                    description: A FHIR Questionnaire as JSON
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Questionnaire'
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '500':
+                    description: If Questionnaire could not be found or multiple Questionnaires match
+                    $ref: '#/components/responses/500ServerError'
+            security:
+                -   Bearer: [ ]
     '/questionnaire/{questionnaireId}':
         get:
             tags:
@@ -248,7 +281,7 @@ paths:
                 '401':
                     $ref: '#/components/responses/401NotAuthenticated'
                 '409':
-                    $ref: '#/components/responses/409Conflict'    
+                    $ref: '#/components/responses/409Conflict'
                 '500':
                     $ref: '#/components/responses/500ServerError'
 components:

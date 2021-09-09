@@ -54,4 +54,32 @@ export class QuestionnaireController {
             }
         );
     }
+
+    /**
+     * Provide the questionnaire data for the requested questionnaire url and version
+     *
+     * @param {ISecureRequest} req
+     * @param {Response} res
+     * @memberof QuestionnaireController
+     */
+    @Get('')
+    @Middleware([AuthorizationController.checkApiUserLogin])
+    public async getQuestionnaireByUrlAndVersion(req: ISecureRequest, res: Response) {
+        const url = req.query.url.toString();
+        const version = req.query.version.toString();
+
+        if (!url || !version) {
+            res.status(400).end();
+        }
+        this.questionnaireModel.getQuestionnaireByUrlAndVersion(url, version).then(
+            (resp) => res.status(200).json(resp),
+            (err) => {
+                if (err.response) {
+                    res.status(err.response.status).end();
+                } else {
+                    res.status(500).end();
+                }
+            }
+        );
+    }
 }
