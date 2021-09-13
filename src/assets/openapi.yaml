@@ -320,6 +320,18 @@ components:
                 firstTime:
                     type: boolean
                     description: Marks if the participant has already send in a questionnaire
+                status:
+                    type: string
+                    enum:
+                        - on-study
+                        - off-study
+                    description: Marks if subject is participating in the study
+                general_study_end_date: 
+                    type: date
+                    description: End date of study that subject is/was participating in
+                personal_study_end_date: 
+                    type: date
+                    description: Individual end date of study that subject is/was participating in
         Health:
             type: object
             properties:
