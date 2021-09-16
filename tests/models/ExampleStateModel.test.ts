@@ -2,7 +2,7 @@ import { ExampleStateModel } from './../../src/models/ExampleStateModel';
 import * as dotenv from 'dotenv';
 import { COMPASSConfig } from '../../src/config/COMPASSConfig';
 
-import { StateChangeTrigger, ParticipantEntry } from '../../src/types';
+import { StateChangeTrigger, ParticipantEntry, ParticipationStatus } from '../../src/types';
 
 describe('signing', () => {
     dotenv.config({ path: './.env' });
@@ -29,7 +29,10 @@ describe('signing', () => {
             due_date: null,
             current_instance_id: null,
             current_interval: null,
-            additional_iterations_left: null
+            additional_iterations_left: null,
+            status: ParticipationStatus.OnStudy,
+            general_study_end_date: undefined,
+            personal_study_end_date: undefined
         };
         const parameters: StateChangeTrigger = {};
 
@@ -68,7 +71,10 @@ describe('signing', () => {
             due_date: new Date(Date.now()),
             current_instance_id: null,
             current_interval: 1,
-            additional_iterations_left: 0
+            additional_iterations_left: 0,
+            status: ParticipationStatus.OnStudy,
+            general_study_end_date: new Date(),
+            personal_study_end_date: new Date()
         };
         const parameters: StateChangeTrigger = {};
 
@@ -107,7 +113,10 @@ describe('signing', () => {
             due_date: new Date(Date.now()),
             current_instance_id: null,
             current_interval: 1,
-            additional_iterations_left: 0
+            additional_iterations_left: 0,
+            status: ParticipationStatus.OnStudy,
+            general_study_end_date: new Date(),
+            personal_study_end_date: new Date()
         };
         const parameters: StateChangeTrigger = { basicTrigger: true };
 
@@ -148,7 +157,10 @@ describe('signing', () => {
             due_date: new Date(Date.now()),
             current_instance_id: null,
             current_interval: 1,
-            additional_iterations_left: 0
+            additional_iterations_left: 0,
+            status: ParticipationStatus.OnStudy,
+            general_study_end_date: new Date(),
+            personal_study_end_date: new Date()
         };
         const parameters: StateChangeTrigger = { specialTrigger: true };
 
