@@ -4,6 +4,7 @@ link:../docs[← Table of Contents]
 
 == DB scripts
 
+Please copy the questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here] and paste it to link:./db/migration/V002__Initial_Data.sql[SQL-command].
 Put your db migration scripts here and comply with the naming rules of https://flywaydb.org/documentation/migrations#discovery[Flyway]
 
 == Steps to Set Up the Schema
@@ -52,7 +53,7 @@ The scripts will setup:
 * 2 study participants
 * 17 exemplary queue items (you won't be able to decrypt those with your key, they are just for reference)
 
-It will not setup an examplary questionnaire. Therefore, before you can connect the mobile application to the backend, ensure that you add a questionnaire to the table called 'questionnaires'. You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here]. 
+It will not setup an examplary questionnaire. Therefore, before you can connect the mobile application to the backend, ensure that you add a questionnaire to the table called 'questionnaires'. You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here].
 
 == Access DB with Admin Tool
 
