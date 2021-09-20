@@ -28,6 +28,7 @@ download and prepare this repository:
 [source,bash]
 ----
 git clone https://github.com/NUMde/compass-numapp-backend.git
+cd compass-numapp-backend/
 npm install
 ----
 
