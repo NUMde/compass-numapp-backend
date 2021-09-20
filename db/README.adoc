@@ -4,8 +4,8 @@ link:../docs[← Table of Contents]
 
 == DB scripts
 
-Please copy the questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here] and paste it to link:./db/migration/V002__Initial_Data.sql[SQL-command].
-Put your db migration scripts here and comply with the naming rules of https://flywaydb.org/documentation/migrations#discovery[Flyway]
+Put your db migration scripts here and comply with the naming rules of https://flywaydb.org/documentation/migrations#discovery[Flyway]. Copy the questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here] and paste it to https://github.com/NUMde/compass-numapp-backend/tree/main/db/migration/V002__Initial_Data.sql[SQL-command].
+
 
 == Steps to Set Up the Schema
 
