@@ -124,16 +124,6 @@ image:images/NUMapp-backend_TopologyView.png[OpenShift Developer Perspective - P
 
 The build config for the mobile backend is configured with a webhook. Add this to your Git repository in order to automatically deploy a new version of the app when a new commit is made. Consult the documentation of https://docs.github.com/en/free-pro-team@latest/developers/webhooks-and-events/about-webhooks[GitHub] and https://docs.gitlab.com/ee/user/project/integrations/webhooks.html[GitLab] on how  this is done.
 
-IMPORTANT: It is highly recommended to setup limit ranges. An extra template is available which sets up the corresponding ressource. You require cluster admin rights to create this resource. If you changed the default value of the VOLUME_CAPACITY parameter during the database setup, set the same parameter for this template. Apply the template as follows:
-
-[source,shell]
-----
-$ oc new-app --file your/path/to/compass-backend-template-limit-range.yaml \
-> -n your_openshift_project_name \
-> [-p VOLUME_CAPACITY=value] #optional
-----
-
-
 [#dbSetup]
 ==== Database Setup
 
