@@ -69,4 +69,36 @@ export class QuestionnaireModel {
             dbClient.release();
         }
     }
+    /**
+     * Retrieve the questionnaire with the requested url and version. Do not create a log
+     *
+     * @param {string} url Questionnaire.url
+     * @param {string} version Questionnaire.version
+     * @return {*}  {Promise<string>}
+     * @memberof QuestionnaireModel
+     */
+    public async getQuestionnaireByUrlAndVersion(url: string, version: string): Promise<string> {
+        // note: we don't try/catch this because if connecting throws an exception
+        // we don't need to dispose the client (it will be undefined)
+        const dbClient = await DB.getPool().connect();
+
+        try {
+            const res = await dbClient.query(
+                "select body from questionnaires where json_extract_path_text(body, 'url') = $1 and json_extract_path_text(body, 'version') = $2",
+                [url, version]
+            );
+            if (res.rows.length === 0) {
+                throw new Error('questionnaire_not_found');
+            } else if (res.rows.length > 1) {
+                throw new Error('questionnaire_url_and_version_not_unique');
+            } else {
+                return res.rows[0].body;
+            }
+        } catch (e) {
+            Logger.Err(e);
+            throw e;
+        } finally {
+            dbClient.release();
+        }
+    }
 }

@@ -59,6 +59,29 @@ export class AuthorizationController {
     }
 
     /**
+     * Express middleware that checks if the subject ID is valid.
+     * This is only used in QuestionnaireController to get a questionnaire.
+     */
+    public static async checkSubjectId(req: ISecureRequest, res: Response, next: NextFunction) {
+        try {
+            const subjectID: string = req.query.subjectId
+                ? req.query.subjectId.toString().trimEnd()
+                : null;
+
+            if (subjectID) {
+                const checkSubjectId: boolean = await AuthorizationController.participantModel.checkLogin(
+                    subjectID
+                );
+                return checkSubjectId ? next() : res.status(401).send();
+            } else {
+                return next();
+            }
+        } catch (err) {
+            Logger.Err(err);
+            return res.status(500).send();
+        }
+    }
+    /**
      * Express middleware that checks if the API user's access token is valid.
      */
     public static async checkApiUserLogin(req: Request, res: Response, next: NextFunction) {
