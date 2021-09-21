@@ -219,21 +219,6 @@ objects:
           COMPASS_PRIVATE_KEY: ${PRIVATE_KEY}
           COMPASS_PUBLIC_KEY: ${PUBLIC_KEY}
       type: Opaque
-    - kind: Secret
-      apiVersion: v1
-      metadata:
-          name: mobile-backend-push-config
-          labels:
-              app: mobile-backend
-              app.kubernetes.io/component: mobile-backend
-              app.kubernetes.io/name: ${APP_NAME}
-              app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
-              app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
-      data:
-          PUSH_CLIENT_SECRET: ${PUSH_CLIENT_SECRET}
-          PUSH_API_KEY: ${PUSH_API_KEY}
-          PUSH_APP_ID: ${PUSH_APP_ID}
-      type: Opaque
     - kind: ConfigMap
       apiVersion: v1
       metadata:
@@ -374,8 +359,6 @@ objects:
                         envFrom:
                             - secretRef:
                                   name: database-creds
-                            - secretRef:
-                                  name: mobile-backend-push-config
                             - secretRef:
                                   name: mobile-backend-signing-key-pair
                             - configMapRef:
@@ -528,18 +511,6 @@ parameters:
     - name: PUBLIC_KEY
       description: Personal public Key for encryption functions
       required: true
-    - name: PUSH_CLIENT_SECRET
-      displayName: Push Service Client Secret
-      description: The client secret to register at the push service. (optional)
-      value: ''
-    - name: PUSH_API_KEY
-      displayName: Push Service API Key
-      description: Api key for the push service. (optional)
-      value: ''
-    - name: PUSH_APP_ID
-      displayName: Push Service APP ID
-      description: App Id for the push service. (optional)
-      value: ''
     - name: SSH_PRIVATE_KEY
       description: Private Key for access to Git
       required: true
