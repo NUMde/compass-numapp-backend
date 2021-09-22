@@ -1,15 +1,12 @@
-import { Post } from '@overnightjs/core';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import { Response } from 'express';
-
-import { Controller, Get, Middleware } from '@overnightjs/core';
-import { ISecureRequest } from '@overnightjs/jwt';
-import { Logger } from '@overnightjs/logger';
+import { Request, Response } from 'express';
+import { Controller, Get, Post, Middleware } from '@overnightjs/core';
+import Logger from 'jet-logger';
 
 import { ParticipantEntry } from '../types/ParticipantEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
@@ -32,7 +29,7 @@ export class ParticipantController {
      */
     @Get(':subjectID')
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
-    public async getParticipant(req: ISecureRequest, resp: Response) {
+    public async getParticipant(req: Request, resp: Response) {
         try {
             const participant: ParticipantEntry = await this.participantModel.getAndUpdateParticipantBySubjectID(
                 req.params.subjectID
@@ -68,7 +65,7 @@ export class ParticipantController {
      */
     @Post('update-device-token/:subjectID')
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
-    public async updateDeviceTokenForParticipant(req: ISecureRequest, resp: Response) {
+    public async updateDeviceTokenForParticipant(req: Request, resp: Response) {
         try {
             // validate parameter
             if (!req.params.subjectID || !req.body.token) {

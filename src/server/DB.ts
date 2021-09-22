@@ -4,7 +4,7 @@
 import { Pool } from 'pg';
 import { ConnectionOptions } from 'tls';
 
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { DBCredentials } from '../config/DBCredentials';
 

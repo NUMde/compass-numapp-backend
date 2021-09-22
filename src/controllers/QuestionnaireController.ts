@@ -4,10 +4,9 @@
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 import { Controller, Get, Middleware } from '@overnightjs/core';
-import { ISecureRequest } from '@overnightjs/jwt';
 
 import { QuestionnaireModel } from '../models/QuestionnaireModel';
 import { AuthorizationController } from './AuthorizationController';
@@ -25,18 +24,16 @@ export class QuestionnaireController {
     /**
      * Provide the questionnaire data for the requested questionnaire ID.
      *
-     * @param {ISecureRequest} req
+     * @param {Request} req
      * @param {Response} res
      * @memberof QuestionnaireController
      */
     @Get(':questionnaireId')
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
-    public async getQuestionnaire(req: ISecureRequest, res: Response) {
+    public async getQuestionnaire(req: Request, res: Response) {
         const bearerHeader = req.headers.authorization;
         const subjectID: string = bearerHeader
             ? bearerHeader.split(' ')[1]
-            : req.payload && req.payload.subject_id
-            ? req.payload.subject_id
             : req.params && req.params.subjectID
             ? req.params.subjectID
             : undefined;

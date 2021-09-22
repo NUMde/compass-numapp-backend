@@ -2,7 +2,7 @@
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { MeasurementObject } from '../types/MeasurementObject';
 import { IdHelper } from './IdHelper';
