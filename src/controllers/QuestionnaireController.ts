@@ -56,6 +56,9 @@ export class QuestionnaireController {
     }
     /**
      * Provide the questionnaire data for the requested questionnaire url and version
+     * For now we don't need an authetification to get questionnaire by url and version.
+     * Should the questionnaire contains sensitive information, please use the authentification by
+     * subjectId (like retrieving the questionnaire by questionnaireId) instead.
      *
      * @param {ISecureRequest} req
      * @param {Response} res

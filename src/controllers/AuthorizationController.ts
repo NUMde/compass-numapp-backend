@@ -60,7 +60,7 @@ export class AuthorizationController {
 
     /**
      * Express middleware that checks if the subject ID is valid.
-     * This is only used in QuestionnaireController to get a questionnaire.
+     * This is only used in QuestionnaireController to get a questionnaire by url and version.
      */
     public static async checkSubjectId(req: ISecureRequest, res: Response, next: NextFunction) {
         try {
