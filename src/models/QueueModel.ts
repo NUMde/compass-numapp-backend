@@ -33,7 +33,7 @@ export class QueueModel {
         try {
             const pool: Pool = DB.getPool();
             const res = await pool.query(
-                'SELECT * FROM queue ORDER BY date_sent ASC LIMIT $1 OFFSET $2',
+                'SELECT * FROM queue WHERE downloaded=false ORDER BY date_sent ASC LIMIT $1 OFFSET $2',
                 [limit, (page - 1) * limit]
             );
             return res.rows as QueueEntry[];
@@ -62,16 +62,18 @@ export class QueueModel {
     }
 
     /**
-     * Remove data from the queue.
+     * Mark data as downloaded
      *
-     * @param {string[]} idArray The ids of the to be deleted entries.
-     * @return {*} The number of deleted entries.
+     * @param {string[]} idArray The ids of the entries which shall be marked as 'downloaded'.
+     * @return {*} The number of updated entries.
      * @memberof QueueModel
      */
-    public async deleteQueueDataByIdArray(idArray: string[]): Promise<number> {
+    public async markAsDownloaded(idArray: string[]): Promise<number> {
         try {
             const pool: Pool = DB.getPool();
-            const res = await pool.query('DELETE FROM queue WHERE id = ANY($1)', [idArray]);
+            const res = await pool.query('UPDATE queue SET downloaded=true WHERE id = ANY($1)', [
+                idArray
+            ]);
             return res.rowCount;
         } catch (err) {
             Logger.Err(err);
