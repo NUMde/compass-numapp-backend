@@ -274,7 +274,7 @@ spec:
 
 "dquote>":: A double quote character (") is not properly closed. Only use pairs of quote characters and check for wrong character formats (“) which can occur during copy-paste processes.
 
-Wiping Project Resources:: To re-run "oc new-app", make sure all resources are deleted properly. Delete all resources using the OpenShift UI in Administrator view, or use "oc delete all -all" and "oc delete secrets -all" and verify every resource is deleted in the UI. You may have to manually remove Persistent Volume Claims (PVC) and Config Maps.
+Wiping Project Resources:: To re-run "oc new-app", make sure all resources are deleted properly. Delete all resources using the OpenShift UI in Administrator view, or use "oc delete all --all" and "oc delete secrets --all" and verify every resource is deleted in the UI. You may have to manually remove Persistent Volume Claims (PVC) and Config Maps.
 
 
 
