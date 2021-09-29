@@ -47,6 +47,91 @@ paths:
                     $ref: '#/components/responses/500ServerError'
             security:
                 - Bearer: []
+    /questionnaire:
+        post:
+            tags:
+                - questionnaire
+            summary: Add a new questionnaire
+            operationId: addQuestionnaire
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AddOrUpdateQuestionnaireRequest'
+            parameters:
+                - name: url
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+                - name: version
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+                - name: name
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+                - name: questionnaire
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/Questionnaire'
+                  required: true
+            responses:
+                '200':
+                    description: successfully created the questionnaire
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '409':
+                    $ref: '#/components/responses/409Conflict'
+                '500':
+                    $ref: '#/components/responses/500ServerError'
+            security:
+                - Bearer: []
+        put:
+            tags:
+                - questionnaire
+            summary: Update an existing questionnaire
+            operationId: addQuestionnaire
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AddOrUpdateQuestionnaireRequest'
+            parameters:
+                - name: url
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+                - name: version
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+                - name: name
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+                - name: questionnaire
+                  in: query
+                  schema:
+                    $ref: '#/components/schemas/Questionnaire'
+                  required: true
+            responses:
+                '200':
+                    description: successfully updated the questionnaire
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '409':
+                    $ref: '#/components/responses/409Conflict'
+                '500':
+                    $ref: '#/components/responses/500ServerError'
+            security:
+                - Bearer: []
     /queue:
         post:
             tags:
@@ -248,7 +333,7 @@ paths:
                 '401':
                     $ref: '#/components/responses/401NotAuthenticated'
                 '409':
-                    $ref: '#/components/responses/409Conflict'    
+                    $ref: '#/components/responses/409Conflict'
                 '500':
                     $ref: '#/components/responses/500ServerError'
 components:
@@ -326,10 +411,10 @@ components:
                         - on-study
                         - off-study
                     description: Marks if subject is participating in the study
-                general_study_end_date: 
+                general_study_end_date:
                     type: date
                     description: End date of study that subject is/was participating in
-                personal_study_end_date: 
+                personal_study_end_date:
                     type: date
                     description: Individual end date of study that subject is/was participating in
         Health:
@@ -345,6 +430,8 @@ components:
                 resourceType:
                     type: string
                 url:
+                    type: string
+                version:
                     type: string
                 item:
                     type: array
@@ -422,6 +509,21 @@ components:
             description: "This is the same object as `QuestionnaireItem`. Workaround for Swagger bug. Swagger can't display recursive structures. See https://github.com/swagger-api/swagger-ui/issues/3325"
             allOf:
                 - $ref: '#/components/schemas/QuestionnaireItem'
+        AddOrUpdateQuestionnaireRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: the name of the questionnaire as used for the logic to deployment
+                url:
+                    type: string
+                    description: the url of the questionnaire as defined in its metadata
+                version:
+                    type: string
+                    description: the version of the questionnaire as defined in its metadata
+                questionnaire:
+                    type: object
+                    $ref: '#/components/schemas/Questionnaire'
         SubjectIdentity:
             type: object
             properties:
