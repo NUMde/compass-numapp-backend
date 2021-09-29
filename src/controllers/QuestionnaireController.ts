@@ -130,4 +130,43 @@ export class QuestionnaireController {
             }
         );
     }
+
+    /**
+     * Update a questionnaire.
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof QuestionnaireController
+     */
+    @Get('')
+    // @Middleware(
+    //     jwt({
+    //         secret: AuthConfig.jwtSecret,
+    //         algorithms: ['HS256'],
+    //         requestProperty: 'payload',
+    //         isRevoked: AuthorizationController.checkApiUserLogin
+    //     })
+    // )
+    public async getQuestionnaireByUrlAndVersion(req: Request, res: Response) {
+        let url: string, version: string;
+        try {
+            url = req.query.url.toString();
+            version = req.query.version.toString();
+        } catch (err) {
+            res.status(400).send('missing params');
+            return;
+        }
+
+        this.questionnaireModel.getQuestionnaireByUrlAndVersion(url, version).then(
+            (response) => {
+                if (response.length === 0) {
+                    res.status(404).send('questionnaire not found');
+                }
+                res.status(200).send(response[0]);
+            },
+            (error) => {
+                res.status(500).send;
+            }
+        );
+    }
 }

@@ -162,4 +162,27 @@ export class QuestionnaireModel {
             dbClient.release();
         }
     }
+
+    /**
+     * Get a questionnaire identified by url and version
+     *
+     * @param {string} url
+     * @param {string} version
+     * @returns{object} the questionnaire object
+     */
+    public async getQuestionnaireByUrlAndVersion(url: string, version: string): Promise<string[]> {
+        const dbClient = await DB.getPool().connect();
+        try {
+            const res = await dbClient.query(
+                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND version = $2',
+                [url, version]
+            );
+            return res.rows;
+        } catch (error) {
+            Logger.Err(error);
+            throw error;
+        } finally {
+            dbClient.release();
+        }
+    }
 }

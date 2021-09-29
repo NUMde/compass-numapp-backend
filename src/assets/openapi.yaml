@@ -48,6 +48,35 @@ paths:
             security:
                 - Bearer: []
     /questionnaire:
+        get:
+            tags:
+                - questionnaire
+            summary: Get a questionnaire by url and version
+            operationId: getQuestionnaireByUrlAndVersion
+            parameters:
+                - name: url
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+                - name: version
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+            responses:
+                '200':
+                    description: A FHIR Questionnaire as JSON
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Questionnaire'
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '404':
+                    $ref: '#/components/responses/404NotFound'
+            security:
+                - Bearer: []
         post:
             tags:
                 - questionnaire
