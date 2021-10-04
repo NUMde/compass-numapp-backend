@@ -4,10 +4,9 @@
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 import { Controller, Middleware, Post } from '@overnightjs/core';
-import { ISecureRequest } from '@overnightjs/jwt';
 
 import { QueueEntry } from '../types/QueueEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
@@ -30,13 +29,13 @@ export class QueueController {
      * 2. A positive result is reported
      * 3. Symptoms are reported
      *
-     * @param {ISecureRequest} req
+     * @param {Request} req
      * @param {Response} res
      * @memberof QueueController
      */
     @Post()
-    @Middleware([AuthorizationController.checkStudyParticipantLogin])
-    public async addToQueue(req: ISecureRequest, res: Response) {
+    @Middleware(AuthorizationController.checkStudyParticipantLogin)
+    public async addToQueue(req: Request, res: Response) {
         const queueEntry: QueueEntry = {
             id: null,
             subject_id: req.query.subjectId.toString(),
@@ -61,7 +60,7 @@ export class QueueController {
         }
     }
 
-    private generateDateReceived(req: ISecureRequest) {
+    private generateDateReceived(req: Request) {
         const date = new Date();
         if (req.query.type !== COMPASSConfig.getQuestionnaireResponseType()) {
             date.setDate(date.getDate() - 2);

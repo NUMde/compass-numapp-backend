@@ -5,7 +5,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as jws from 'jws';
 
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { PerformanceLogger } from './PerformanceLogger';
