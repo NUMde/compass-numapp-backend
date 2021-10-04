@@ -87,7 +87,7 @@ export class QueueModel {
      * @return {*}
      * @memberof QueueModel
      */
-    public async addDataToQueue(queueEntry: QueueEntry, req: ISecureRequest): Promise<void> {
+    public async addDataToQueue(queueEntry: QueueEntry, req: ISecureRequest): Promise<boolean> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose of the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
@@ -107,7 +107,8 @@ export class QueueModel {
                 );
 
                 if (res.rows.length === 0 || res.rows[0].date_sent !== null) {
-                    return;
+                    Logger.Err('!!! Already sent !!!');
+                    return false;
                 } else {
                     await dbClient.query(
                         'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
@@ -129,7 +130,7 @@ export class QueueModel {
                         queueEntry.subject_id,
                         req.query.updateValues as string
                     );
-                    return;
+                    return true;
                 }
             } else {
                 // a report is send from the client
@@ -148,7 +149,7 @@ export class QueueModel {
                     queueEntry.subject_id,
                     req.query.updateValues as string
                 );
-                return;
+                return true;
             }
         } catch (e) {
             Logger.Err('!!! DB might be inconsistent. Check DB !!!');

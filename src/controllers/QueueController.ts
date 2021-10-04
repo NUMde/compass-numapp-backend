@@ -44,17 +44,21 @@ export class QueueController {
             date_sent: new Date(),
             date_received: this.generateDateReceived(req)
         };
-
-        this.queueModel.addDataToQueue(queueEntry, req).then(
-            () => res.status(200).end(),
-            (err) => {
-                if (err.response) {
-                    res.status(err.response.status).end();
-                } else {
-                    res.status(500).end();
-                }
+        try {
+            const result = await this.queueModel.addDataToQueue(queueEntry, req);
+            if (!result) {
+                //Data already sent through the other App
+                res.status(406).end();
+            } else {
+                res.status(200).end();
             }
-        );
+        } catch (err) {
+            if (err.response) {
+                res.status(err.response.status).end();
+            } else {
+                res.status(500).end();
+            }
+        }
     }
 
     private generateDateReceived(req: ISecureRequest) {
