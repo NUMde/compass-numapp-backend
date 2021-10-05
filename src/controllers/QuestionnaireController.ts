@@ -81,7 +81,7 @@ export class QuestionnaireController {
                 res.status(200).send();
             },
             (err) => {
-                if (err.code === '409') {
+                if (err.code === 409) {
                     res.status(409).send('A questionnaire with this name already exists.');
                 } else {
                     res.status(500).send();
