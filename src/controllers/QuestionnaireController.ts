@@ -139,14 +139,14 @@ export class QuestionnaireController {
      * @memberof QuestionnaireController
      */
     @Get('')
-    // @Middleware(
-    //     jwt({
-    //         secret: AuthConfig.jwtSecret,
-    //         algorithms: ['HS256'],
-    //         requestProperty: 'payload',
-    //         isRevoked: AuthorizationController.checkApiUserLogin
-    //     })
-    // )
+    @Middleware(
+        jwt({
+            secret: AuthConfig.jwtSecret,
+            algorithms: ['HS256'],
+            requestProperty: 'payload',
+            isRevoked: AuthorizationController.checkApiUserLogin
+        })
+    )
     public async getQuestionnaireByUrlAndVersion(req: Request, res: Response) {
         let url: string, version: string;
         try {
