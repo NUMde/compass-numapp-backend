@@ -57,6 +57,8 @@ The scripts will setup:
 
 It will not setup an exemplary questionnaire. Therefore, before you can connect the mobile application to the backend, ensure that you add a questionnaire to the table called 'questionnaires'. You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here].
 
+Instead of inserting questionnaires into the database using sql, you can use REST calls. Those endpoints are described in the openapi documentation, reachable under http://{your-backend-url}/docs.
+
 == Access DB with Admin Tool
 
 .Preconditions
