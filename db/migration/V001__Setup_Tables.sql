@@ -37,6 +37,7 @@ CREATE TABLE queue
     encrypted_resp text NOT NULL,
     date_sent timestamp without time zone NOT NULL,
     date_received timestamp without time zone NOT NULL,
+    downloaded boolean DEFAULT false,
     CONSTRAINT queue_pkey PRIMARY KEY (id)
 );
 

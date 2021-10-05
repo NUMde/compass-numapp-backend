@@ -2,12 +2,10 @@
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-
 import { Request, Response } from 'express';
 import jwt from 'express-jwt';
 
-import { ClassMiddleware, Controller, Delete, Get } from '@overnightjs/core';
+import { ClassMiddleware, Controller, Get, Put } from '@overnightjs/core';
 import Logger from 'jet-logger';
 
 import { CTransfer } from '../types/CTransfer';
@@ -48,7 +46,7 @@ export class DownloadController {
      * @memberof DownloadController
      */
     @Get()
-    public async getAvailableDataFromQueue(req: Request, resp: Response) {
+    public async getAvailableDataFromQueue(req: Request, resp: Response): Promise<Response> {
         try {
             const page: number = req.query.page ? parseInt(req.query.page.toString(), 10) : 1;
             if (page < 1) {
@@ -95,21 +93,21 @@ export class DownloadController {
     }
 
     /**
-     * Delete study data from the download queue.
+     * Mark queue entries as downloaded
      *
      * @param {Request} req
      * @param {Response} resp
      * @return {*}
      * @memberof DownloadController
      */
-    @Delete()
-    public async deleteDataFromQueue(req: Request, resp: Response) {
+    @Put()
+    public async markAsDownloaded(req: Request, resp: Response): Promise<Response> {
         try {
             if (!Array.isArray(req.body)) {
                 return resp.sendStatus(400);
             }
-            const deletedRowCount = await this.queueModel.deleteQueueDataByIdArray(req.body);
-            return resp.status(200).send({ deletedRowCount });
+            const updatedRowCount = await this.queueModel.markAsDownloaded(req.body);
+            return resp.status(200).send({ updatedRowCount: updatedRowCount });
         } catch (err) {
             Logger.Err(err, true);
             return resp.sendStatus(500);
