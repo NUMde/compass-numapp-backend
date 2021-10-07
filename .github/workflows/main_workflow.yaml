@@ -4,7 +4,8 @@ name: main_workflow
 on:
   push:
     branches: [ main ]
-  pull_request:
+  pull_request_target:
+    types: [opened, assigned, synchronize, reopened]
     branches: [ main ]
 jobs:
   Run_tests:
