@@ -2,6 +2,30 @@
 
 link:../docs[← Table of Contents]
 
+== DB Setup
+
+=== Local DB Server
+
+For development purposes it is beneficial to setup a local db service.
+The SQL database of choice for COMPASS is https://www.postgresql.org/[PostgreSQL]. It is a open source ralational database system and is easy to install.
+
+There are different options for setting up a Postgres instance locally. Two are described in the following sections.
+
+For any variant of installation please make sure to use the correct version of Postgres. The db schema for compass doesn't have special requirements on the RDBMS, but it is tested and know to be working with Postgres in version 12.
+
+==== Docker
+
+To start an instance with docker, follow the documentation on https://github.com/docker-library/docs/blob/master/postgres/README.md[Postgres image documentation]. Please pay special attention to the section https://github.com/docker-library/docs/blob/master/postgres/README.md#where-to-store-data[Where to Store Data].
+
+==== Native Install
+
+Follow the OS specific documentation on https://www.postgresql.org/download/[PostgreSQL Downloads] to install Postgres onto your local maschine.
+
+
+=== Remote DB Server
+
+The setup of a remote db service is out of scope, as it heavily depends on the environment.
+
 == DB scripts
 
 Put your db migration scripts here and comply with the naming rules of https://flywaydb.org/documentation/migrations#discovery[Flyway]. Copy the questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here] and paste it to https://github.com/NUMde/compass-numapp-backend/tree/main/db/migration/V002__Initial_Data.sql[SQL-command].
