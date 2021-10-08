@@ -102,7 +102,7 @@ paths:
             tags:
                 - questionnaire
             summary: Update an existing questionnaire
-            operationId: addQuestionnaire
+            operationId: updateQuestionnaire
             requestBody:
                 content:
                     application/json:
