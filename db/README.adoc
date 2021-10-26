@@ -7,7 +7,7 @@ link:../docs[← Table of Contents]
 === Local DB Server
 
 For development purposes it is beneficial to setup a local db service.
-The SQL database of choice for COMPASS is https://www.postgresql.org/[PostgreSQL]. It is a open source ralational database system and is easy to install.
+The SQL database of choice for COMPASS is https://www.postgresql.org/[PostgreSQL]. It is a open source relational database system and is easy to install.
 
 There are different options for setting up a Postgres instance locally. Two are described in the following sections.
 
@@ -19,7 +19,7 @@ To start an instance with docker, follow the documentation on https://github.com
 
 ==== Native Install
 
-Follow the OS specific documentation on https://www.postgresql.org/download/[PostgreSQL Downloads] to install Postgres onto your local maschine.
+Follow the OS specific documentation on https://www.postgresql.org/download/[PostgreSQL Downloads] to install Postgres onto your local machine.
 
 
 === Remote DB Server
@@ -77,7 +77,7 @@ The scripts will setup:
 * 2 study participants
 * 17 exemplary queue items (you won't be able to decrypt those with your key, they are just for reference)
 
-It will not setup an examplary questionnaire. Therefore, before you can connect the mobile application to the backend, ensure that you add a questionnaire to the table called 'questionnaires'. You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here].
+It will not setup an exemplary questionnaire. Therefore, before you can connect the mobile application to the backend, ensure that you add a questionnaire to the table called 'questionnaires'. You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here].
 
 == Access DB with Admin Tool
 
