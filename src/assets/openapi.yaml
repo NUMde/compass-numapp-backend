@@ -271,25 +271,25 @@ paths:
                     description: Page query parameter set wrong
                 '500':
                     $ref: '#/components/responses/500ServerError'
-        delete:
+        put:
             tags:
                 - download
-            summary: Delete given IDs from queue
+            summary: Mark entries with given IDs as downloaded
             requestBody:
-                description: UUIDs of CTransferList to be deleted
+                description: UUIDs of CTransferList to be updated
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/DeleteUUIDsParam'
+                            $ref: '#/components/schemas/UpdateUUIDsParam'
             security:
                 - DownloadAuthentication: []
             responses:
                 '200':
-                    description: Deleted row count
+                    description: Updated row count
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/DeletedRowCount'
+                                $ref: '#/components/schemas/UpdatedRowCount'
                 '500':
                     $ref: '#/components/responses/500ServerError'
     '/subjectIdentities/addNew':
@@ -338,16 +338,16 @@ components:
                     type: string
                     description: >-
                         'RSA-SHA256' Signature of object containing UUID, Subject ID, encrypted questionnaire response, dispatch date, reception date.'
-        DeleteUUIDsParam:
+        UpdateUUIDsParam:
             type: array
             items:
                 type: string
-                description: UUID of CTransfer to be deleted.
+                description: UUID of CTransfer to be updated.
                 example: 534772d7-b62d-4050-ab2f-f052933c325f
-        DeletedRowCount:
+        UpdatedRowCount:
             type: object
             properties:
-                deletedRowCount:
+                updatedRowCount:
                     type: number
         LoginRequest:
             type: object
@@ -360,7 +360,7 @@ components:
                 encrypted_key:
                     type: string
                     description: >
-                        Encrypt random AES key with backends public key (RSA-AES-256-CBC
+                        Encrypt random AES key with the backend's public key (RSA-AES-256-CBC
                         Encryption)
                 iv:
                     type: string

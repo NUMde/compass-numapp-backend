@@ -228,7 +228,8 @@ $ base64 -i ~/path/to/downloads/credentials.json
 ----
 
 Step 3. Import the secret into your OpenShift project.
-Replace the string "BASE64_CREDENTIAL_STRING" in file "ocp_deployment/templates/google-services-secret.yaml" with the encoded content
+Copy "ocp_deployment/templates/google-services-secret.yaml.sample" and rename to "ocp_deployment/templates/google-services-secret.yaml"
+Replace the string "BASE64_CREDENTIAL_STRING" in this file with the encoded content generated in the previous step.
 
 Step 4. Deploy the secret to the cluster:
 [source,shell]

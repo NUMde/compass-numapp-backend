@@ -33,7 +33,7 @@ export class QueueModel {
         try {
             const pool: Pool = DB.getPool();
             const res = await pool.query(
-                'SELECT * FROM queue ORDER BY date_sent ASC LIMIT $1 OFFSET $2',
+                'SELECT * FROM queue WHERE downloaded=false ORDER BY date_sent ASC LIMIT $1 OFFSET $2',
                 [limit, (page - 1) * limit]
             );
             return res.rows as QueueEntry[];
@@ -62,16 +62,18 @@ export class QueueModel {
     }
 
     /**
-     * Remove data from the queue.
+     * Mark data as downloaded
      *
-     * @param {string[]} idArray The ids of the to be deleted entries.
-     * @return {*} The number of deleted entries.
+     * @param {string[]} idArray The ids of the entries which shall be marked as 'downloaded'.
+     * @return {*} The number of updated entries.
      * @memberof QueueModel
      */
-    public async deleteQueueDataByIdArray(idArray: string[]): Promise<number> {
+    public async markAsDownloaded(idArray: string[]): Promise<number> {
         try {
             const pool: Pool = DB.getPool();
-            const res = await pool.query('DELETE FROM queue WHERE id = ANY($1)', [idArray]);
+            const res = await pool.query('UPDATE queue SET downloaded=true WHERE id = ANY($1)', [
+                idArray
+            ]);
             return res.rowCount;
         } catch (err) {
             Logger.Err(err);
@@ -87,7 +89,7 @@ export class QueueModel {
      * @return {*}
      * @memberof QueueModel
      */
-    public async addDataToQueue(queueEntry: QueueEntry, req: Request): Promise<void> {
+    public async addDataToQueue(queueEntry: QueueEntry, req: Request): Promise<boolean> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose of the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
@@ -107,7 +109,8 @@ export class QueueModel {
                 );
 
                 if (res.rows.length === 0 || res.rows[0].date_sent !== null) {
-                    return;
+                    Logger.Err('!!! Already sent !!!');
+                    return false;
                 } else {
                     await dbClient.query(
                         'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
@@ -129,7 +132,7 @@ export class QueueModel {
                         queueEntry.subject_id,
                         req.query.updateValues as string
                     );
-                    return;
+                    return true;
                 }
             } else {
                 // a report is send from the client
@@ -148,7 +151,7 @@ export class QueueModel {
                     queueEntry.subject_id,
                     req.query.updateValues as string
                 );
-                return;
+                return true;
             }
         } catch (e) {
             Logger.Err('!!! DB might be inconsistent. Check DB !!!');

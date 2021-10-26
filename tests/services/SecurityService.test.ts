@@ -12,11 +12,11 @@ describe('signing', () => {
     });
 
     it('signAndVerify', () => {
-        const value = { name: 'KEY', sound: 'VALUE' };
-        const newSign = SecurityService.sign({ key: value });
-        SecurityService.verifyJWS(newSign);
         let result: boolean;
+        let newSign: string;
+        const value = { name: 'KEY', sound: 'VALUE' };
         try {
+            newSign = SecurityService.sign({ key: value });
             SecurityService.verifyJWS(newSign);
             result = true;
         } catch (err) {
