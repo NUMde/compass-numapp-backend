@@ -53,7 +53,7 @@ To check that everything is working run `npx flyway -c db/flyway.js info` from t
 
 From the project root folder run `npx flyway -c db/flyway.js migrate` (When you run Flyway the first time, it downloads some binaries and exits. Rerun the command to start the migration.) User and password can be found in the secret database-creds.
 
-The output should look like this:
+The output should look like this (flyway an postgres versions might differ):
 [source]
 ----
 $ npx flyway -c db/flyway.js migrate
@@ -62,22 +62,26 @@ Database password:
 
 Flyway Community Edition 7.5.0 by Redgate
 Database: jdbc:database://localhost:15432/compass (PostgreSQL 12.1)
-Successfully validated 2 migrations (execution time 00:00.808s)
-Creating Schema History table "public"."flyway_schema_history" ...
-Current version of schema "public": << Empty Schema >>
-Migrating schema "public" to version "001 - Setup Tables"
+Successfully validated 6 migrations (execution time 00:00.038s)
+Current version of schema "public": 001
 Migrating schema "public" to version "002 - Initial Data"
-Successfully applied 2 migrations to schema "public" (execution time 00:20.229s)
+Migrating schema "public" to version "003 - Queue Data"
+Migrating schema "public" to version "004 - Api User"
+Migrating schema "public" to version "005 - Store Device Token"
+Migrating schema "public" to version "006 - Questionnaire Version History"
+Successfully applied 6 migrations to schema "public", now at version v006 (execution time 00:00.153s)
 ----
 
 The scripts will setup:
 
-* 5 tables
+* 6 tables
 * 1 api user (API_ID = "test", API_KEY = "gKdKLYG2g0-Y1EllI0-W")
 * 2 study participants
 * 17 exemplary queue items (you won't be able to decrypt those with your key, they are just for reference)
 
 It will not setup an exemplary questionnaire. Therefore, before you can connect the mobile application to the backend, ensure that you add a questionnaire to the table called 'questionnaires'. You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here].
+
+Instead of inserting questionnaires into the database using sql, you can use REST calls. Those endpoints are described in the openapi documentation, reachable under http://{your-backend-url}/docs.
 
 == Access DB with Admin Tool
 
