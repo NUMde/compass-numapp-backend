@@ -7,6 +7,7 @@ link:../docs[← Table of Contents]
 === Local DB Server
 
 For development purposes it is beneficial to setup a local db service.
+
 The SQL database of choice for COMPASS is https://www.postgresql.org/[PostgreSQL]. It is a open source relational database system and is easy to install.
 
 There are different options for setting up a Postgres instance locally. Two are described in the following sections.
@@ -20,7 +21,6 @@ To start an instance with docker, follow the documentation on https://github.com
 ==== Native Install
 
 Follow the OS specific documentation on https://www.postgresql.org/download/[PostgreSQL Downloads] to install Postgres onto your local machine.
-
 
 === Remote DB Server
 
