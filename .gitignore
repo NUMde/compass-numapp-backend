@@ -75,4 +75,5 @@ test.ts
 # Certificate files
 private*.pem
 public*.pem
+*cert*.pem
 google-services.json

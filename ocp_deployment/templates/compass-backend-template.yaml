@@ -218,6 +218,7 @@ objects:
       data:
           COMPASS_PRIVATE_KEY: ${PRIVATE_KEY}
           COMPASS_PUBLIC_KEY: ${PUBLIC_KEY}
+          COMPASS_RECIPIENT_CERTIFICATE: ${CERTIFICATE}
       type: Opaque
     - kind: ConfigMap
       apiVersion: v1
@@ -511,9 +512,13 @@ parameters:
     - name: PUBLIC_KEY
       description: Personal public Key for encryption functions
       required: true
+    - name: CERTIFICATE
+      description: The certificate which is used for the encryption of the responses on the app (optional)
+      value: ''
     - name: SSH_PRIVATE_KEY
-      description: Private Key for access to Git
-      required: true
+      description: Private Key for access to Git via ssh
+      #Placeholder; base64 encoded empty string
+      value: 'Cg=='
     - name: VOLUME_CAPACITY
       description: Volume space available for data, e.g. 512Mi, 2Gi.
       displayName: Volume Capacity
