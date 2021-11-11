@@ -29,7 +29,7 @@ export class ParticipantController {
      */
     @Get(':subjectID')
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
-    public async getParticipant(req: Request, resp: Response) {
+    public async getParticipant(req: Request, res: Response) {
         try {
             const participant: ParticipantEntry = await this.participantModel.getAndUpdateParticipantBySubjectID(
                 req.params.subjectID
@@ -52,10 +52,14 @@ export class ParticipantController {
                 general_study_end_date: participant.general_study_end_date,
                 personal_study_end_date: participant.personal_study_end_date
             };
-            return resp.status(200).json(returnObject);
+            return res.status(200).json(returnObject);
         } catch (err) {
             Logger.Err(err, true);
-            return resp.sendStatus(500);
+            return res.status(500).json({
+                errorCode: 'InternalErr',
+                errorMessage: 'An internal error ocurred.',
+                errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+            });
         }
     }
 
@@ -65,21 +69,28 @@ export class ParticipantController {
      */
     @Post('update-device-token/:subjectID')
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
-    public async updateDeviceTokenForParticipant(req: Request, resp: Response) {
+    public async updateDeviceTokenForParticipant(req: Request, res: Response) {
         try {
             // validate parameter
             if (!req.params.subjectID || !req.body.token) {
-                return resp.status(400).send({ error: 'missing_data' });
+                return res.status(400).send({
+                    errorCode: 'InvalidQuery',
+                    errorMessage: 'Invalid credentials: missing subject_id or token'
+                });
             }
             await this.participantModel.updateDeviceToken(
                 req.params.subjectID,
                 req.body.token.toString()
             );
 
-            return resp.sendStatus(204);
+            return res.sendStatus(204);
         } catch (err) {
             Logger.Err(err, true);
-            return resp.sendStatus(500);
+            return res.status(500).json({
+                errorCode: 'InternalErr',
+                errorMessage: 'An internal error ocurred.',
+                errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+            });
         }
     }
 }

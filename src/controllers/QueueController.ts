@@ -47,15 +47,23 @@ export class QueueController {
             const result = await this.queueModel.addDataToQueue(queueEntry, req);
             if (!result) {
                 //Data already sent through the other App
-                res.status(409).end();
+                res.status(409).json({
+                    errorCode: 'QueueDuplicateRes',
+                    errcode:
+                        'Queue already contains response object for the corresponding questionnaire.'
+                });
             } else {
-                res.status(200).end();
+                res.sendStatus(204);
             }
         } catch (err) {
             if (err.response) {
-                res.status(err.response.status).end();
+                res.status(err.response.status).send();
             } else {
-                res.status(500).end();
+                res.status(500).json({
+                    errorCode: 'InternalErr',
+                    errMessage: 'An internal error occurred.',
+                    errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+                });
             }
         }
     }
