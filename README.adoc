@@ -19,7 +19,7 @@ This repository provides the source code for the mobile back end of the link:htt
 The mobile back end provides study data for the NUM-App in form of link:https://www.hl7.org/fhir/questionnaire.html[FHIR Questionnaires]. It also stores the study data that is uploaded from the mobile app.
 Additionally it makes the collected data accessible for other parties.
 
-You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here]. 
+You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here].
 
 == Development
 
@@ -40,17 +40,17 @@ npm install
 
 === Run the back end locally
 
-==== Create .env file
-Some configuration values need to be present as environment variables during runtime.
-The application loads a file  with the name `.env` during startup, if it is present.
-
-To get started copy the file `.env.sample` to `.env` and add your values.
-
 === Generating RSA key pair
 
 For local development we need an RSA key pair for the encryption with the client.
 Execute the following commands to create a key pair.
 The resulting files are picked automatically. But they can also be inserted into the `.env` file.
+
+==== Create .env file
+Some configuration values need to be present as environment variables during runtime.
+The application loads a file  with the name `.env` during startup, if it is present.
+
+To get started copy the file `.env.sample` to `.env` and add your values.
 
 [source,bash]
 ----
