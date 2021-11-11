@@ -18,6 +18,8 @@ tags:
       description: Queue Operations
     - name: download
       description: API to download data from Queue
+    - name: subjectIdentities
+      description: API to manage subjectIdentities based on orscf standard
 paths:
     '/questionnaire/{questionnaireId}':
         get:
@@ -41,6 +43,78 @@ paths:
                                 $ref: '#/components/schemas/Questionnaire'
                 '401':
                     $ref: '#/components/responses/401NotAuthenticated'
+                '500':
+                    $ref: '#/components/responses/500ServerError'
+            security:
+                - Bearer: []
+    /questionnaire:
+        get:
+            tags:
+                - questionnaire
+            summary: Get a questionnaire by url and version
+            operationId: getQuestionnaireByUrlAndVersion
+            parameters:
+                - name: url
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+                - name: version
+                  in: query
+                  schema:
+                    type: string
+                  required: true
+            responses:
+                '200':
+                    description: A FHIR Questionnaire as JSON
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Questionnaire'
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '404':
+                    $ref: '#/components/responses/404NotFound'
+            security:
+                - Bearer: []
+        post:
+            tags:
+                - questionnaire
+            summary: Add a new questionnaire
+            operationId: addQuestionnaire
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AddOrUpdateQuestionnaireRequest'
+            responses:
+                '200':
+                    description: successfully created the questionnaire
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '409':
+                    $ref: '#/components/responses/409Conflict'
+                '500':
+                    $ref: '#/components/responses/500ServerError'
+            security:
+                - Bearer: []
+        put:
+            tags:
+                - questionnaire
+            summary: Update an existing questionnaire
+            operationId: updateQuestionnaire
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AddOrUpdateQuestionnaireRequest'
+            responses:
+                '200':
+                    description: successfully updated the questionnaire
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '409':
+                    $ref: '#/components/responses/409Conflict'
                 '500':
                     $ref: '#/components/responses/500ServerError'
             security:
@@ -197,25 +271,56 @@ paths:
                     description: Page query parameter set wrong
                 '500':
                     $ref: '#/components/responses/500ServerError'
-        delete:
+        put:
             tags:
                 - download
-            summary: Delete given IDs from queue
+            summary: Mark entries with given IDs as downloaded
             requestBody:
-                description: UUIDs of CTransferList to be deleted
+                description: UUIDs of CTransferList to be updated
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/DeleteUUIDsParam'
+                            $ref: '#/components/schemas/UpdateUUIDsParam'
             security:
                 - DownloadAuthentication: []
             responses:
                 '200':
-                    description: Deleted row count
+                    description: Updated row count
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/DeletedRowCount'
+                                $ref: '#/components/schemas/UpdatedRowCount'
+                '500':
+                    $ref: '#/components/responses/500ServerError'
+    '/subjectIdentities/addNew':
+        post:
+            tags:
+                - subjectIdentities
+            summary: Add new subject identity
+            operationId: postSubjectidentity
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SubjectIdentity'
+            responses:
+                '200':
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    return:
+                                        type: boolean
+                                        description: the method-result of the executed operation
+
+                '400':
+                    $ref: '#/components/responses/400BadRequest'
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '409':
+                    $ref: '#/components/responses/409Conflict'
                 '500':
                     $ref: '#/components/responses/500ServerError'
 components:
@@ -233,16 +338,16 @@ components:
                     type: string
                     description: >-
                         'RSA-SHA256' Signature of object containing UUID, Subject ID, encrypted questionnaire response, dispatch date, reception date.'
-        DeleteUUIDsParam:
+        UpdateUUIDsParam:
             type: array
             items:
                 type: string
-                description: UUID of CTransfer to be deleted.
+                description: UUID of CTransfer to be updated.
                 example: 534772d7-b62d-4050-ab2f-f052933c325f
-        DeletedRowCount:
+        UpdatedRowCount:
             type: object
             properties:
-                deletedRowCount:
+                updatedRowCount:
                     type: number
         LoginRequest:
             type: object
@@ -255,7 +360,7 @@ components:
                 encrypted_key:
                     type: string
                     description: >
-                        Encrypt random AES key with backends public key (RSA-AES-256-CBC
+                        Encrypt random AES key with the backend's public key (RSA-AES-256-CBC
                         Encryption)
                 iv:
                     type: string
@@ -281,12 +386,24 @@ components:
                 start_date:
                     type: string
                     description: Start Date of the Questionnaire
-                subject_id:
+                subjectId:
                     type: string
                     description: Subject ID given by QR Code
                 firstTime:
                     type: boolean
                     description: Marks if the participant has already send in a questionnaire
+                status:
+                    type: string
+                    enum:
+                        - on-study
+                        - off-study
+                    description: Marks if subject is participating in the study
+                general_study_end_date:
+                    type: date
+                    description: End date of study that subject is/was participating in
+                personal_study_end_date:
+                    type: date
+                    description: Individual end date of study that subject is/was participating in
         Health:
             type: object
             properties:
@@ -300,6 +417,8 @@ components:
                 resourceType:
                     type: string
                 url:
+                    type: string
+                version:
                     type: string
                 item:
                     type: array
@@ -377,6 +496,30 @@ components:
             description: "This is the same object as `QuestionnaireItem`. Workaround for Swagger bug. Swagger can't display recursive structures. See https://github.com/swagger-api/swagger-ui/issues/3325"
             allOf:
                 - $ref: '#/components/schemas/QuestionnaireItem'
+        AddOrUpdateQuestionnaireRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: the name of the questionnaire as used for the logic to deployment
+                url:
+                    type: string
+                    description: the url of the questionnaire as defined in its metadata
+                version:
+                    type: string
+                    description: the version of the questionnaire as defined in its metadata
+                questionnaire:
+                    type: object
+                    $ref: '#/components/schemas/Questionnaire'
+        SubjectIdentity:
+            type: object
+            properties:
+                subjectIdentity:
+                    type: object
+                    properties:
+                        recordId:
+                            type: string
+                            description: Identifier for new subject
         EnableWhenItem:
             required:
                 - operator
@@ -448,13 +591,15 @@ components:
             description: Access token for the Download API
     responses:
         400BadRequest:
-            description: Bad Request - URL parameter is missing
+            description: Bad Request - (URL) parameter is missing
         401NotAuthenticated:
             description: Not Authenticated - No valid authentication data was supplied
         403NotAuthorized:
             description: Unauthorized - No valid authorization header was supplied
         404NotFound:
             description: Not Found - Requested data does not exist
+        409Conflict:
+            description: Conflict - Resource already exists
         500ServerError:
             description: Internal Server Error
         503ServerError:

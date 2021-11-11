@@ -199,7 +199,7 @@ export class COMPASSConfig {
     }
 
     /**
-     * Flag to toogle fake date calculation to ease testing.
+     * Flag to toggle fake date calculation to ease testing.
      */
     public static useFakeDateCalculation(): boolean {
         return env.get('COMPASS_USE_FAKE_DATES').default('false').asBoolStrict();

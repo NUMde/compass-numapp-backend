@@ -41,6 +41,9 @@ typings/
 # Optional eslint cache
 .eslintcache
 
+# Eslint Report
+eslint_report.json
+
 # Optional REPL history
 .node_repl_history
 
@@ -73,3 +76,4 @@ test.ts
 private*.pem
 public*.pem
 *cert*.pem
+google-services.json

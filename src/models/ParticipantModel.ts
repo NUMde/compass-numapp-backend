@@ -3,9 +3,9 @@
  */
 import { Pool } from 'pg';
 
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
-import { StateChangeTrigger, ParticipantEntry } from '../types';
+import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
 import DB from '../server/DB';
 import { ExampleStateModel } from './ExampleStateModel';
 import { StateModel } from './StateModel';
@@ -54,9 +54,10 @@ export class ParticipantModel {
                     due_date = $3,
                     current_instance_id = $4,
                     current_interval = $5,
-                    additional_iterations_left = $6
+                    additional_iterations_left = $6,
+                    status = $7
                 where
-                    subject_id = $7
+                    subject_id = $8
                 `,
                 [
                     updatedParticipant.current_questionnaire_id,
@@ -65,11 +66,11 @@ export class ParticipantModel {
                     updatedParticipant.current_instance_id,
                     updatedParticipant.current_interval,
                     updatedParticipant.additional_iterations_left,
+                    updatedParticipant.status,
                     updatedParticipant.subject_id
                 ]
             );
-
-            return participant;
+            return updatedParticipant;
         } catch (err) {
             Logger.Err(err);
             throw err;
@@ -77,7 +78,7 @@ export class ParticipantModel {
     }
 
     /**
-     * Retreieve the participant from the database and eventually update the participants data in case due_date ist outdated or start_date is not set.
+     * Retrieve the participant from the database and eventually update the participants data in case due_date is outdated, start_date is not set, or study end dates are outdated.
      *
      * @param subjectID The participant id
      */
@@ -88,7 +89,6 @@ export class ParticipantModel {
             const res = await pool.query('select * from studyparticipant where subject_id = $1', [
                 subjectID
             ]);
-
             if (res.rows.length !== 1) {
                 throw new Error('subject_id_not_found');
             }
@@ -96,7 +96,10 @@ export class ParticipantModel {
             let participant = res.rows[0] as ParticipantEntry;
             if (
                 !participant.start_date ||
-                (participant.due_date && participant.due_date < new Date())
+                (participant.due_date && participant.due_date < new Date()) ||
+                (participant.status == ParticipationStatus['OnStudy'] &&
+                    (participant.personal_study_end_date < new Date() ||
+                        participant.general_study_end_date < new Date()))
             ) {
                 // TODO rewrite updateParticipant to take an existing participant object and not reload from the db
                 participant = await this.updateParticipant(participant.subject_id);
@@ -149,18 +152,18 @@ export class ParticipantModel {
     }
 
     /**
-     * Retrieve all subject ids / participant ids for which a questionnair is available for download.
+     * Retrieve all device tokens for which a questionnaire is available for download.
      *
      * @param referenceDate The reference date used to determine matching participant ids
      */
     public async getParticipantsWithAvailableQuestionnairs(referenceDate: Date): Promise<string[]> {
-        // conditions - Start_Date and Due_Date in study_participant is set && Due_Date is not reached && no entry in History table present
+        // conditions - Start_Date and Due_Date in study_participant is set && Due_Date is not reached && no entry in History table present && subject is on-study
         try {
             const pool: Pool = DB.getPool();
             const dateParam = this.convertDateToQueryString(referenceDate);
             const res = await pool.query(
                 `select
-                    s.subject_id
+                    s.registration_token
                 from
                     studyparticipant s
                 left join questionnairehistory q on
@@ -171,10 +174,11 @@ export class ParticipantModel {
                     q.id is null
                     and s.start_date <= $1
                     and s.due_date >= $1
+                    and s.status = $2
                 `,
-                [dateParam]
+                [dateParam, ParticipationStatus['OnStudy']]
             );
-            return res.rows.map((participant) => participant.subject_id);
+            return res.rows.map((participant) => participant.registration_token);
         } catch (err) {
             Logger.Err(err);
             throw err;
@@ -182,18 +186,18 @@ export class ParticipantModel {
     }
 
     /**
-     * Retrieve all subject ids / participant ids for which a questionnair is available for download.
+     * Retrieve all device tokens for which a questionnaire is available for download.
      *
      * @param referenceDate The reference date used to determine matching participant ids
      */
     public async getParticipantsWithPendingUploads(referenceDate: Date): Promise<string[]> {
-        // conditions - Start_Date and Due_Date in study_participant is set && Due_Date is not reached && one entry in History table with date_sent == null is present
+        // conditions - Start_Date and Due_Date in study_participant is set && Due_Date is not reached && one entry in History table with date_sent == null is present && subject is on-study
         try {
             const pool: Pool = DB.getPool();
             const dateParam = this.convertDateToQueryString(referenceDate);
             const res = await pool.query(
                 `select
-                    s.subject_id
+                    s.registration_token
                 from
                     studyparticipant s,
                     questionnairehistory q
@@ -204,10 +208,31 @@ export class ParticipantModel {
                     and q.questionnaire_id = s.current_questionnaire_id
                     and q.instance_id = s.current_instance_id
                     and q.date_sent is null
+                    and s.status = $2
                 `,
-                [dateParam]
+                [dateParam, ParticipationStatus['OnStudy']]
             );
-            return res.rows.map((participant) => participant.subject_id);
+            return res.rows.map((participant) => participant.registration_token);
+        } catch (err) {
+            Logger.Err(err);
+            throw err;
+        }
+    }
+
+    /**
+     * Store the device registration token for the given participant.
+     *
+     * @param {string} subjectID The ID of the participant.
+     * @param {*} token The device token to store.
+     */
+    public async updateDeviceToken(subjectID: string, token: string): Promise<void> {
+        try {
+            const pool: Pool = DB.getPool();
+            await pool.query(
+                'update studyparticipant set registration_token = $1 where subject_id = $2;',
+                [token, subjectID]
+            );
+            return;
         } catch (err) {
             Logger.Err(err);
             throw err;

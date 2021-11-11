@@ -1,13 +1,12 @@
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
-import * as bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 
 import { HealthChecker, HealthEndpoint } from '@cloudnative/health-connect';
 import { Server } from '@overnightjs/core';
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 
 import { Environment } from '../config/Environment';
 import * as controllers from '../controllers';
@@ -41,29 +40,29 @@ class ExpressServer extends Server {
             this.app.enable('trust proxy');
         }
 
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: true }));
+        this.app.use(express.json({ limit: '1mb' }));
+        this.app.use(express.urlencoded({ extended: true }));
 
         this.setupControllers();
     }
 
     private setupControllers(): void {
-        const ctlrInstances = [];
+        const ctrlInstances = [];
         for (const name in controllers) {
             // eslint-disable-next-line no-prototype-builtins
             if (controllers.hasOwnProperty(name)) {
                 const controller = controllers[name];
-                ctlrInstances.push(new controller());
+                ctrlInstances.push(new controller());
             }
         }
-        super.addControllers(ctlrInstances);
+        super.addControllers(ctrlInstances);
     }
 
     /**
      * The start methods. It performs following steps
      * - Startup express server
      * - Open a DB connection
-     * - Create a healt endpoint for probing
+     * - Create a health endpoint for probing
      * - Start Swagger UI for API documentation
      *
      * In case of issues, like failing DB connection, this method exits the running process.
@@ -81,8 +80,8 @@ class ExpressServer extends Server {
                 await swaggerUI.start();
 
                 // setup cloud health endpoints
-                const healthcheck = new HealthChecker();
-                this.app.use('/health', HealthEndpoint(healthcheck));
+                const healthCheck = new HealthChecker();
+                this.app.use('/health', HealthEndpoint(healthCheck));
                 CustomRoutes.addRoute('GET', '/health');
 
                 this.logRegisteredRoutes();

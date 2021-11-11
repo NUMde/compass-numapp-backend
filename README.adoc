@@ -4,6 +4,10 @@
 :caution-caption: :fire:
 :warning-caption: :warning:
 
+image:https://img.shields.io/badge/license-Apache2-green?style=flat-square[license: Apache2.0,link=https://opensource.org/licenses/Apache-2.0]
+image:https://img.shields.io/lgtm/grade/javascript/g/NUMde/compass-numapp-backend.svg?logo=lgtm&logoWidth=18&style=flat-square[Language Grade: JavaScript,link=https://lgtm.com/projects/g/NUMde/compass-numapp-backend/context:javascript]
+image:https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square[PRs Welcome,link=https://makeapullrequest.com]
+
 = NUM-App Mobile Back End
 
 https://github.com/NUMde/compass-numapp[Main Repository] | link:./docs[Back End Documentation]
@@ -14,6 +18,8 @@ This repository provides the source code for the mobile back end of the link:htt
 
 The mobile back end provides study data for the NUM-App in form of link:https://www.hl7.org/fhir/questionnaire.html[FHIR Questionnaires]. It also stores the study data that is uploaded from the mobile app.
 Additionally it makes the collected data accessible for other parties.
+
+You can find an exemplary questionnaire https://github.com/NUMde/compass-implementation-guide/blob/master/input/questionnaire-generic.json[here]. 
 
 == Development
 
@@ -26,6 +32,7 @@ download and prepare this repository:
 [source,bash]
 ----
 git clone https://github.com/NUMde/compass-numapp-backend.git
+cd compass-numapp-backend/
 npm install
 ----
 
@@ -50,6 +57,20 @@ The resulting files are picked automatically. But they can also be inserted into
 $ openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:4096
 $ openssl rsa -pubout -in private_key.pem -out public_key.pem
 ----
+
+==== Generating certificate
+
+To submit the public key to the client, a certificate must be created.
+To create a self-signed certificate, which will be valid for 1 year, use the following command:
+
+[source,bash]
+----
+$ openssl req -x509 -days 365 -new -out self-signed-certificate.pem -key private_key.pem
+----
+
+The certificate must be put in the .env file. If no certificate is provided, the native app will default to a built-in
+one (defined in src/config/appConfig.js).
+
 
 === Scripts
 
@@ -84,13 +105,13 @@ Run your unit tests with jest.
 === Environment variables used by the application
 
 There are many different environment variables used by the application.
-Most of them have default values, that can be overriden by exposing a different value as environment variable.
+Most of them have default values, that can be overridden by exposing a different value as environment variable.
 All used variables can be found in the `src/config` folder.
 
-=== Commiting code changes
+=== Committing code changes
 
 This app uses https://typicode.github.io/husky[Husky] to trigger some actions during a commit.
-Before each commit passes automatic tests and linting is run. If any action failes, the commit failes.
+Before each commit passes automatic tests and linting is run. If any action fails, the commit fails.
 
 == Deployment
 

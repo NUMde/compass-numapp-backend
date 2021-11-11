@@ -3,7 +3,7 @@
  */
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { IdHelper } from '../services/IdHelper';
-import { StateChangeTrigger, ParticipantEntry } from '../types';
+import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
 import { StateModel } from './StateModel';
 
 /**
@@ -42,6 +42,13 @@ export class ExampleStateModel implements StateModel {
             ? distValues.additionalIterationsLeft - 1
             : 0;
 
+        // check participation status in study based on defined study dates
+        const participationStatus =
+            participant.general_study_end_date < new Date() ||
+            participant.personal_study_end_date < new Date()
+                ? ParticipationStatus['OffStudy']
+                : ParticipationStatus['OnStudy'];
+
         // clone the object and set updated values
         const updatedParticipant: ParticipantEntry = { ...participant };
         updatedParticipant.current_instance_id = IdHelper.createID();
@@ -50,6 +57,7 @@ export class ExampleStateModel implements StateModel {
         updatedParticipant.due_date = datesAndIterations.dueDate;
         updatedParticipant.current_interval = distValues.nextInterval;
         updatedParticipant.additional_iterations_left = iterationsLeft;
+        updatedParticipant.status = participationStatus;
         return updatedParticipant;
     }
 
@@ -154,9 +162,9 @@ export class ExampleStateModel implements StateModel {
                 currentParticipant.current_interval === shortInterval
                     ? shortDuration
                     : regularDuration;
-            const enableShortmode = currentParticipant.current_interval === regularInterval;
-            const nextStartHour = enableShortmode ? shortStartHour : regularStartHour;
-            const nextDueHour = enableShortmode ? shortDueHour : regularDueHour;
+            const enableShortMode = currentParticipant.current_interval === regularInterval;
+            const nextStartHour = enableShortMode ? shortStartHour : regularStartHour;
+            const nextDueHour = enableShortMode ? shortDueHour : regularDueHour;
             const startImmediately = false;
             const additionalIterationsLeft = currentParticipant.additional_iterations_left;
 
@@ -172,9 +180,9 @@ export class ExampleStateModel implements StateModel {
         } else {
             // determine next questionnaire that will be delivered to the study participant
             let nextQuestionnaireId: string;
-            if (triggerValues.specialTrigger) {
+            if (triggerValues.specialTrigger && triggerValues.specialTrigger === true) {
                 nextQuestionnaireId = shortLimitedQuestionnaireId;
-            } else if (triggerValues.basicTrigger) {
+            } else if (triggerValues.basicTrigger && triggerValues.basicTrigger === true) {
                 nextQuestionnaireId = shortQuestionnaireId;
             } else if (!currentParticipant.due_date) {
                 nextQuestionnaireId = initialQuestionnaireId;

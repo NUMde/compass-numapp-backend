@@ -2,7 +2,7 @@ import { ExampleStateModel } from './../../src/models/ExampleStateModel';
 import * as dotenv from 'dotenv';
 import { COMPASSConfig } from '../../src/config/COMPASSConfig';
 
-import { StateChangeTrigger, ParticipantEntry } from '../../src/types';
+import { StateChangeTrigger, ParticipantEntry, ParticipationStatus } from '../../src/types';
 
 describe('signing', () => {
     dotenv.config({ path: './.env' });
@@ -29,7 +29,10 @@ describe('signing', () => {
             due_date: null,
             current_instance_id: null,
             current_interval: null,
-            additional_iterations_left: null
+            additional_iterations_left: null,
+            status: ParticipationStatus.OnStudy,
+            general_study_end_date: undefined,
+            personal_study_end_date: undefined
         };
         const parameters: StateChangeTrigger = {};
 
@@ -39,10 +42,14 @@ describe('signing', () => {
         // then
 
         //set up expected values
-        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedStartDate = setUpExpectedStartDate(
+            initialDate,
+            COMPASSConfig.getDefaultStartHour()
+        );
         const expectedDueDate = setUpExpectedDueDate(
             expectedStartDate,
-            COMPASSConfig.getDefaultDuration()
+            COMPASSConfig.getDefaultDuration(),
+            COMPASSConfig.getDefaultDueHour()
         );
 
         expect(result.subject_id).toBe('1');
@@ -64,7 +71,10 @@ describe('signing', () => {
             due_date: new Date(Date.now()),
             current_instance_id: null,
             current_interval: 1,
-            additional_iterations_left: 0
+            additional_iterations_left: 0,
+            status: ParticipationStatus.OnStudy,
+            general_study_end_date: new Date(),
+            personal_study_end_date: new Date()
         };
         const parameters: StateChangeTrigger = {};
 
@@ -73,10 +83,14 @@ describe('signing', () => {
 
         // then
         //set up expected values
-        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedStartDate = setUpExpectedStartDate(
+            initialDate,
+            COMPASSConfig.getDefaultStartHour()
+        );
         const expectedDueDate = setUpExpectedDueDate(
             expectedStartDate,
-            COMPASSConfig.getDefaultDuration()
+            COMPASSConfig.getDefaultDuration(),
+            COMPASSConfig.getDefaultDueHour()
         );
 
         expect(result.subject_id).toBe('1');
@@ -99,7 +113,10 @@ describe('signing', () => {
             due_date: new Date(Date.now()),
             current_instance_id: null,
             current_interval: 1,
-            additional_iterations_left: 0
+            additional_iterations_left: 0,
+            status: ParticipationStatus.OnStudy,
+            general_study_end_date: new Date(),
+            personal_study_end_date: new Date()
         };
         const parameters: StateChangeTrigger = { basicTrigger: true };
 
@@ -108,10 +125,14 @@ describe('signing', () => {
 
         // then
         //set up expected values
-        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedStartDate = setUpExpectedStartDate(
+            initialDate,
+            COMPASSConfig.getDefaultShortStartHour()
+        );
         const expectedDueDate = setUpExpectedDueDate(
             expectedStartDate,
-            COMPASSConfig.getDefaultShortDuration()
+            COMPASSConfig.getDefaultShortDuration(),
+            COMPASSConfig.getDefaultShortDueHour()
         );
 
         expect(result.subject_id).toBe('1');
@@ -136,7 +157,10 @@ describe('signing', () => {
             due_date: new Date(Date.now()),
             current_instance_id: null,
             current_interval: 1,
-            additional_iterations_left: 0
+            additional_iterations_left: 0,
+            status: ParticipationStatus.OnStudy,
+            general_study_end_date: new Date(),
+            personal_study_end_date: new Date()
         };
         const parameters: StateChangeTrigger = { specialTrigger: true };
 
@@ -145,10 +169,14 @@ describe('signing', () => {
 
         // then
         //set up expected values
-        const expectedStartDate = setUpExpectedStartDate(initialDate);
+        const expectedStartDate = setUpExpectedStartDate(
+            initialDate,
+            COMPASSConfig.getDefaultShortStartHour()
+        );
         const expectedDueDate = setUpExpectedDueDate(
             expectedStartDate,
-            COMPASSConfig.getDefaultShortDuration()
+            COMPASSConfig.getDefaultShortDuration(),
+            COMPASSConfig.getDefaultShortDueHour()
         );
         expect(result.subject_id).toBe('1');
         expect(result.last_action).toBe(null);
@@ -170,10 +198,10 @@ describe('signing', () => {
  *
  * @param {Date} initialDate the initial date
  */
-const setUpExpectedStartDate = (initialDate: Date) => {
+const setUpExpectedStartDate = (initialDate: Date, startHour: number) => {
     const expectedStartDate = new Date(initialDate);
     expectedStartDate.setDate(initialDate.getDate() + COMPASSConfig.getDefaultIntervalStartIndex());
-    expectedStartDate.setHours(COMPASSConfig.getDefaultStartHour());
+    expectedStartDate.setHours(startHour);
     return expectedStartDate;
 };
 /**
@@ -182,9 +210,9 @@ const setUpExpectedStartDate = (initialDate: Date) => {
  * @param {Date} startDate the given start date
  * @param {number} duration the duration of the current interval
  */
-const setUpExpectedDueDate = (startDate: Date, duration: number) => {
+const setUpExpectedDueDate = (startDate: Date, duration: number, dueHour: number) => {
     const expectedDueDate = new Date(startDate);
     expectedDueDate.setDate(startDate.getDate() + duration);
-    expectedDueDate.setHours(COMPASSConfig.getDefaultDueHour());
+    expectedDueDate.setHours(dueHour);
     return expectedDueDate;
 };

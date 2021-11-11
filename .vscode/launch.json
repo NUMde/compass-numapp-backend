@@ -17,6 +17,20 @@
             "windows": {
               "program": "${workspaceFolder}/node_modules/jest/bin/jest"
             }
+      },
+      //Configuration for Debugging of Unit-Tests
+      {
+          "name": "Debug Unit-Tests",
+          "type": "node",
+          "request": "launch",
+          "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/jest",
+          "args": ["test","--runInBand", "--no-cache", "watchAll=false"],
+          "cwd": "${workspaceRoot}",
+          "protocol": "inspector",
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen",
+          "env": {"CI": "true"},
+          "disableOptimisticBPs": true
       }
     ]
 }

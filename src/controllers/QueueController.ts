@@ -4,10 +4,9 @@
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 import { Controller, Middleware, Post } from '@overnightjs/core';
-import { ISecureRequest } from '@overnightjs/jwt';
 
 import { QueueEntry } from '../types/QueueEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
@@ -26,17 +25,17 @@ export class QueueController {
 
     /**
      * Add entries to the queue. It is called during following events from the client:
-     * 1. A questionnair is send
+     * 1. A questionnaire is sent
      * 2. A positive result is reported
      * 3. Symptoms are reported
      *
-     * @param {ISecureRequest} req
+     * @param {Request} req
      * @param {Response} res
      * @memberof QueueController
      */
     @Post()
-    @Middleware([AuthorizationController.checkStudyParticipantLogin])
-    public async addToQueue(req: ISecureRequest, res: Response) {
+    @Middleware(AuthorizationController.checkStudyParticipantLogin)
+    public async addToQueue(req: Request, res: Response) {
         const queueEntry: QueueEntry = {
             id: null,
             subject_id: req.query.subjectId.toString(),
@@ -44,20 +43,24 @@ export class QueueController {
             date_sent: new Date(),
             date_received: this.generateDateReceived(req)
         };
-
-        this.queueModel.addDataToQueue(queueEntry, req).then(
-            () => res.status(200).end(),
-            (err) => {
-                if (err.response) {
-                    res.status(err.response.status).end();
-                } else {
-                    res.status(500).end();
-                }
+        try {
+            const result = await this.queueModel.addDataToQueue(queueEntry, req);
+            if (!result) {
+                //Data already sent through the other App
+                res.status(409).end();
+            } else {
+                res.status(200).end();
             }
-        );
+        } catch (err) {
+            if (err.response) {
+                res.status(err.response.status).end();
+            } else {
+                res.status(500).end();
+            }
+        }
     }
 
-    private generateDateReceived(req: ISecureRequest) {
+    private generateDateReceived(req: Request) {
         const date = new Date();
         if (req.query.type !== COMPASSConfig.getQuestionnaireResponseType()) {
             date.setDate(date.getDate() - 2);

@@ -37,6 +37,7 @@ CREATE TABLE queue
     encrypted_resp text NOT NULL,
     date_sent timestamp without time zone NOT NULL,
     date_received timestamp without time zone NOT NULL,
+    downloaded boolean DEFAULT false,
     CONSTRAINT queue_pkey PRIMARY KEY (id)
 );
 
@@ -51,5 +52,8 @@ CREATE TABLE studyparticipant
     current_instance_id character varying(355),
     current_interval smallint,
     additional_iterations_left smallint,
+    status character varying(9) DEFAULT 'on-study',
+    general_study_end_date DATE DEFAULT '9999-12-31',
+    personal_study_end_date DATE DEFAULT '9999-12-31',
     CONSTRAINT studyparticipant_pkey PRIMARY KEY (subject_id)
 );

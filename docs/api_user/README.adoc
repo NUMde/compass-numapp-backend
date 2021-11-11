@@ -1,0 +1,29 @@
+= API User Setup
+
+For different purposes there is the need for authenticated access to the COMPASS back end service.
+One use case is the download of encrypted questionnaire responses, another the management of subject identities.
+
+For this purpose the application uses API users.
+
+== Creating API Users
+
+The creation of API users is done manually by importing the needed values into the database.
+
+The table that stores the users has the following structure:
+
+* api_id - a string containing the name of the user
+* api_key - the hashed key of the user; for hashing SHA512 is used
+* api_key_salt - the salt that was used to hash the key
+
+To create the hashed key and the salt, one can use the REST api of this application.
+On a running instance perform a post request to the route `<server>/api/auth/helper/passwordhash` with a body
+of the structure `{"password":"My-Secret-Password"}`.
+
+The result provides the salt and the hashed password. Those values need to be added into the database.
+Either by creating an import script similar to
+ link:../../db/migration/V004__Api_User.sql[Api User import script]
+or by issuing the import statement directly.
+
+== Accessing the routes as an API user
+
+The routes that are available only to API users need an authentication token. This token can be aquired by using the `<server>/api/auth` route. Please see the OpenAPI definition for details.

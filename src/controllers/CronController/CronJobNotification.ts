@@ -2,7 +2,7 @@
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 
-import { Logger } from '@overnightjs/logger';
+import Logger from 'jet-logger';
 import { PushServiceConfig } from '../../config/PushServiceConfig';
 
 import { ParticipantModel } from '../../models/ParticipantModel';
@@ -19,6 +19,7 @@ import { AbstractCronJob } from './AbstractCronJob';
  */
 export class CronJobNotification extends AbstractCronJob {
     private participantModel: ParticipantModel = new ParticipantModel();
+    private pushService: PushService = new PushService();
 
     constructor() {
         super('0 6 * * *'); // at 6:00 Local Time (GMT+02:00)
@@ -39,24 +40,24 @@ export class CronJobNotification extends AbstractCronJob {
         const now = new Date();
         now.setUTCHours(6, 0, 0, 0);
 
-        // Reminder - download questionnair
+        // Reminder - download questionnaire
         try {
-            const participantsWithNewQuestionnairs = await this.participantModel.getParticipantsWithAvailableQuestionnairs(
+            const participantsWithNewQuestionnaires = await this.participantModel.getParticipantsWithAvailableQuestionnairs(
                 now
             );
             const downloadMsg = PushServiceConfig.getDownloadMessage();
-            await PushService.send(downloadMsg, participantsWithNewQuestionnairs);
+            await this.pushService.send(downloadMsg, participantsWithNewQuestionnaires);
         } catch (error) {
             Logger.Err(error, true);
         }
 
-        // Reminder - upload questionnair
+        // Reminder - upload questionnaire
         try {
             const participantsWithPendingUploads = await this.participantModel.getParticipantsWithPendingUploads(
                 now
             );
             const uploadMsg = PushServiceConfig.getUploadMessage();
-            await PushService.send(uploadMsg, participantsWithPendingUploads);
+            await this.pushService.send(uploadMsg, participantsWithPendingUploads);
         } catch (error) {
             Logger.Err(error, true);
         }
