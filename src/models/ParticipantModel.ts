@@ -6,7 +6,7 @@ import { Pool } from 'pg';
 import Logger from 'jet-logger';
 
 import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
-import DB from '../server/DB';
+import { DB } from '../server/DB';
 import { ExampleStateModel } from './ExampleStateModel';
 import { StateModel } from './StateModel';
 export class ParticipantModel {

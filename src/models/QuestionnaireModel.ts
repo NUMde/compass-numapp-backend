@@ -6,7 +6,7 @@ import Logger from 'jet-logger';
 
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantModel } from '../models/ParticipantModel';
-import DB from '../server/DB';
+import { DB } from '../server/DB';
 import { IdHelper } from '../services/IdHelper';
 
 /**
