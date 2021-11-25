@@ -242,6 +242,26 @@ paths:
                     $ref: '#/components/responses/500ServerError'
             security:
                 - Bearer: []
+    /participant/update-language-code/{subjectId}:
+        post:
+            tags:
+                - participant
+            summary: Document language preferrence of user
+            operationId: updateLanguageCode
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateLanguageRequest'
+            responses:
+                '200':
+                    description: successfully stored user language preference
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+                '500':
+                    $ref: '#/components/responses/500ServerError'
+            security:
+                - Bearer: []
     /auth:
         post:
             tags:
@@ -395,6 +415,13 @@ components:
             example:
               - de
               - en
+        UpdateLanguageRequest:
+            type: object
+            properties:
+                language:
+                    type: string
+                    description: the code of the language preferred by the user
+                    example: 'en'
         QueueInsert:
             type: object
             properties:
