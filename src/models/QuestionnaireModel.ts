@@ -37,13 +37,9 @@ export class QuestionnaireModel {
             );
 
             const res = await dbClient.query(
-                'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);', 
-                [ 
-                    questionnaireId, 
-                    language, 
-                    COMPASSConfig.getDefaultIntervalStartIndex()
-                ]
-            );          
+                'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);',
+                [questionnaireId, language, COMPASSConfig.getDefaultLanguageCode()]
+            );
 
             if (res.rows.length !== 1) {
                 throw new Error('questionnaire_not_found');
