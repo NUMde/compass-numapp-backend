@@ -82,4 +82,28 @@ export class ParticipantController {
             return resp.sendStatus(500);
         }
     }
+
+    /**
+     * Updates the language preference of a participant.
+     * Is called from the client during first login and when the language is changed.
+     */
+     @Post('update-language-code/:subjectID')
+     @Middleware([AuthorizationController.checkStudyParticipantLogin])
+     public async updateLanguageCodeForParticipant(req: Request, resp: Response) {
+         try {
+             // validate parameter
+             if (!req.params.subjectID || !req.body.language) {
+                 return resp.status(400).send({ error: 'missing_data' });
+             }
+             await this.participantModel.updateLanguageCode(
+                req.params.subjectID,
+                req.params.language
+             );
+ 
+             return resp.sendStatus(204);
+         } catch (err) {
+             Logger.Err(err, true);
+             return resp.sendStatus(500);
+         }
+     }
 }

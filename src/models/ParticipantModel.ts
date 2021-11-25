@@ -240,6 +240,25 @@ export class ParticipantModel {
     }
 
     /**
+     * Store the language code for the given participant.
+     *
+     * @param {string} language The preferred language of the participant.
+     */
+    public async updateLanguageCode(subjectID: string, language: string): Promise<void> {
+        try {
+            const pool: Pool = DB.getPool();
+            await pool.query(
+                'update studyparticipant set language_code = $1 where subject_id = $2;',
+                [language, subjectID]
+            );
+            return;
+        } catch (err) {
+            Logger.Err(err);
+            throw err;
+        }
+    }
+
+    /**
      * Converts a Javascript Date to Postgres-acceptable format.
      *
      * @param date The Date object
