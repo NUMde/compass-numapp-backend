@@ -10,8 +10,8 @@ module.exports = function() {
             locations: 'filesystem:db/migration',
 
             // if not set here, flyway will ask during execution
-            user: 'lenzch',
-            password: ''
+            // user: 'DB_USER',
+            // password: 'DB_PASSWORD',
         }
         // version: '7.8.2', // optional, empty or missing will download the latest (7.8.2 is known to be working)
     };
