@@ -48,14 +48,17 @@ export class QuestionnaireModel {
             if (res.rows.length !== 1) {
                 throw new Error('questionnaire_not_found');
             } else {
+                if (language != res.rows[0].language_code) {
+                    Logger.Info(
+                        `User language '${language}' not available, using fallback language '${res.rows[0].language_code}'`
+                    );
+                }
                 const dbId =
-                questionnaireId +
-                '-' +
-                res.rows[0].language_code +
-                '-' +
-                subjectID +
-                '-' +
-                (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
+                    questionnaireId +
+                    '-' +
+                    subjectID +
+                    '-' +
+                    (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
                 await dbClient.query(
                     'INSERT INTO questionnairehistory(id, subject_id, questionnaire_id, language_code, date_received, date_sent, instance_id) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT DO NOTHING;',
                     [

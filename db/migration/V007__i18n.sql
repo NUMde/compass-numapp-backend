@@ -22,5 +22,4 @@ ALTER TABLE questionnaire_version_history ADD CONSTRAINT questionnaire_version_h
 -- ALTER TABLE queue ADD language_code varchar NOT NULL DEFAULT 'de';
 
 -- Table: questionnairehistory
--- TODO this one also? probably not
--- ALTER TABLE questionnairehistory ADD language_code varchar NOT NULL DEFAULT 'de';
+ALTER TABLE questionnairehistory ADD language_code varchar NOT NULL DEFAULT 'de';

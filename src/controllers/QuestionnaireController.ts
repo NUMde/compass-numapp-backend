@@ -12,6 +12,7 @@ import { QuestionnaireModel } from '../models/QuestionnaireModel';
 import { AuthorizationController } from './AuthorizationController';
 import jwt from 'express-jwt';
 import { AuthConfig } from '../config/AuthConfig';
+import { COMPASSConfig } from '../config/COMPASSConfig';
 
 /**
  * Endpoint class for all questionnaire related restful methods.
@@ -30,7 +31,7 @@ export class QuestionnaireController {
      * @param {Response} res
      * @memberof QuestionnaireController
      */
-    @Get(':questionnaireId')
+    @Get(':questionnaireId/:language?')
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
     public async getQuestionnaire(req: Request, res: Response) {
         const bearerHeader = req.headers.authorization;
@@ -41,8 +42,9 @@ export class QuestionnaireController {
             : undefined;
 
         const questionnaireId = req.params.questionnaireId;
+        const language = req.params.language ? req.params.language : COMPASSConfig.getDefaultLanguageCode();
 
-        this.questionnaireModel.getQuestionnaire(subjectID, questionnaireId).then(
+        this.questionnaireModel.getQuestionnaire(subjectID, questionnaireId, language).then(
             (resp) => res.status(200).json(resp),
             (err) => {
                 if (err.response) {

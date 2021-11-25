@@ -21,7 +21,7 @@ tags:
     - name: subjectIdentities
       description: API to manage subjectIdentities based on orscf standard
 paths:
-    '/questionnaire/{questionnaireId}':
+    '/questionnaire/{questionnaireId}/{language}':
         get:
             tags:
                 - questionnaire
@@ -34,6 +34,12 @@ paths:
                   schema:
                       type: string
                   required: true
+                - name: language
+                  in: path
+                  description: Code of desired language
+                  schema:
+                      type: string
+                  required: false
             responses:
                 '200':
                     description: A FHIR Questionnaire as JSON
