@@ -26,7 +26,7 @@ export class QuestionnaireModel {
      * @return {*}  {Promise<string>}
      * @memberof QuestionnaireModel
      */
-    public async getQuestionnaire(subjectID: string, questionnaireId: string): Promise<string> {
+    public async getQuestionnaire(subjectID: string, questionnaireId: string, language: string): Promise<string> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
@@ -35,31 +35,39 @@ export class QuestionnaireModel {
             const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
                 subjectID
             );
-            const res = await dbClient.query('SELECT body FROM questionnaires WHERE id = $1', [
-                questionnaireId
-            ]);
 
-            const dbId =
-                questionnaireId +
-                '-' +
-                subjectID +
-                '-' +
-                (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
-            await dbClient.query(
-                'INSERT INTO questionnairehistory(id, subject_id, questionnaire_id, date_received, date_sent, instance_id) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING;',
-                [
-                    dbId,
-                    subjectID,
-                    questionnaireId,
-                    new Date(),
-                    null,
-                    participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId()
+            const res = await dbClient.query(
+                'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);', 
+                [ 
+                    questionnaireId, 
+                    language, 
+                    COMPASSConfig.getDefaultIntervalStartIndex()
                 ]
-            );
+            );          
 
             if (res.rows.length !== 1) {
                 throw new Error('questionnaire_not_found');
             } else {
+                const dbId =
+                questionnaireId +
+                '-' +
+                res.rows[0].language_code +
+                '-' +
+                subjectID +
+                '-' +
+                (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
+                await dbClient.query(
+                    'INSERT INTO questionnairehistory(id, subject_id, questionnaire_id, language_code, date_received, date_sent, instance_id) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT DO NOTHING;',
+                    [
+                        dbId,
+                        subjectID,
+                        questionnaireId,
+                        res.rows[0].language_code,
+                        new Date(),
+                        null,
+                        participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId()
+                    ]
+                );
                 return res.rows[0].body;
             }
         } catch (e) {
