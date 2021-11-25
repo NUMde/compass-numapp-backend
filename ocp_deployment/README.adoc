@@ -104,7 +104,6 @@ $ oc new-app --file your/path/to/compass-backend-template.yaml \
 APP_GIT_URL:: "Clone with SSH" link to the Git-repository if repository is private and a deploy key is set. Otherwise use HTTPS link.
 PRIVATE_KEY:: Private SSH key of mobile backend corresponding to PUBLIC_KEY, needed for signature creation of encrypted documents in backend
 PUBLIC_KEY:: Public SSH key of mobile backend corresponding to PRIVATE_KEY, primarily used for testing purposes for signature verification.
-PRIVATE_KEY:: Private SSH key of mobile backend corresponding to PUBLIC_KEY, needed for signature creation of encrypted documents in backend
 CERTIFICATE:: The Certificate used for the encryption of the questionnaire responses by the NUM app. This is optional, so you can just leave this parameter out, if for example you set it in the frontend, i.e. the app
 SSH_PRIVATE_KEY:: Dedicated private deploy key added to your Git-repository for authentication to deploy a private repository to OpenShift. In case the repository is public, you can omit this parameter.
 
