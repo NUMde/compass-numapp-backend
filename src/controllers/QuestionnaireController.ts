@@ -179,7 +179,7 @@ export class QuestionnaireController {
      * @param {Response} res
      * @memberof QuestionnaireController
      */
-     @Get('get-languages')
+    @Get('get-languages')
     @Middleware(
         jwt({
             secret: AuthConfig.jwtSecret,

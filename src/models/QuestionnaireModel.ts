@@ -197,14 +197,14 @@ export class QuestionnaireModel {
      * Get available questionnaire languages
      * @returns{string[]} list of available languages
      */
-     public async getQuestionnaireLanguages(): Promise<string[]> {
+    public async getQuestionnaireLanguages(): Promise < string[] > {
         const dbClient = await DB.getPool().connect();
         try {
             const res = await dbClient.query(
                 'SELECT DISTINCT language_code FROM questionnaires'
             );
             var responseArray = [];
-            for(let row of res.rows) {
+            for (let row of res.rows) {
                 responseArray.push(row.language_code);
             }
             return responseArray;
