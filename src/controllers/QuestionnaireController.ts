@@ -169,4 +169,31 @@ export class QuestionnaireController {
             }
         );
     }
+
+    /**
+     * Retrieve available questionnaire languages.
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof QuestionnaireController
+     */
+     @Get('get-languages')
+    @Middleware(
+        jwt({
+            secret: AuthConfig.jwtSecret,
+            algorithms: ['HS256'],
+            requestProperty: 'payload',
+            isRevoked: AuthorizationController.checkApiUserLogin
+        })
+    )
+     public async getQuestionnaireLanguages(req: Request, res: Response) {
+         this.questionnaireModel.getQuestionnaireLanguages().then(
+             (response) => {
+                 res.status(200).send(response);
+             },
+             (error) => {
+                 res.status(500).send;
+             }
+         );
+     }
 }

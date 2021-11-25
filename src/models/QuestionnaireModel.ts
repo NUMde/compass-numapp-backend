@@ -193,4 +193,27 @@ export class QuestionnaireModel {
             dbClient.release();
         }
     }
+
+    /**
+     * Get available questionnaire languages
+     * @returns{string[]} list of available languages
+     */
+     public async getQuestionnaireLanguages(): Promise<string[]> {
+        const dbClient = await DB.getPool().connect();
+        try {
+            const res = await dbClient.query(
+                'SELECT DISTINCT language_code FROM questionnaires'
+            );
+            var responseArray = [];
+            for(let row of res.rows) {
+                responseArray.push(row.language_code);
+            }
+            return responseArray;
+        } catch (error) {
+            Logger.Err(error);
+            throw error;
+        } finally {
+            dbClient.release();
+        }
+    }
 }

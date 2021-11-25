@@ -119,6 +119,23 @@ paths:
                     $ref: '#/components/responses/500ServerError'
             security:
                 - Bearer: []
+    /questionnaire/get-languages:
+        get:
+            tags:
+                - questionnaire
+            summary: Get available questionnaire languages
+            operationId: getQuestionnaireLanguages
+            responses:
+                '200':
+                    description: Array of language strings
+                    content: 
+                      application/json:
+                        schema:
+                            $ref: '#/components/schemas/LanguageList'
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
+            security:
+                - Bearer: []
     /queue:
         post:
             tags:
@@ -365,6 +382,13 @@ components:
                 iv:
                     type: string
                     description: Random initialization vector
+        LanguageList:
+            type: array
+            items:
+                type: string
+            example:
+              - de
+              - en
         QueueInsert:
             type: object
             properties:
