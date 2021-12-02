@@ -25,6 +25,25 @@ export class QuestionnaireController {
     private questionnaireModel: QuestionnaireModel = new QuestionnaireModel();
 
     /**
+     * Retrieve available questionnaire languages.
+     *
+     * @param {Request} req
+     * @param {Response} res
+     * @memberof QuestionnaireController
+     */
+    @Get('get-languages')
+    public async getQuestionnaireLanguages(req: Request, res: Response) {
+        this.questionnaireModel.getQuestionnaireLanguages().then(
+            (response) => {
+                res.status(200).send(response);
+            },
+            (error) => {
+                res.status(500).send;
+            }
+        );
+    }
+
+    /**
      * Provide the questionnaire data for the requested questionnaire ID.
      *
      * @param {Request} req
@@ -171,23 +190,4 @@ export class QuestionnaireController {
             }
         );
     }
-
-    /**
-     * Retrieve available questionnaire languages.
-     *
-     * @param {Request} req
-     * @param {Response} res
-     * @memberof QuestionnaireController
-     */
-    @Get('get-languages')
-     public async getQuestionnaireLanguages(req: Request, res: Response) {
-         this.questionnaireModel.getQuestionnaireLanguages().then(
-             (response) => {
-                 res.status(200).send(response);
-             },
-             (error) => {
-                 res.status(500).send;
-             }
-         );
-     }
 }
