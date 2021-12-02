@@ -180,14 +180,6 @@ export class QuestionnaireController {
      * @memberof QuestionnaireController
      */
     @Get('get-languages')
-    @Middleware(
-        jwt({
-            secret: AuthConfig.jwtSecret,
-            algorithms: ['HS256'],
-            requestProperty: 'payload',
-            isRevoked: AuthorizationController.checkApiUserLogin
-        })
-    )
      public async getQuestionnaireLanguages(req: Request, res: Response) {
          this.questionnaireModel.getQuestionnaireLanguages().then(
              (response) => {
