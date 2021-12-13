@@ -461,6 +461,9 @@ components:
                 personal_study_end_date:
                     type: date
                     description: Individual end date of study that subject is/was participating in
+                language_code:
+                    type: string
+                    description: Code of participant language
         Health:
             type: object
             properties:
