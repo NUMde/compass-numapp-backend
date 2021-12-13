@@ -50,7 +50,8 @@ export class ParticipantController {
                 recipient_certificate_pem_string: COMPASSConfig.getRecipientCertificate(),
                 status: participant.status,
                 general_study_end_date: participant.general_study_end_date,
-                personal_study_end_date: participant.personal_study_end_date
+                personal_study_end_date: participant.personal_study_end_date,
+                language_code: participant.language_code
             };
             return resp.status(200).json(returnObject);
         } catch (err) {
