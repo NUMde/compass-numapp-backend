@@ -48,10 +48,19 @@ export class AuthorizationController {
                 subjectID
             );
 
-            return checkLoginSuccess ? next() : res.status(401).send();
+            return checkLoginSuccess
+                ? next()
+                : res.status(401).json({
+                      errorCode: 'AuthFailed',
+                      errorMessage: 'No valid authorization details provided.'
+                  });
         } catch (err) {
             Logger.Err(err);
-            return res.status(500).send();
+            return res.status(500).json({
+                errorCode: 'InternalErr',
+                errorMessage: 'An internal error occurred.',
+                errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+            });
         }
     }
 
@@ -97,7 +106,10 @@ export class AuthorizationController {
             typeof encryptedKey !== 'string' ||
             typeof initializationVector !== 'string'
         ) {
-            return res.status(401).send();
+            return res.status(401).json({
+                errorCode: 'AuthInvalid',
+                errorMessage: 'Invalid credentials provided. Only strings allowed.'
+            });
         }
 
         try {
@@ -116,14 +128,20 @@ export class AuthorizationController {
                 typeof credentials.ApiKey !== 'string' ||
                 typeof credentials.CurrentDate !== 'string'
             ) {
-                return res.status(401).send();
+                return res.status(401).json({
+                    errorCode: 'AuthInvalid',
+                    errorMessage: 'Invalid credentials provided. Only strings allowed.'
+                });
             }
 
             const credsDate = new Date(credentials.CurrentDate);
 
             if (AuthConfig.enableTimeCheckForAPIAuth) {
                 if (credsDate < timeMinus2Mins || credsDate > timePlus2Mins) {
-                    return res.status(401).send();
+                    return res.status(401).json({
+                        errorCode: 'AuthOutdated',
+                        errorMessage: 'Invalid credentials provided. Timestamp is outdated.'
+                    });
                 }
             }
 
@@ -151,11 +169,21 @@ export class AuthorizationController {
                     access_token: accessToken
                 });
             } else {
-                return res.status(401).send();
+                return res.status(401).json({
+                    errorCode: 'AuthNoMatch',
+                    errorMessage: 'Invalid credentials provided: api_key and api_id do not match.'
+                });
             }
         } catch (err) {
             Logger.Err(err);
-            return res.status(401).send();
+            return res.status(401).json({
+                errorCode: 'AuthError',
+                errorMessage:
+                    process.env.NODE_ENV !== 'production'
+                        ? `Authorization failed with error: '${err.message}'.`
+                        : 'Authorization failed.',
+                errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+            });
         }
     }
 
@@ -171,14 +199,21 @@ export class AuthorizationController {
     public async helperCreatePasswordHash(req: Request, res: Response) {
         try {
             if (!req.body || !req.body.password) {
-                return res.sendStatus(400);
+                return res.status(400).json({
+                    errorCode: 'InvalidQuery',
+                    errorMessage: 'Invalid authorization query.'
+                });
             }
 
             const password = req.body.password;
             const result = SecurityService.createPasswordHash(password);
-            return res.send(result);
+            return res.json(result);
         } catch (err) {
-            return res.sendStatus(500);
+            return res.status(500).json({
+                errorCode: 'InternalErr',
+                errorMessage: 'Request failed due to an internal error.',
+                errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+            });
         }
     }
 }

@@ -41,16 +41,19 @@ export class DownloadController {
      * Provide study data to the caller.
      *
      * @param {Request} req
-     * @param {Response} resp
+     * @param {Response} res
      * @return {*}
      * @memberof DownloadController
      */
     @Get()
-    public async getAvailableDataFromQueue(req: Request, resp: Response): Promise<Response> {
+    public async getAvailableDataFromQueue(req: Request, res: Response): Promise<Response> {
         try {
             const page: number = req.query.page ? parseInt(req.query.page.toString(), 10) : 1;
             if (page < 1) {
-                return resp.sendStatus(400);
+                return res.status(400).json({
+                    errorCode: 'InvalidQuery',
+                    errorMessage: "Invalid query: param 'page' must be >= 1"
+                });
             }
             const totalEntries: number = parseInt(
                 await this.queueModel.countAvailableQueueData(),
@@ -65,7 +68,7 @@ export class DownloadController {
 
             SecurityService.verifyJWS(signedItems);
 
-            return resp.status(200).json({
+            return res.status(200).json({
                 totalEntries,
                 totalPages: Math.ceil(totalEntries / this.limitEntries),
                 currentPage: page,
@@ -73,7 +76,11 @@ export class DownloadController {
             });
         } catch (err) {
             Logger.Err(err, true);
-            return resp.sendStatus(500);
+            return res.status(500).json({
+                errorCode: 'InternalErr',
+                errorMessage: 'An internal error ocurred.',
+                errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+            });
         }
     }
 
@@ -96,21 +103,28 @@ export class DownloadController {
      * Mark queue entries as downloaded
      *
      * @param {Request} req
-     * @param {Response} resp
+     * @param {Response} res
      * @return {*}
      * @memberof DownloadController
      */
     @Put()
-    public async markAsDownloaded(req: Request, resp: Response): Promise<Response> {
+    public async markAsDownloaded(req: Request, res: Response): Promise<Response> {
         try {
             if (!Array.isArray(req.body)) {
-                return resp.sendStatus(400);
+                return res.status(400).json({
+                    errorCode: 'InvalidQuery',
+                    errorMessage: 'Invalid query: no data provided.'
+                });
             }
             const updatedRowCount = await this.queueModel.markAsDownloaded(req.body);
-            return resp.status(200).send({ updatedRowCount: updatedRowCount });
+            return res.status(200).json({ updatedRowCount: updatedRowCount });
         } catch (err) {
             Logger.Err(err, true);
-            return resp.sendStatus(500);
+            return res.status(500).json({
+                errorCode: 'InternalErr',
+                errorMessage: 'An internal error ocurred.',
+                errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+            });
         }
     }
 }

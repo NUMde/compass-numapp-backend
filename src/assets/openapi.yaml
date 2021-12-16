@@ -94,8 +94,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/AddOrUpdateQuestionnaireRequest'
             responses:
-                '200':
-                    description: successfully created the questionnaire
+                '204':
+                    description: successfully created the questionnaire (empty body returned)
                 '401':
                     $ref: '#/components/responses/401NotAuthenticated'
                 '409':
@@ -115,8 +115,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/AddOrUpdateQuestionnaireRequest'
             responses:
-                '200':
-                    description: successfully updated the questionnaire
+                '204':
+                    description: successfully updated the questionnaire (empty body returned)
                 '401':
                     $ref: '#/components/responses/401NotAuthenticated'
                 '409':
@@ -195,8 +195,8 @@ paths:
                               type: boolean
                   required: false
             responses:
-                '200':
-                    description: Added to queue
+                '204':
+                    description: Added to queue (empty body returned)
                 '401':
                     $ref: '#/components/responses/401NotAuthenticated'
                 '500':

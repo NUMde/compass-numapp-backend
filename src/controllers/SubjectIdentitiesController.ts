@@ -37,11 +37,11 @@ export class SubjectIdentitiesController {
      * Is called by API user to register a new subject which will then get access to app by their id.
      */
     @Post('addNew')
-    public async addSubjectIdentity(req: Request, resp: Response) {
+    public async addSubjectIdentity(req: Request, res: Response) {
         try {
             // validate parameter existence
             if (!req.body.subjectIdentity || !req.body.subjectIdentity.recordId) {
-                return resp.status(400).send({
+                return res.status(400).send({
                     error: 'missing_data'
                 });
             }
@@ -51,7 +51,7 @@ export class SubjectIdentitiesController {
             );
 
             if (subjectIdentityExistence) {
-                return resp.status(409).send({
+                return res.status(409).send({
                     error: 'participant_already_exists'
                 });
             }
@@ -60,12 +60,16 @@ export class SubjectIdentitiesController {
                 req.body.subjectIdentity.recordId
             );
 
-            return resp.status(200).json({
+            return res.status(200).json({
                 return: true
             });
         } catch (err) {
             Logger.Err(err, true);
-            return resp.sendStatus(500);
+            return res.status(500).json({
+                errorCode: 'InternalErr',
+                errorMessage: 'An internal error ocurred.',
+                errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+            });
         }
     }
 }
