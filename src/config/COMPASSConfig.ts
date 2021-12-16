@@ -183,6 +183,18 @@ export class COMPASSConfig {
     }
 
     /**
+     * The default language_code for questionnaire retrieval. 
+     * Used as fallback if no questionnaire exists for preferred user language.
+     *
+     * @static
+     * @return {*}  {string}
+     * @memberof COMPASSConfig
+     */
+     public static getDefaultLanguageCode(): string {
+        return env.get('COMPASS_DEFAULT_LANGUAGE_CODE').default('de').asString();
+    }
+
+    /**
      * The certificate to use for the encryption of the client data.
      * It is the public certificate of the receiver of the data.
      *

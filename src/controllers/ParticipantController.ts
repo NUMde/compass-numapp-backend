@@ -50,7 +50,8 @@ export class ParticipantController {
                 recipient_certificate_pem_string: COMPASSConfig.getRecipientCertificate(),
                 status: participant.status,
                 general_study_end_date: participant.general_study_end_date,
-                personal_study_end_date: participant.personal_study_end_date
+                personal_study_end_date: participant.personal_study_end_date,
+                language_code: participant.language_code
             };
             return resp.status(200).json(returnObject);
         } catch (err) {
@@ -74,6 +75,30 @@ export class ParticipantController {
             await this.participantModel.updateDeviceToken(
                 req.params.subjectID,
                 req.body.token.toString()
+            );
+
+            return resp.sendStatus(204);
+        } catch (err) {
+            Logger.Err(err, true);
+            return resp.sendStatus(500);
+        }
+    }
+
+    /**
+     * Updates the language preference of a participant.
+     * Is called from the client during first login and when the language is changed.
+     */
+    @Post('update-language-code/:subjectID')
+    @Middleware([AuthorizationController.checkStudyParticipantLogin])
+    public async updateLanguageCodeForParticipant(req: Request, resp: Response) {
+        try {
+            // validate parameter
+            if (!req.params.subjectID || !req.body.language) {
+                return resp.status(400).send({ error: 'missing_data' });
+            }
+            await this.participantModel.updateLanguageCode(
+                req.params.subjectID,
+                req.body.language
             );
 
             return resp.sendStatus(204);

@@ -3,7 +3,7 @@
  */
 import { Pool } from 'pg';
 import Logger from 'jet-logger';
-import DB from '../server/DB';
+import { DB } from '../server/DB';
 
 export class SubjectIdentitiesModel {
     /**

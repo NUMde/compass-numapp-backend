@@ -32,7 +32,8 @@ describe('signing', () => {
             additional_iterations_left: null,
             status: ParticipationStatus.OnStudy,
             general_study_end_date: undefined,
-            personal_study_end_date: undefined
+            personal_study_end_date: undefined,
+            language_code: 'de'
         };
         const parameters: StateChangeTrigger = {};
 
@@ -74,7 +75,8 @@ describe('signing', () => {
             additional_iterations_left: 0,
             status: ParticipationStatus.OnStudy,
             general_study_end_date: new Date(),
-            personal_study_end_date: new Date()
+            personal_study_end_date: new Date(),
+            language_code: COMPASSConfig.getDefaultLanguageCode()
         };
         const parameters: StateChangeTrigger = {};
 
@@ -116,7 +118,8 @@ describe('signing', () => {
             additional_iterations_left: 0,
             status: ParticipationStatus.OnStudy,
             general_study_end_date: new Date(),
-            personal_study_end_date: new Date()
+            personal_study_end_date: new Date(),
+            language_code: COMPASSConfig.getDefaultLanguageCode()
         };
         const parameters: StateChangeTrigger = { basicTrigger: true };
 
@@ -160,7 +163,8 @@ describe('signing', () => {
             additional_iterations_left: 0,
             status: ParticipationStatus.OnStudy,
             general_study_end_date: new Date(),
-            personal_study_end_date: new Date()
+            personal_study_end_date: new Date(),
+            language_code: COMPASSConfig.getDefaultLanguageCode()
         };
         const parameters: StateChangeTrigger = { specialTrigger: true };
 

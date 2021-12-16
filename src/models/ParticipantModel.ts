@@ -6,7 +6,7 @@ import { Pool } from 'pg';
 import Logger from 'jet-logger';
 
 import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
-import DB from '../server/DB';
+import { DB } from '../server/DB';
 import { ExampleStateModel } from './ExampleStateModel';
 import { StateModel } from './StateModel';
 export class ParticipantModel {
@@ -231,6 +231,25 @@ export class ParticipantModel {
             await pool.query(
                 'update studyparticipant set registration_token = $1 where subject_id = $2;',
                 [token, subjectID]
+            );
+            return;
+        } catch (err) {
+            Logger.Err(err);
+            throw err;
+        }
+    }
+
+    /**
+     * Store the language code for the given participant.
+     *
+     * @param {string} language The preferred language of the participant.
+     */
+    public async updateLanguageCode(subjectID: string, language: string): Promise<void> {
+        try {
+            const pool: Pool = DB.getPool();
+            await pool.query(
+                'update studyparticipant set language_code = $1 where subject_id = $2;',
+                [language, subjectID]
             );
             return;
         } catch (err) {

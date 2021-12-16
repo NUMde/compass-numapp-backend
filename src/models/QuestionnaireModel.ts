@@ -6,7 +6,7 @@ import Logger from 'jet-logger';
 
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantModel } from '../models/ParticipantModel';
-import DB from '../server/DB';
+import { DB } from '../server/DB';
 import { IdHelper } from '../services/IdHelper';
 
 /**
@@ -26,7 +26,7 @@ export class QuestionnaireModel {
      * @return {*}  {Promise<string>}
      * @memberof QuestionnaireModel
      */
-    public async getQuestionnaire(subjectID: string, questionnaireId: string): Promise<string> {
+    public async getQuestionnaire(subjectID: string, questionnaireId: string, language: string): Promise<string> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
@@ -35,31 +35,38 @@ export class QuestionnaireModel {
             const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
                 subjectID
             );
-            const res = await dbClient.query('SELECT body FROM questionnaires WHERE id = $1', [
-                questionnaireId
-            ]);
 
-            const dbId =
-                questionnaireId +
-                '-' +
-                subjectID +
-                '-' +
-                (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
-            await dbClient.query(
-                'INSERT INTO questionnairehistory(id, subject_id, questionnaire_id, date_received, date_sent, instance_id) VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT DO NOTHING;',
-                [
-                    dbId,
-                    subjectID,
-                    questionnaireId,
-                    new Date(),
-                    null,
-                    participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId()
-                ]
+            const res = await dbClient.query(
+                'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);',
+                [questionnaireId, language, COMPASSConfig.getDefaultLanguageCode()]
             );
 
             if (res.rows.length !== 1) {
                 throw new Error('questionnaire_not_found');
             } else {
+                if (language != res.rows[0].language_code) {
+                    Logger.Info(
+                        `User language '${language}' not available, using fallback language '${res.rows[0].language_code}'`
+                    );
+                }
+                const dbId =
+                    questionnaireId +
+                    '-' +
+                    subjectID +
+                    '-' +
+                    (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
+                await dbClient.query(
+                    'INSERT INTO questionnairehistory(id, subject_id, questionnaire_id, language_code, date_received, date_sent, instance_id) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT DO NOTHING;',
+                    [
+                        dbId,
+                        subjectID,
+                        questionnaireId,
+                        res.rows[0].language_code,
+                        new Date(),
+                        null,
+                        participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId()
+                    ]
+                );
                 return res.rows[0].body;
             }
         } catch (e) {
@@ -178,6 +185,29 @@ export class QuestionnaireModel {
                 [url, version]
             );
             return res.rows;
+        } catch (error) {
+            Logger.Err(error);
+            throw error;
+        } finally {
+            dbClient.release();
+        }
+    }
+
+    /**
+     * Get available questionnaire languages
+     * @returns{string[]} list of available languages
+     */
+    public async getQuestionnaireLanguages(): Promise < string[] > {
+        const dbClient = await DB.getPool().connect();
+        try {
+            const res = await dbClient.query(
+                'SELECT DISTINCT language_code FROM questionnaires'
+            );
+            var responseArray = [];
+            for (let row of res.rows) {
+                responseArray.push(row.language_code);
+            }
+            return responseArray;
         } catch (error) {
             Logger.Err(error);
             throw error;

@@ -14,7 +14,7 @@ import { DBCredentials } from '../config/DBCredentials';
  *
  * @class DB
  */
-class DB {
+export class DB {
     // Singleton
     private static poolInstance: Pool;
 
@@ -86,5 +86,3 @@ class DB {
         });
     }
 }
-
-export default DB;

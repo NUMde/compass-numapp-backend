@@ -11,7 +11,7 @@ import Logger from 'jet-logger';
 import { Environment } from '../config/Environment';
 import * as controllers from '../controllers';
 import { CustomRoutes } from './CustomRoutes';
-import DB from './DB';
+import { DB } from './DB';
 import { Route } from './Route';
 import { SwaggerUI } from './SwaggerUI';
 

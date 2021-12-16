@@ -21,7 +21,7 @@ tags:
     - name: subjectIdentities
       description: API to manage subjectIdentities based on orscf standard
 paths:
-    '/questionnaire/{questionnaireId}':
+    '/questionnaire/{questionnaireId}/{language}':
         get:
             tags:
                 - questionnaire
@@ -34,6 +34,12 @@ paths:
                   schema:
                       type: string
                   required: true
+                - name: language
+                  in: path
+                  description: Code of desired language
+                  schema:
+                      type: string
+                  required: false
             responses:
                 '200':
                     description: A FHIR Questionnaire as JSON
@@ -117,6 +123,23 @@ paths:
                     $ref: '#/components/responses/409Conflict'
                 '500':
                     $ref: '#/components/responses/500ServerError'
+            security:
+                - Bearer: []
+    /questionnaire/get-languages:
+        get:
+            tags:
+                - questionnaire
+            summary: Get available questionnaire languages
+            operationId: getQuestionnaireLanguages
+            responses:
+                '200':
+                    description: Array of language strings
+                    content: 
+                      application/json:
+                        schema:
+                            $ref: '#/components/schemas/LanguageList'
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
             security:
                 - Bearer: []
     /queue:
@@ -215,6 +238,26 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Participant'
+                '500':
+                    $ref: '#/components/responses/500ServerError'
+            security:
+                - Bearer: []
+    /participant/update-language-code/{subjectId}:
+        post:
+            tags:
+                - participant
+            summary: Document language preferrence of user
+            operationId: updateLanguageCode
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateLanguageRequest'
+            responses:
+                '200':
+                    description: successfully stored user language preference
+                '401':
+                    $ref: '#/components/responses/401NotAuthenticated'
                 '500':
                     $ref: '#/components/responses/500ServerError'
             security:
@@ -365,6 +408,20 @@ components:
                 iv:
                     type: string
                     description: Random initialization vector
+        LanguageList:
+            type: array
+            items:
+                type: string
+            example:
+              - de
+              - en
+        UpdateLanguageRequest:
+            type: object
+            properties:
+                language:
+                    type: string
+                    description: the code of the language preferred by the user
+                    example: 'en'
         QueueInsert:
             type: object
             properties:
@@ -404,6 +461,9 @@ components:
                 personal_study_end_date:
                     type: date
                     description: Individual end date of study that subject is/was participating in
+                language_code:
+                    type: string
+                    description: Code of participant language
         Health:
             type: object
             properties:

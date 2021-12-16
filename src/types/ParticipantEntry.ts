@@ -21,4 +21,5 @@ export interface ParticipantEntry {
     status: ParticipationStatus;
     general_study_end_date: Date;
     personal_study_end_date: Date;
+    language_code: string;
 }
