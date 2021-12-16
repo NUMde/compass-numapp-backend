@@ -1,13 +1,13 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-name: main_workflow
+name: main workflow
 on:
   push:
     branches: [ main ]
   pull_request_target:
     branches: [ main ]
 jobs:
-  Run_tests:
+  run_tests:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 24
@@ -40,8 +40,7 @@ jobs:
       run: openssl rsa -pubout -in private_key.pem -out public_key.pem
     - name: run all tests
       run: npm test
-  Run_eslint:
-    if: ${{ github.event_name == 'pull_request' }}
+  lint_annotations:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 24
@@ -64,20 +63,5 @@ jobs:
           ${{ runner.OS }}-
     - name: install npm
       run: npm install -g npm@latest
-    - name: install node dependencies
-      run: npm ci
-      env:
-        CI: true
-    - name: save code linting report
-      run: npm run lint:report
-      continue-on-error: true
-    - name: annotate code linting results
-      uses: ataylorme/eslint-annotate-action@1.2.0
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        report-json: "eslint_report.json"
-    - name: upload ESLint report
-      uses: actions/upload-artifact@v2
-      with:
-        name: eslint_report.json
-        path: eslint_report.json
+    - name: run lint and generate annotations
+      run: npm run lint:annotate
