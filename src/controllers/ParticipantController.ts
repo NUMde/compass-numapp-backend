@@ -107,10 +107,7 @@ export class ParticipantController {
             if (!req.params.subjectID || !req.body.language) {
                 return resp.status(400).send({ error: 'missing_data' });
             }
-            await this.participantModel.updateLanguageCode(
-                req.params.subjectID,
-                req.body.language
-            );
+            await this.participantModel.updateLanguageCode(req.params.subjectID, req.body.language);
 
             return resp.sendStatus(204);
         } catch (err) {

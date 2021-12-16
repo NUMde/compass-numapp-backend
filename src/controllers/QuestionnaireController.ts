@@ -61,7 +61,9 @@ export class QuestionnaireController {
             : undefined;
 
         const questionnaireId = req.params.questionnaireId;
-        const language = req.params.language ? req.params.language : COMPASSConfig.getDefaultLanguageCode();
+        const language = req.params.language
+            ? req.params.language
+            : COMPASSConfig.getDefaultLanguageCode();
 
         this.questionnaireModel.getQuestionnaire(subjectID, questionnaireId, language).then(
             (resp) => res.status(200).json(resp),

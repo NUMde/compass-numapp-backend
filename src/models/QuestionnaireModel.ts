@@ -26,7 +26,11 @@ export class QuestionnaireModel {
      * @return {*}  {Promise<string>}
      * @memberof QuestionnaireModel
      */
-    public async getQuestionnaire(subjectID: string, questionnaireId: string, language: string): Promise<string> {
+    public async getQuestionnaire(
+        subjectID: string,
+        questionnaireId: string,
+        language: string
+    ): Promise<string> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
@@ -197,14 +201,12 @@ export class QuestionnaireModel {
      * Get available questionnaire languages
      * @returns{string[]} list of available languages
      */
-    public async getQuestionnaireLanguages(): Promise < string[] > {
+    public async getQuestionnaireLanguages(): Promise<string[]> {
         const dbClient = await DB.getPool().connect();
         try {
-            const res = await dbClient.query(
-                'SELECT DISTINCT language_code FROM questionnaires'
-            );
-            var responseArray = [];
-            for (let row of res.rows) {
+            const res = await dbClient.query('SELECT DISTINCT language_code FROM questionnaires');
+            const responseArray = [];
+            for (const row of res.rows) {
                 responseArray.push(row.language_code);
             }
             return responseArray;

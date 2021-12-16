@@ -183,14 +183,14 @@ export class COMPASSConfig {
     }
 
     /**
-     * The default language_code for questionnaire retrieval. 
+     * The default language_code for questionnaire retrieval.
      * Used as fallback if no questionnaire exists for preferred user language.
      *
      * @static
      * @return {*}  {string}
      * @memberof COMPASSConfig
      */
-     public static getDefaultLanguageCode(): string {
+    public static getDefaultLanguageCode(): string {
         return env.get('COMPASS_DEFAULT_LANGUAGE_CODE').default('de').asString();
     }
 
