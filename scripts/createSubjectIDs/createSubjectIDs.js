@@ -3,17 +3,11 @@
  */
 
 require('dotenv').config({ path: __dirname + '/./../../.env' });
-const { Pool, Client } = require('pg');
+const { Pool } = require('pg');
 const fs = require('fs');
 const readline = require('readline');
 
 const fileName = 'SUBJECTID_input.txt';
-
-function sleep(ms) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms);
-    });
-}
 
 async function processLineByLine(pool) {
     const fileStream = fs.createReadStream(fileName);
@@ -43,7 +37,6 @@ async function processLineByLine(pool) {
 async function start() {
     const sslConnOptions = {};
     if (process.env.DB_USE_SSL === 'true') {
-        console.log(process.env);
         sslConnOptions.rejectUnauthorized = true;
         try {
             sslConnOptions.ca = Buffer.from(process.env.DB_SSL_CA, 'base64').toString();
