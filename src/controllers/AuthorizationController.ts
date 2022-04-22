@@ -41,8 +41,8 @@ export class AuthorizationController {
             const subjectID: string = bearerHeader
                 ? bearerHeader.split(' ')[1]
                 : req.params && req.params.subjectID
-                ? req.params.subjectID
-                : undefined;
+                    ? req.params.subjectID
+                    : undefined;
 
             const checkLoginSuccess: boolean = await AuthorizationController.participantModel.checkLogin(
                 subjectID
@@ -51,9 +51,9 @@ export class AuthorizationController {
             return checkLoginSuccess
                 ? next()
                 : res.status(401).json({
-                      errorCode: 'AuthFailed',
-                      errorMessage: 'No valid authorization details provided.'
-                  });
+                    errorCode: 'AuthFailed',
+                    errorMessage: 'No valid authorization details provided.'
+                });
         } catch (err) {
             Logger.Err(err);
             return res.status(500).json({
@@ -81,6 +81,25 @@ export class AuthorizationController {
             if (success) {
                 return done(null, false);
             } else return done({ name: 'UnauthorizedApiUser; Not found' }, true);
+        } catch (err) {
+            Logger.Err(err);
+            return done({ name: 'InternalError' }, true);
+        }
+    }
+
+    public static async checkOrscfAuthentication(
+        _req: Request,
+        payload: {
+            iss: string;
+        },
+        done: (err: { name: string }, revoked: boolean) => void
+    ) {
+        try {
+            if (payload.iss !== 'ECCT') {
+                return done({ name: 'Unauthorized' }, true);
+            } else {
+                return done(null, false);
+            }
         } catch (err) {
             Logger.Err(err);
             return done({ name: 'InternalError' }, true);

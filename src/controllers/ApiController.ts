@@ -10,6 +10,9 @@ import { QuestionnaireController } from './QuestionnaireController';
 import { QueueController } from './QueueController';
 import { ParticipantController } from './ParticipantController';
 import { SubjectIdentitiesController } from './SubjectIdentitiesController';
+import { SdrApiInfoController } from './sdr/SdrApiInfoController';
+import { SubjectSubmissionController } from './sdr/SubjectSubmissionController';
+import { SubjectConsumeController } from './sdr/SubjectConsumeController';
 
 /**
  * Parent controller
@@ -26,6 +29,9 @@ import { SubjectIdentitiesController } from './SubjectIdentitiesController';
     new ParticipantController(),
     new QueueController(),
     new QuestionnaireController(),
-    new SubjectIdentitiesController()
+    new SubjectIdentitiesController(),
+    new SdrApiInfoController(),
+    new SubjectSubmissionController(),
+    new SubjectConsumeController()
 ])
 export class ApiController {}
