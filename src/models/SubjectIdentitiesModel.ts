@@ -320,19 +320,19 @@ export class SubjectIdentitiesModel {
                 )} ${sortDescending ? ' DESC' : ''}\
                 LIMIT ${searchRequest.limitResults}`;
 
-            //const searchQuery = await pool.query(searchSql);
-            //return searchQuery.rows;
+            const searchQuery = await pool.query(searchSql);
+            return searchQuery.rows;
 
-            const searchQuery2 = await pool.query(`SELECT \
-                subject_uid AS "subjectUid", \
-                subject_id AS "subjectIdentifier", \
-                study_uid AS "studyUid", \
-                actual_site_uid AS "actualSiteUid", \
-                0 AS "isArchived", \
-                0 AS modiciationTimestampUtc \
-                FROM studyparticipant`);
+            // const searchQuery2 = await pool.query(`SELECT \
+            //     subject_uid AS "subjectUid", \
+            //     subject_id AS "subjectIdentifier", \
+            //     study_uid AS "studyUid", \
+            //     actual_site_uid AS "actualSiteUid", \
+            //     0 AS "isArchived", \
+            //     0 AS modiciationTimestampUtc \
+            //     FROM studyparticipant`);
 
-            return searchQuery2.rows;
+            // return searchQuery2.rows;
         } catch (err) {
             Logger.Err(err);
             //return [] as SubjectMetaRecord[];
