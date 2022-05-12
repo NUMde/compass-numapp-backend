@@ -138,7 +138,7 @@ export class COMPASSConfig {
     public static getDefaultQuestionnaireId(): string {
         return env
             .get('COMPASS_DEFAULT_QUESTIONNAIRE_ID')
-            .default('fedaf08b-aae2-4d9b-8306-8a3de02d2f74')
+            .default('https://num-compass.science/fhir/Questionnaires/GECCO|1.0')
             .asString();
     }
 
