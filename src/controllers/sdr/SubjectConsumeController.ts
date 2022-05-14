@@ -33,7 +33,7 @@ export class SubjectConsumeController {
     public async searchSubjects(req: Request, resp: Response) {
         try {
             const searchRequest: SearchSubjectsRequest = req.body;
-            if (searchRequest === undefined || searchRequest === null) {
+            if (searchRequest === undefined || searchRequest == null) {
                 return resp.status(200).json({ fault: 'invalid search request', return: null });
             }
 
