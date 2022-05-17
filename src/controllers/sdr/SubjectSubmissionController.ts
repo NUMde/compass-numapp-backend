@@ -1,10 +1,8 @@
-import { SubjectBatchMutation } from './../../types/sdr/SubjectBatchMutation';
-import { SubjectMutation } from './../../types/sdr/SubjectMutation';
 import { OrscfTokenService } from './../../services/OrscfTokenService';
 import { SdrMappingHelper } from './../../services/SdrMappingHelper';
 import { ParticipantEntry } from './../../types/ParticipantEntry';
 import { SubjectIdentitiesModel } from './../../models/SubjectIdentitiesModel';
-import { Subject } from './../../types/sdr/Subject';
+import * as SdrModels from 'orscf-subjectdata-contract/models';
 import Logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { Controller, Post, ClassMiddleware } from '@overnightjs/core';
@@ -23,7 +21,7 @@ export class SubjectSubmissionController {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async importSubjects(req: Request, resp: Response) {
         try {
-            const subjects: Subject[] = req.body.subjects;
+            const subjects: SdrModels.SubjectStructure[] = req.body.subjects;
             if (subjects === undefined || subjects === null) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
@@ -97,16 +95,18 @@ export class SubjectSubmissionController {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async applySubjectMutations(req: Request, resp: Response) {
         try {
-            const mutationsBySubjecttUid: { [subjectUid: string]: SubjectMutation } =
-                req.body.mutationsBySubjecttUid;
-            if (mutationsBySubjecttUid === undefined || mutationsBySubjecttUid === null) {
+            const mutationsBySubjectUid: {
+                [subjectUid: string]: SdrModels.SubjectMutation;
+            } = req.body.mutationsBySubjecttUid;
+            if (mutationsBySubjectUid === undefined || mutationsBySubjectUid === null) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
 
             const updatedSubjectUids: string[] = [];
 
-            for (const subjectUid in mutationsBySubjecttUid) {
-                const subjectMutation: SubjectMutation = mutationsBySubjecttUid[subjectUid];
+            for (const subjectUid in mutationsBySubjectUid) {
+                const subjectMutation: SdrModels.SubjectMutation =
+                    mutationsBySubjectUid[subjectUid];
                 const subjectWasUpdated: boolean = await this.subjectIdentityModel.updateSubject(
                     subjectUid,
                     subjectMutation
@@ -134,7 +134,7 @@ export class SubjectSubmissionController {
             if (subjectUids === undefined || subjectUids === null) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
-            const mutation: SubjectBatchMutation = req.body.mutation;
+            const mutation: SdrModels.BatchableSubjectMutation = req.body.mutation;
             if (mutation === undefined || subjectUids === null) {
                 return resp.status(200).json({ fault: 'no mutation on request', return: null });
             }

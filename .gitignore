@@ -82,3 +82,4 @@ google-services.json
 /.vs/ProjectSettings.json
 /.vs/slnx.sqlite
 /.vs/*
+.vscode/*

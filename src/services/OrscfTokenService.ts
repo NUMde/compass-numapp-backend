@@ -1,6 +1,6 @@
 import { OrscfAuthConfig } from './../config/OrscfAuthConfig';
 import { SecurityService } from './SecurityService';
-import { GetPermittedAuthScopesResponse } from './../types/sdr/GetPermittedAuthScopesResponse';
+import * as SdrDTOs from 'orscf-subjectdata-contract/dtos';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 
 interface JwtPayload {
@@ -9,7 +9,9 @@ interface JwtPayload {
     iss: string;
 }
 export class OrscfTokenService {
-    public static getPermittedAuthScopes(authHeader: string): GetPermittedAuthScopesResponse {
+    public static getPermittedAuthScopes(
+        authHeader: string
+    ): SdrDTOs.GetPermittedAuthScopesResponse {
         if (authHeader === undefined || authHeader === null) {
             return {
                 authState: 0,

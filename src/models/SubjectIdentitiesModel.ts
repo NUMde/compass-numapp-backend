@@ -4,12 +4,10 @@
 import { Pool } from 'pg';
 import Logger from 'jet-logger';
 import { DB } from '../server/DB';
-import { SubjectBatchMutation } from './../types/sdr/SubjectBatchMutation';
-import { SubjectMutation } from './../types/sdr/SubjectMutation';
 import { SdrMappingHelper } from './../services/SdrMappingHelper';
 import { ParticipantEntry } from './../types/ParticipantEntry';
-import { SearchSubjectsRequest } from 'orscf-subjectdata-contract/dtos';
-import { SubjectFields, SubjectFilter, SubjectMetaRecord } from 'orscf-subjectdata-contract/models';
+import * as SdrDtos from 'orscf-subjectdata-contract/dtos';
+import * as SdrModels from 'orscf-subjectdata-contract/models';
 
 export class SubjectIdentitiesModel {
     /**
@@ -162,7 +160,7 @@ export class SubjectIdentitiesModel {
 
     public async updateSubject(
         subjectUid: string,
-        subjectMutation: SubjectMutation
+        subjectMutation: SdrModels.SubjectMutation
     ): Promise<boolean> {
         try {
             const pool: Pool = DB.getPool();
@@ -190,7 +188,7 @@ export class SubjectIdentitiesModel {
 
     public async updateSubjects(
         subjectUids: string[],
-        mutation: SubjectBatchMutation
+        mutation: SdrModels.BatchableSubjectMutation
     ): Promise<string[]> {
         try {
             const pool: Pool = DB.getPool();
@@ -230,16 +228,16 @@ export class SubjectIdentitiesModel {
     }
 
     public async searchParticipants(
-        searchRequest: SearchSubjectsRequest,
+        searchRequest: SdrDtos.SearchSubjectsRequest,
         minTimestampUtc: Date,
         sortingField: string,
         sortDescending: boolean
-    ): Promise<SubjectMetaRecord[]> {
+    ): Promise<SdrModels.SubjectMetaRecord[]> {
         try {
             const pool: Pool = DB.getPool();
 
             if (searchRequest.filter === undefined || searchRequest.filter == null) {
-                searchRequest.filter = {} as SubjectFilter;
+                searchRequest.filter = {} as SdrModels.SubjectFilter;
             }
 
             const minPeriodStartWhereClause =
@@ -340,7 +338,7 @@ export class SubjectIdentitiesModel {
         }
     }
 
-    public async getSubjects(subjectUids: string[]): Promise<SubjectFields[]> {
+    public async getSubjects(subjectUids: string[]): Promise<SdrModels.SubjectFields[]> {
         try {
             const pool: Pool = DB.getPool();
             let subjectUidsIn = '';
@@ -354,27 +352,13 @@ export class SubjectIdentitiesModel {
             }
 
             const getSubjetsQuery = await pool.query(
-                `SELECT \
-                    subject_uid AS "subjectUid", \
-                    subject_id AS "subjectIdentifier", \
-                    study_uid AS "studyUid", \
-                    actual_site_uid AS "actualSiteUid", \
-                    'false' AS "isArchived", \
-                    last_action AS "modificationTimestampUtc", \
-                    enrolling_site_uid AS "enrollingSiteUid", \
-                    status AS "status", \
-                    '' AS "statusNote", \
-                    start_date AS "periodStart", \
-                    personal_study_end_date AS "periodEnd", \
-                    '' AS "assignedArm", \
-                    '' AS "actualArm", \
-                    '' AS "substudyNames", \
-                    actual_site_defined_patient_identifier AS "actualSiteDefinedPatientIdentifier", \
-                    '' AS "customFields" \
+                `SELECT * \
                 FROM studyparticipant where subject_uid in (${subjectUidsIn}) \
                 `
             );
-            return getSubjetsQuery.rows;
+            return getSubjetsQuery.rows.map((r) =>
+                SdrMappingHelper.mapParticipantEntryToSubject(r)
+            );
         } catch (err) {
             Logger.Err(err);
             throw err;
