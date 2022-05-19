@@ -29,7 +29,6 @@
         "@types/jest": "27.5.1",
         "@types/jsonwebtoken": "8.5.8",
         "@types/jws": "3.2.4",
-        "@types/lodash.set": "4.3.6",
         "@types/node": "12.20.6",
         "@types/pg": "7.14.11",
         "@types/request": "2.48.8",
