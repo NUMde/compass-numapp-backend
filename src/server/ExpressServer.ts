@@ -6,7 +6,7 @@ import express, { Request, Response } from 'express';
 
 import { HealthChecker, HealthEndpoint } from '@cloudnative/health-connect';
 import { Server } from '@overnightjs/core';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { Environment } from '../config/Environment';
 import * as controllers from '../controllers';
@@ -26,17 +26,17 @@ class ExpressServer extends Server {
         super(Environment.isLocal()); // setting showLogs to true for development
 
         if (Environment.isLocal()) {
-            Logger.Imp('Server starting in environment: local/development');
+            logger.imp('Server starting in environment: local/development');
             const result = dotenv.config({ path: './.env' });
             if (result.error) {
-                Logger.Err(result.error);
+                logger.err(result.error);
                 throw result.error;
             }
         }
 
         if (Environment.isProd()) {
-            Logger.Imp('Server starting in environment: production');
-            Logger.Info('Server not local. Setting up proxy ...');
+            logger.imp('Server starting in environment: production');
+            logger.info('Server not local. Setting up proxy ...');
             this.app.enable('trust proxy');
         }
 
@@ -73,7 +73,7 @@ class ExpressServer extends Server {
     public start(port: number): void {
         DB.initPool(
             async (conn: string) => {
-                Logger.Info(`${conn} connection successful.`);
+                logger.info(`${conn} connection successful.`);
 
                 // initialize swagger ui
                 const swaggerUI: SwaggerUI = new SwaggerUI(this.app);
@@ -88,8 +88,8 @@ class ExpressServer extends Server {
                 this.startExpressApp(port);
             },
             (conn: string, err: Error) => {
-                Logger.Err(`Failed to establish ${conn} connection. Did the network just go down?`);
-                Logger.Err(err);
+                logger.err(`Failed to establish ${conn} connection. Did the network just go down?`);
+                logger.err(err);
                 return process.exit(1);
             }
         );
@@ -106,7 +106,7 @@ class ExpressServer extends Server {
         });
 
         this.app.listen(port, () => {
-            Logger.Imp(`Express server started on port: ${port}`);
+            logger.imp(`Express server started on port: ${port}`);
         });
     }
 
@@ -142,7 +142,7 @@ class ExpressServer extends Server {
                 if (r.route) {
                     const method = r.route.stack[0].method.toUpperCase();
                     const route = path.concat(r.route.path);
-                    Logger.Info(
+                    logger.info(
                         `### ${method}${space(8 - method.length)}${route}${space(
                             50 - route.length
                         )}###`
@@ -155,7 +155,7 @@ class ExpressServer extends Server {
 
         function customRoutesForEach() {
             CustomRoutes.getRoutes().forEach((entry: Route) => {
-                Logger.Info(
+                logger.info(
                     '### ' +
                         entry.method +
                         space(8 - entry.method.length) +
@@ -166,13 +166,13 @@ class ExpressServer extends Server {
             });
         }
 
-        Logger.Info('#################################################################');
-        Logger.Info('### DISPLAYING REGISTERED ROUTES:                             ###');
-        Logger.Info('###                                                           ###');
+        logger.info('#################################################################');
+        logger.info('### DISPLAYING REGISTERED ROUTES:                             ###');
+        logger.info('###                                                           ###');
         recForEach('', this.app._router);
         customRoutesForEach();
-        Logger.Info('###                                                           ###');
-        Logger.Info('#################################################################');
+        logger.info('###                                                           ###');
+        logger.info('#################################################################');
     }
 }
 

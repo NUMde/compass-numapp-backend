@@ -8,7 +8,7 @@ import { timingSafeEqual } from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 
 import { Controller, Post } from '@overnightjs/core';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { AuthConfig } from '../config/AuthConfig';
 import { ApiUserModel } from '../models/ApiUserModel';
@@ -55,7 +55,7 @@ export class AuthorizationController {
                       errorMessage: 'No valid authorization details provided.'
                   });
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error occurred.',
@@ -82,7 +82,7 @@ export class AuthorizationController {
                 return done(null, false);
             } else return done({ name: 'UnauthorizedApiUser; Not found' }, true);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             return done({ name: 'InternalError' }, true);
         }
     }
@@ -175,7 +175,7 @@ export class AuthorizationController {
                 });
             }
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             return res.status(401).json({
                 errorCode: 'AuthError',
                 errorMessage:

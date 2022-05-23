@@ -7,7 +7,7 @@
 import { Request, Response } from 'express';
 
 import { Post, Controller, ClassMiddleware } from '@overnightjs/core';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { SubjectIdentitiesModel } from '../models/SubjectIdentitiesModel';
 import { AuthorizationController } from './AuthorizationController';
@@ -64,7 +64,7 @@ export class SubjectIdentitiesController {
                 return: true
             });
         } catch (err) {
-            Logger.Err(err, true);
+            logger.err(err, true);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error ocurred.',

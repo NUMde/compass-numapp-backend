@@ -4,7 +4,7 @@ import { PushServiceConfig } from '../config/PushServiceConfig';
  */
 import * as admin from 'firebase-admin';
 
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 /**
  * Adapter for the Firebase Cloud Messaging service.
@@ -18,7 +18,7 @@ export class PushService {
     public constructor() {
         if (!PushService.fcmInstance) {
             // Initialize the SDK
-            Logger.Info('Initializing Firebase Cloud Messaging');
+            logger.info('Initializing Firebase Cloud Messaging');
             PushService.fcmInstance = admin.initializeApp({
                 credential: admin.credential.applicationDefault()
             });
@@ -35,24 +35,24 @@ export class PushService {
      * @memberof PushService
      */
     public async send(msg: string, registrationTokens: string[]): Promise<void> {
-        Logger.Info(' --> Entering Send');
+        logger.info(' --> Entering Send');
 
         if (msg === null) {
-            Logger.Warn('No message provided. Skip sending push notifications.');
+            logger.warn('No message provided. Skip sending push notifications.');
             return;
         }
         if (registrationTokens === null || registrationTokens.length < 1) {
-            Logger.Warn('No participantid provided. Skip sending push notifications.');
+            logger.warn('No participantid provided. Skip sending push notifications.');
             return;
         }
         if (PushServiceConfig.getCredentialFile().length === 0) {
-            Logger.Err(
+            logger.err(
                 'Credential file for push service not set. Skip sending push notifications.'
             );
             return;
         }
 
-        Logger.Imp(`Sending message [${msg}] to [${registrationTokens.length}] recipients.`);
+        logger.imp(`Sending message [${msg}] to [${registrationTokens.length}] recipients.`);
 
         const android: admin.messaging.AndroidConfig = {
             collapseKey: 'Accept',
@@ -88,7 +88,7 @@ export class PushService {
             // registration token.
             try {
                 const response = await admin.messaging().sendMulticast(message);
-                Logger.Info(response.successCount + ' messages were sent successfully');
+                logger.info(response.successCount + ' messages were sent successfully');
                 if (response.failureCount > 0) {
                     const failedTokens = [];
                     response.responses.forEach((resp, idx) => {
@@ -96,14 +96,14 @@ export class PushService {
                             failedTokens.push(registrationTokens[idx]);
                         }
                     });
-                    Logger.Err('List of tokens that caused failures: ' + failedTokens);
+                    logger.err('List of tokens that caused failures: ' + failedTokens);
                 }
             } catch (error) {
-                Logger.Err('Error sending message: ' + error);
+                logger.err('Error sending message: ' + error);
             }
         });
 
-        Logger.Info(' <-- Leaving Send');
+        logger.info(' <-- Leaving Send');
     }
 
     /**

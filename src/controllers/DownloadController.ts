@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 import jwt from 'express-jwt';
 
 import { ClassMiddleware, Controller, Get, Put } from '@overnightjs/core';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { CTransfer } from '../types/CTransfer';
 import { QueueEntry } from '../types/QueueEntry';
@@ -75,7 +75,7 @@ export class DownloadController {
                 cTransferList: signedItems
             });
         } catch (err) {
-            Logger.Err(err, true);
+            logger.err(err, true);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error ocurred.',
@@ -119,7 +119,7 @@ export class DownloadController {
             const updatedRowCount = await this.queueModel.markAsDownloaded(req.body);
             return res.status(200).json({ updatedRowCount: updatedRowCount });
         } catch (err) {
-            Logger.Err(err, true);
+            logger.err(err, true);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error ocurred.',
