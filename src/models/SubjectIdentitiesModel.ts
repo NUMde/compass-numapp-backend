@@ -2,7 +2,7 @@
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 import { Pool } from 'pg';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { DB } from '../server/DB';
 
 export class SubjectIdentitiesModel {
@@ -22,7 +22,7 @@ export class SubjectIdentitiesModel {
             }
             return true;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -36,7 +36,7 @@ export class SubjectIdentitiesModel {
             const pool: Pool = DB.getPool();
             await pool.query('INSERT INTO studyparticipant(subject_id) VALUES ($1);', [subjectID]);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
         return;

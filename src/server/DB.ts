@@ -4,7 +4,7 @@
 import { Pool } from 'pg';
 import { ConnectionOptions } from 'tls';
 
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { DBCredentials } from '../config/DBCredentials';
 
@@ -52,7 +52,7 @@ export class DB {
             try {
                 sslConnOptions.ca = Buffer.from(DBCredentials.getSSLCA(), 'base64').toString();
             } catch (err) {
-                Logger.Warn(
+                logger.warn(
                     "Cannot get CA from environment variable DB_SSL_CA. Self-signed certificates in DB connection won't work!"
                 );
             }
@@ -66,11 +66,11 @@ export class DB {
             port: DBCredentials.getPort(),
             ssl: DBCredentials.getUseSSL() ? sslConnOptions : false
         });
-        Logger.Info(
+        logger.info(
             `Created pool. Currently: ${pool.totalCount} Clients (${pool.idleCount} idle, ${pool.waitingCount} busy)`
         );
         pool.connect((err, client, release) => {
-            Logger.Info('Trying query...');
+            logger.info('Trying query...');
             if (err) {
                 return callbackError('PostgreSQL', err);
             }
@@ -79,7 +79,7 @@ export class DB {
                 if (nowErr) {
                     return callbackError('PostgreSQL', nowErr);
                 }
-                Logger.Info(`SELECT NOW() => ${JSON.stringify(result.rows)}`);
+                logger.info(`SELECT NOW() => ${JSON.stringify(result.rows)}`);
                 DB.poolInstance = pool;
                 return callbackSuccess('PostgreSQL');
             });

@@ -4,7 +4,7 @@
 
 import { CronJob } from 'cron';
 
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 /**
  * A base class for all cron jobs.
@@ -24,10 +24,10 @@ export abstract class AbstractCronJob {
      */
     constructor(pattern: string) {
         this.job = new CronJob(pattern, () => this.executeJob(), null, true);
-        Logger.Info('Created Cronjob');
-        Logger.Info('Running: [' + this.job.running + ']');
-        Logger.Imp('Next executions: ');
-        Logger.Imp(this.job.nextDates(5), true);
+        logger.info('Created Cronjob');
+        logger.info('Running: [' + this.job.running + ']');
+        logger.imp('Next executions: ');
+        logger.imp(this.job.nextDates(5), true);
     }
 
     protected abstract executeJob(): Promise<void>;

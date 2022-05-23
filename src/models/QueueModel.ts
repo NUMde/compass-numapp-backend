@@ -4,7 +4,7 @@
 import { Pool } from 'pg';
 
 import { Request } from 'express';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { QueueEntry } from '../types/QueueEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
@@ -38,7 +38,7 @@ export class QueueModel {
             );
             return res.rows as QueueEntry[];
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -56,7 +56,7 @@ export class QueueModel {
             // tslint:disable-next-line: no-string-literal
             return res.rows[0]['count_queue_data'];
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -76,7 +76,7 @@ export class QueueModel {
             ]);
             return res.rowCount;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -109,7 +109,7 @@ export class QueueModel {
                 );
 
                 if (res.rows.length === 0 || res.rows[0].date_sent !== null) {
-                    Logger.Err('!!! Already sent !!!');
+                    logger.err('!!! Already sent !!!');
                     return false;
                 } else {
                     await dbClient.query(
@@ -154,8 +154,8 @@ export class QueueModel {
                 return true;
             }
         } catch (e) {
-            Logger.Err('!!! DB might be inconsistent. Check DB !!!');
-            Logger.Err(e);
+            logger.err('!!! DB might be inconsistent. Check DB !!!');
+            logger.err(e);
             throw e;
         } finally {
             dbClient.release();

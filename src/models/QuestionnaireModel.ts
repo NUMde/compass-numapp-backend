@@ -2,7 +2,7 @@
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantModel } from '../models/ParticipantModel';
@@ -49,7 +49,7 @@ export class QuestionnaireModel {
                 throw new Error('questionnaire_not_found');
             } else {
                 if (language != res.rows[0].language_code) {
-                    Logger.Info(
+                    logger.info(
                         `User language '${language}' not available, using fallback language '${res.rows[0].language_code}'`
                     );
                 }
@@ -74,8 +74,8 @@ export class QuestionnaireModel {
                 return res.rows[0].body;
             }
         } catch (e) {
-            Logger.Err('!!! DB might be inconsistent. Check DB !!!');
-            Logger.Err(e);
+            logger.err('!!! DB might be inconsistent. Check DB !!!');
+            logger.err(e);
             throw e;
         } finally {
             dbClient.release();
@@ -117,7 +117,7 @@ export class QuestionnaireModel {
                 questionnaire
             ]);
         } catch (error) {
-            Logger.Err(error);
+            logger.err(error);
             throw error;
         } finally {
             dbClient.release();
@@ -167,7 +167,7 @@ export class QuestionnaireModel {
                 name
             ]);
         } catch (error) {
-            Logger.Err(error);
+            logger.err(error);
             throw error;
         } finally {
             dbClient.release();
@@ -190,7 +190,7 @@ export class QuestionnaireModel {
             );
             return res.rows;
         } catch (error) {
-            Logger.Err(error);
+            logger.err(error);
             throw error;
         } finally {
             dbClient.release();
@@ -211,7 +211,7 @@ export class QuestionnaireModel {
             }
             return responseArray;
         } catch (error) {
-            Logger.Err(error);
+            logger.err(error);
             throw error;
         } finally {
             dbClient.release();

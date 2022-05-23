@@ -2,7 +2,7 @@
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { PushServiceConfig } from '../../config/PushServiceConfig';
 
 import { ParticipantModel } from '../../models/ParticipantModel';
@@ -31,7 +31,7 @@ export class CronJobNotification extends AbstractCronJob {
      * @memberof CronJobNotification
      */
     public async executeJob(): Promise<void> {
-        Logger.Info('Cronjob CronJobNotification fired at [' + new Date() + ']');
+        logger.info('Cronjob CronJobNotification fired at [' + new Date() + ']');
         const perfLog = PerformanceLogger.startMeasurement('CronJobNotification', 'executeJob');
 
         // ATTENTION: keep this in sync with the start time of this cron job
@@ -48,7 +48,7 @@ export class CronJobNotification extends AbstractCronJob {
             const downloadMsg = PushServiceConfig.getDownloadMessage();
             await this.pushService.send(downloadMsg, participantsWithNewQuestionnaires);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
         }
 
         // Reminder - upload questionnaire
@@ -59,7 +59,7 @@ export class CronJobNotification extends AbstractCronJob {
             const uploadMsg = PushServiceConfig.getUploadMessage();
             await this.pushService.send(uploadMsg, participantsWithPendingUploads);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
         }
 
         PerformanceLogger.endMeasurement(perfLog);
