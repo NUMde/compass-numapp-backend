@@ -31,9 +31,10 @@ export class ParticipantController {
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
     public async getParticipant(req: Request, res: Response) {
         try {
-            const participant: ParticipantEntry = await this.participantModel.getAndUpdateParticipantBySubjectID(
-                req.params.subjectID
-            );
+            const participant: ParticipantEntry =
+                await this.participantModel.getAndUpdateParticipantBySubjectID(
+                    req.params.subjectID
+                );
             this.participantModel.updateLastAction(req.params.subjectID);
 
             const returnObject = {

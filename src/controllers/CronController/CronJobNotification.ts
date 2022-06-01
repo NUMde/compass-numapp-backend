@@ -42,9 +42,8 @@ export class CronJobNotification extends AbstractCronJob {
 
         // Reminder - download questionnaire
         try {
-            const participantsWithNewQuestionnaires = await this.participantModel.getParticipantsWithAvailableQuestionnairs(
-                now
-            );
+            const participantsWithNewQuestionnaires =
+                await this.participantModel.getParticipantsWithAvailableQuestionnairs(now);
             const downloadMsg = PushServiceConfig.getDownloadMessage();
             await this.pushService.send(downloadMsg, participantsWithNewQuestionnaires);
         } catch (error) {
@@ -53,9 +52,8 @@ export class CronJobNotification extends AbstractCronJob {
 
         // Reminder - upload questionnaire
         try {
-            const participantsWithPendingUploads = await this.participantModel.getParticipantsWithPendingUploads(
-                now
-            );
+            const participantsWithPendingUploads =
+                await this.participantModel.getParticipantsWithPendingUploads(now);
             const uploadMsg = PushServiceConfig.getUploadMessage();
             await this.pushService.send(uploadMsg, participantsWithPendingUploads);
         } catch (error) {
