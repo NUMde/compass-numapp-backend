@@ -10,7 +10,7 @@ import { Controller, Get, Middleware, Post, Put } from '@overnightjs/core';
 
 import { QuestionnaireModel } from '../models/QuestionnaireModel';
 import { AuthorizationController } from './AuthorizationController';
-import jwt from 'express-jwt';
+import { expressjwt as jwt } from 'express-jwt';
 import { AuthConfig } from '../config/AuthConfig';
 import { COMPASSConfig } from '../config/COMPASSConfig';
 
