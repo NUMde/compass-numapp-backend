@@ -26,7 +26,7 @@ export class SwaggerUI {
     public async start(): Promise<void> {
         // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
         const spec = fs.readFileSync(path.join(__dirname, '../assets/openapi.yaml'), 'utf8');
-        const swaggerDoc = jsyaml.safeLoad(spec);
+        const swaggerDoc = jsyaml.load(spec);
         this.app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
         CustomRoutes.addRoute('GET', '/docs');
     }
