@@ -3,7 +3,7 @@
  */
 
 import { Request, Response } from 'express';
-import jwt from 'express-jwt';
+import { expressjwt as jwt } from 'express-jwt';
 
 import { ClassMiddleware, Controller, Get, Put } from '@overnightjs/core';
 import logger from 'jet-logger';

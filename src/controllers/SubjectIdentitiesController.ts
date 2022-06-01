@@ -11,7 +11,7 @@ import logger from 'jet-logger';
 
 import { SubjectIdentitiesModel } from '../models/SubjectIdentitiesModel';
 import { AuthorizationController } from './AuthorizationController';
-import jwt from 'express-jwt';
+import { expressjwt as jwt } from 'express-jwt';
 import { AuthConfig } from '../config/AuthConfig';
 
 /**
@@ -46,9 +46,10 @@ export class SubjectIdentitiesController {
                 });
             }
 
-            const subjectIdentityExistence: boolean = await this.subjectIdentityModel.getSubjectIdentityExistence(
-                req.body.subjectIdentity.recordId
-            );
+            const subjectIdentityExistence: boolean =
+                await this.subjectIdentityModel.getSubjectIdentityExistence(
+                    req.body.subjectIdentity.recordId
+                );
 
             if (subjectIdentityExistence) {
                 return res.status(409).send({
