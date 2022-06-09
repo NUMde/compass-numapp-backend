@@ -6,7 +6,7 @@
 
 import { Request, Response } from 'express';
 
-import { Post, Controller, ClassMiddleware } from '@overnightjs/core';
+import { Post, Controller, ClassMiddleware, ClassErrorMiddleware } from '@overnightjs/core';
 import logger from 'jet-logger';
 
 import { SubjectIdentitiesModel } from '../models/SubjectIdentitiesModel';
@@ -29,6 +29,14 @@ import { AuthConfig } from '../config/AuthConfig';
         isRevoked: AuthorizationController.checkApiUserLogin
     })
 )
+@ClassErrorMiddleware((err, _req, res, next) => {
+    res.status(err.status).json({
+        errorCode: err.code,
+        errorMessage: err.inner.message,
+        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+    });
+    next(err);
+})
 export class SubjectIdentitiesController {
     private subjectIdentityModel: SubjectIdentitiesModel = new SubjectIdentitiesModel();
 

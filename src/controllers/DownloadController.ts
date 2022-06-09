@@ -5,7 +5,7 @@
 import { Request, Response } from 'express';
 import { expressjwt as jwt } from 'express-jwt';
 
-import { ClassMiddleware, Controller, Get, Put } from '@overnightjs/core';
+import { ClassMiddleware, ClassErrorMiddleware, Controller, Get, Put } from '@overnightjs/core';
 import logger from 'jet-logger';
 
 import { CTransfer } from '../types/CTransfer';
@@ -24,14 +24,22 @@ import { AuthConfig } from './../config/AuthConfig';
  * @class DownloadController
  */
 @Controller('download')
-@ClassMiddleware(
+@ClassMiddleware([
     jwt({
         secret: AuthConfig.jwtSecret,
         algorithms: ['HS256'],
         requestProperty: 'payload',
         isRevoked: AuthorizationController.checkApiUserLogin
     })
-)
+])
+@ClassErrorMiddleware((err, _req, res, next) => {
+    res.status(err.status).json({
+        errorCode: err.code,
+        errorMessage: err.inner.message,
+        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+    });
+    next(err);
+})
 export class DownloadController {
     private queueModel: QueueModel = new QueueModel();
 
