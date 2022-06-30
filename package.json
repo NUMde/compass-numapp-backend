@@ -29,7 +29,7 @@
         "@types/jest": "27.5.2",
         "@types/jsonwebtoken": "8.5.8",
         "@types/jws": "3.2.4",
-        "@types/node": "12.20.55",
+        "@types/node": "16.11.42",
         "@types/pg": "8.6.5",
         "@types/request": "2.48.8",
         "@types/swagger-ui-express": "4.1.3",
