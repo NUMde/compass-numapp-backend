@@ -43,7 +43,7 @@
         "eslint-plugin-jest": "26.5.3",
         "eslint-plugin-prettier": "4.2.1",
         "husky": "8.0.1",
-        "jest": "28.1.0",
+        "jest": "28.1.2",
         "node-flywaydb": "3.0.7",
         "nodemon": "2.0.18",
         "npm-run-all": "4.1.5",
