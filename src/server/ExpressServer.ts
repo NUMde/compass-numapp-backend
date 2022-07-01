@@ -120,14 +120,6 @@ class ExpressServer extends Server {
     }
 
     private logRegisteredRoutes(): void {
-        function space(x) {
-            let res = '';
-            for (; x > 0; x--) {
-                res += ' ';
-            }
-            return res;
-        }
-
         function getBase(regexp) {
             const match = regexp
                 .toString()
@@ -142,11 +134,7 @@ class ExpressServer extends Server {
                 if (r.route) {
                     const method = r.route.stack[0].method.toUpperCase();
                     const route = path.concat(r.route.path);
-                    logger.info(
-                        `### ${method}${space(8 - method.length)}${route}${space(
-                            50 - route.length
-                        )}###`
-                    );
+                    logger.info(`### ${method.padEnd(8, ' ')}${route.padEnd(50, ' ')}###`);
                 } else if (r.name === 'router') {
                     recForEach(path + getBase(r.regexp), r.handle);
                 }
@@ -156,12 +144,7 @@ class ExpressServer extends Server {
         function customRoutesForEach() {
             CustomRoutes.getRoutes().forEach((entry: Route) => {
                 logger.info(
-                    '### ' +
-                        entry.method +
-                        space(8 - entry.method.length) +
-                        entry.route +
-                        space(50 - entry.route.length) +
-                        '###'
+                    '### ' + entry.method.padEnd(8, ' ') + entry.route.padEnd(50, ' ') + '###'
                 );
             });
         }
