@@ -1,3 +1,5 @@
+import { DataRecordingSubmissionController } from './vdr/DataRecordingSubmissionController';
+import { VisitConsumeController } from './vdr/VisitConsumeController';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
@@ -13,6 +15,8 @@ import { SubjectIdentitiesController } from './SubjectIdentitiesController';
 import { SdrApiInfoController } from './sdr/SdrApiInfoController';
 import { SubjectSubmissionController } from './sdr/SubjectSubmissionController';
 import { SubjectConsumeController } from './sdr/SubjectConsumeController';
+import { VdrApiInfoController } from './vdr/VdrApiInfoController';
+import { VisitSubmissionController } from './vdr/VisitSubmissionController';
 
 /**
  * Parent controller
@@ -32,6 +36,10 @@ import { SubjectConsumeController } from './sdr/SubjectConsumeController';
     new SubjectIdentitiesController(),
     new SdrApiInfoController(),
     new SubjectSubmissionController(),
-    new SubjectConsumeController()
+    new SubjectConsumeController(),
+    new VdrApiInfoController(),
+    new VisitSubmissionController(),
+    new VisitConsumeController(),
+    new DataRecordingSubmissionController()
 ])
 export class ApiController {}

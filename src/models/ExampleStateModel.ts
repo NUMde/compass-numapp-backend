@@ -23,10 +23,10 @@ export class ExampleStateModel implements StateModel {
      * @return {*}  {ParticipantEntry}
      * @memberof ExampleStateModel
      */
-    public calculateUpdatedData(
+    public async calculateUpdatedData(
         participant: ParticipantEntry,
         parameters: StateChangeTrigger
-    ): ParticipantEntry {
+    ): Promise<ParticipantEntry> {
         const distValues = this.calculateStateValues(participant, parameters);
         const datesAndIterations = this.calculateDates(
             participant,

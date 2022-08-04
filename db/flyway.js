@@ -3,7 +3,7 @@ module.exports = function() {
     return {
         flywayArgs: {
             // JDBC string that addresses the database
-            url: 'jdbc:postgresql://localhost:15432/compass',
+            url: 'jdbc:postgresql://localhost:5432/compass',
             // the default schema of a Postgresql database
             schemas: 'public',
             // local location where the db migration scripts are stored
