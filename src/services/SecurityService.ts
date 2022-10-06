@@ -7,7 +7,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as jws from 'jws';
 
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { PerformanceLogger } from './PerformanceLogger';
@@ -31,7 +31,7 @@ export class SecurityService {
     public static getServerPublicKey(): string {
         const pubKey = COMPASSConfig.getIBMPublicKey();
         if (pubKey === 'false') {
-            Logger.Err('Attention: Using public key from file');
+            logger.err('Attention: Using public key from file');
             return fs.readFileSync('./public_key.pem', 'utf8');
         } else {
             return pubKey;
@@ -49,7 +49,7 @@ export class SecurityService {
     public static getServerSecretKey(): string {
         const privKey = COMPASSConfig.getIBMPrivateKey();
         if (privKey === 'false') {
-            Logger.Err('Attention: Using private key from file');
+            logger.err('Attention: Using private key from file');
             return fs.readFileSync('./private_key.pem', 'utf8');
         } else {
             return privKey;
@@ -59,7 +59,7 @@ export class SecurityService {
     public static getOrscfPublicKeyOrSecretByIssuer(issuer: string): string {
         const pubKey = OrscfAuthConfig.getOrscfPublicKeyOrSecretByIssuer(issuer);
         if (pubKey === 'false') {
-            Logger.Err('Attention: Using public key from file');
+            logger.Err('Attention: Using public key from file');
             return fs.readFileSync('./orscf_public_key.pem', 'utf8');
         } else {
             return pubKey;
@@ -87,7 +87,7 @@ export class SecurityService {
                 privateKey
             });
         } catch (err) {
-            Logger.Err('[SecurityService.sign] ' + JSON.stringify(err));
+            logger.err('[SecurityService.sign] ' + JSON.stringify(err));
             throw new Error('signature_creation_failed');
         }
         PerformanceLogger.endMeasurement(perfLog);
@@ -106,7 +106,7 @@ export class SecurityService {
                 throw new Error('validation_result_false');
             }
         } catch (err) {
-            Logger.Err('[SecurityService.sign] ' + JSON.stringify(err));
+            logger.err('[SecurityService.sign] ' + JSON.stringify(err));
             throw new Error('signature_validation_failed');
         }
     }
@@ -130,7 +130,7 @@ export class SecurityService {
                     Buffer.from(encryptedKey, 'base64')
                 );
             } catch (err) {
-                Logger.Err(
+                logger.err(
                     '[SecurityService.decryptLogin][key_decryption_failed] ' + JSON.stringify(err)
                 );
                 throw new Error('key_decryption_failed');
@@ -147,7 +147,7 @@ export class SecurityService {
             return decrypted;
         } catch (err) {
             if (err !== 'key_decryption_failed') {
-                Logger.Err(
+                logger.err(
                     '[SecurityService.decryptLogin][decryption_failed] ' + JSON.stringify(err)
                 );
             }

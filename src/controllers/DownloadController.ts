@@ -3,10 +3,10 @@
  */
 
 import { Request, Response } from 'express';
-import jwt from 'express-jwt';
+import { expressjwt as jwt } from 'express-jwt';
 
-import { ClassMiddleware, Controller, Get, Put } from '@overnightjs/core';
-import Logger from 'jet-logger';
+import { ClassMiddleware, ClassErrorMiddleware, Controller, Get, Put } from '@overnightjs/core';
+import logger from 'jet-logger';
 
 import { CTransfer } from '../types/CTransfer';
 import { QueueEntry } from '../types/QueueEntry';
@@ -24,14 +24,22 @@ import { AuthConfig } from './../config/AuthConfig';
  * @class DownloadController
  */
 @Controller('download')
-@ClassMiddleware(
+@ClassMiddleware([
     jwt({
         secret: AuthConfig.jwtSecret,
         algorithms: ['HS256'],
         requestProperty: 'payload',
         isRevoked: AuthorizationController.checkApiUserLogin
     })
-)
+])
+@ClassErrorMiddleware((err, _req, res, next) => {
+    res.status(err.status).json({
+        errorCode: err.code,
+        errorMessage: err.inner.message,
+        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+    });
+    next(err);
+})
 export class DownloadController {
     private queueModel: QueueModel = new QueueModel();
 
@@ -75,7 +83,7 @@ export class DownloadController {
                 cTransferList: signedItems
             });
         } catch (err) {
-            Logger.Err(err, true);
+            logger.err(err, true);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error ocurred.',
@@ -90,6 +98,8 @@ export class DownloadController {
             const cTransfer: CTransfer = {
                 UUID: queueEntry.id,
                 SubjectId: queueEntry.subject_id,
+                QuestionnaireId: queueEntry.questionnaire_id ? queueEntry.questionnaire_id : '',
+                Version: queueEntry.version ? queueEntry.version : '',
                 JSON: queueEntry.encrypted_resp,
                 AbsendeDatum: queueEntry.date_sent,
                 ErhaltenDatum: queueEntry.date_received
@@ -119,7 +129,7 @@ export class DownloadController {
             const updatedRowCount = await this.queueModel.markAsDownloaded(req.body);
             return res.status(200).json({ updatedRowCount: updatedRowCount });
         } catch (err) {
-            Logger.Err(err, true);
+            logger.err(err, true);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error ocurred.',

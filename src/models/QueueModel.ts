@@ -4,7 +4,7 @@
 import { Pool } from 'pg';
 
 import { Request } from 'express';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { QueueEntry } from '../types/QueueEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
@@ -38,7 +38,7 @@ export class QueueModel {
             );
             return res.rows as QueueEntry[];
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -56,7 +56,7 @@ export class QueueModel {
             // tslint:disable-next-line: no-string-literal
             return res.rows[0]['count_queue_data'];
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -76,7 +76,7 @@ export class QueueModel {
             ]);
             return res.rowCount;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -109,17 +109,19 @@ export class QueueModel {
                 );
 
                 if (res.rows.length === 0 || res.rows[0].date_sent !== null) {
-                    Logger.Err('!!! Already sent !!!');
+                    logger.err('!!! Already sent !!!');
                     return false;
                 } else {
                     await dbClient.query(
-                        'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
+                        'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received, questionnaire_id, version) VALUES ($1, $2, $3, $4, $5, $6, $7)',
                         [
                             IdHelper.createID(),
                             queueEntry.subject_id,
                             queueEntry.encrypted_resp,
                             queueEntry.date_sent,
-                            res.rows[0].date_received
+                            res.rows[0].date_received,
+                            queueEntry.questionnaire_id,
+                            queueEntry.version
                         ]
                     );
 
@@ -137,13 +139,15 @@ export class QueueModel {
             } else {
                 // a report is send from the client
                 await dbClient.query(
-                    'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
+                    'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received, questionnaire_id, version) VALUES ($1, $2, $3, $4, $5, $6, $7)',
                     [
                         IdHelper.createID(),
                         queueEntry.subject_id,
                         queueEntry.encrypted_resp,
                         queueEntry.date_sent,
-                        queueEntry.date_received
+                        queueEntry.date_received,
+                        queueEntry.questionnaire_id,
+                        queueEntry.version
                     ]
                 );
 
@@ -154,8 +158,8 @@ export class QueueModel {
                 return true;
             }
         } catch (e) {
-            Logger.Err('!!! DB might be inconsistent. Check DB !!!');
-            Logger.Err(e);
+            logger.err('!!! DB might be inconsistent. Check DB !!!');
+            logger.err(e);
             throw e;
         } finally {
             dbClient.release();

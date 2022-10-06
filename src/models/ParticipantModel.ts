@@ -4,7 +4,7 @@ import { OrscfStateModel } from './OrscfStateModel';
  */
 import { Pool } from 'pg';
 
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
 import { DB } from '../server/DB';
@@ -72,7 +72,7 @@ export class ParticipantModel {
             );
             return updatedParticipant;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -106,7 +106,7 @@ export class ParticipantModel {
             }
             return participant;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -124,7 +124,7 @@ export class ParticipantModel {
             );
             return;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -146,7 +146,7 @@ export class ParticipantModel {
                 return true;
             }
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -180,7 +180,7 @@ export class ParticipantModel {
             );
             return res.rows.map((participant) => participant.registration_token);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -214,7 +214,7 @@ export class ParticipantModel {
             );
             return res.rows.map((participant) => participant.registration_token);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -234,7 +234,7 @@ export class ParticipantModel {
             );
             return;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -253,7 +253,7 @@ export class ParticipantModel {
             );
             return;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -265,7 +265,7 @@ export class ParticipantModel {
      */
     private convertDateToQueryString(date: Date): string {
         const convertedDate = date.toISOString().replace('T', ' ').replace('Z', '');
-        Logger.Imp('Converted [' + date + '] to [' + convertedDate + ']');
+        logger.imp('Converted [' + date + '] to [' + convertedDate + ']');
         return convertedDate;
     }
 }

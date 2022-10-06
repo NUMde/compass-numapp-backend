@@ -3,7 +3,7 @@
  */
 import { Pool } from 'pg';
 
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { DB } from '../server/DB';
 import { ApiUserEntry } from '../types/ApiUserEntry';
@@ -32,7 +32,7 @@ export class ApiUserModel {
                 return res.rows[0] as ApiUserEntry;
             }
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -54,7 +54,7 @@ export class ApiUserModel {
                 return true;
             }
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }

@@ -8,7 +8,8 @@ import { timingSafeEqual } from 'crypto';
 import { NextFunction, Request, Response } from 'express';
 
 import { Controller, Post } from '@overnightjs/core';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
+import { Jwt } from 'jsonwebtoken';
 
 import { AuthConfig } from '../config/AuthConfig';
 import { ApiUserModel } from '../models/ApiUserModel';
@@ -44,9 +45,8 @@ export class AuthorizationController {
                     ? req.params.subjectID
                     : undefined;
 
-            const checkLoginSuccess: boolean = await AuthorizationController.participantModel.checkLogin(
-                subjectID
-            );
+            const checkLoginSuccess: boolean =
+                await AuthorizationController.participantModel.checkLogin(subjectID);
 
             return checkLoginSuccess
                 ? next()
@@ -55,7 +55,7 @@ export class AuthorizationController {
                     errorMessage: 'No valid authorization details provided.'
                 });
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error occurred.',
@@ -67,23 +67,17 @@ export class AuthorizationController {
     /**
      * Express middleware that checks if the API user's access token is valid.
      */
-    public static async checkApiUserLogin(
-        _req: Request,
-        payload: {
-            api_id: string;
-        },
-        done: (err: { name: string }, revoked: boolean) => void
-    ) {
+    public static async checkApiUserLogin(_req: Request, token: Jwt) {
         try {
             const success = await AuthorizationController.apiUserModel.checkIfExists(
-                payload.api_id
+                token.payload['api_id']
             );
             if (success) {
-                return done(null, false);
-            } else return done({ name: 'UnauthorizedApiUser; Not found' }, true);
+                return Promise.resolve(false);
+            } else return Promise.resolve(true);
         } catch (err) {
-            Logger.Err(err);
-            return done({ name: 'InternalError' }, true);
+            logger.err(err);
+            return Promise.reject();
         }
     }
 
@@ -194,7 +188,7 @@ export class AuthorizationController {
                 });
             }
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             return res.status(401).json({
                 errorCode: 'AuthError',
                 errorMessage:
