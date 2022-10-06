@@ -9,7 +9,6 @@ export interface QueueEntry {
     id: string;
     subject_id: string;
     questionnaire_id: string;
-    version: string;
     encrypted_resp: string;
     date_sent: Date;
     date_received: Date;
