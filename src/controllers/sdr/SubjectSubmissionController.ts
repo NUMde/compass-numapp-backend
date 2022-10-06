@@ -30,12 +30,12 @@ export class SubjectSubmissionController {
             const updatedSubjectUids: string[] = [];
 
             for (const subject of subjects) {
-                const participant: ParticipantEntry = SdrMappingHelper.mapSubjectToParticipantEntry(
-                    subject
-                );
-                const subjectIdentityExistence: boolean = await this.subjectIdentityModel.getSubjectIdentityExistence(
-                    participant.subject_id
-                );
+                const participant: ParticipantEntry =
+                    SdrMappingHelper.mapSubjectToParticipantEntry(subject);
+                const subjectIdentityExistence: boolean =
+                    await this.subjectIdentityModel.getSubjectIdentityExistence(
+                        participant.subject_id
+                    );
                 if (subjectIdentityExistence) {
                     await this.subjectIdentityModel.updateStudyParticipant(participant);
                     updatedSubjectUids.push(participant.subject_uid);
@@ -68,9 +68,8 @@ export class SubjectSubmissionController {
             const archivedSubjectUids: string[] = [];
 
             for (const subjectUid of subjectUids) {
-                const subjectIdentityExistence: boolean = await this.subjectIdentityModel.getSubjectIdentityExistence(
-                    subjectUid
-                );
+                const subjectIdentityExistence: boolean =
+                    await this.subjectIdentityModel.getSubjectIdentityExistence(subjectUid);
                 if (!subjectIdentityExistence) {
                     return resp.status(200).json({ fault: 'subject not found', return: null });
                 }

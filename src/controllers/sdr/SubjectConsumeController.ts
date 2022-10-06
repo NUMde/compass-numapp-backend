@@ -110,9 +110,10 @@ export class SubjectConsumeController {
             const availableSubjectUids: string[] = [];
 
             for (const subjectUid of subjectUids) {
-                const subjectExists: boolean = await this.subjectIdentityModel.getSubjectIdentityExistenceBySubjectUid(
-                    subjectUid
-                );
+                const subjectExists: boolean =
+                    await this.subjectIdentityModel.getSubjectIdentityExistenceBySubjectUid(
+                        subjectUid
+                    );
                 if (subjectExists) {
                     availableSubjectUids.push(subjectUid);
                 } else {

@@ -45,9 +45,8 @@ export class SdrApiInfoController {
     public async getPermittedAuthScopes(req: Request, resp: Response) {
         try {
             const authorizationHeader = req.headers.authorization;
-            const result: GetPermittedAuthScopesResponse = OrscfTokenService.getPermittedAuthScopes(
-                authorizationHeader
-            );
+            const result: GetPermittedAuthScopesResponse =
+                OrscfTokenService.getPermittedAuthScopes(authorizationHeader);
             return resp.status(200).json(result);
         } catch (error) {
             Logger.Err(error, true);

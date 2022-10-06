@@ -182,10 +182,11 @@ export class VisitModel {
         const questionnaireVersion = '1.0.0';
         const questionnaireName = dr.dataSchemaUrl + '|' + questionnaireVersion;
         const questionnaireBody = JSON.stringify({ url: dr.dataSchemaUrl });
-        const existingQuestionnaire: string[] = await this.questionnaireModel.getQuestionnaireByUrlAndVersion(
-            dr.dataSchemaUrl,
-            questionnaireVersion
-        );
+        const existingQuestionnaire: string[] =
+            await this.questionnaireModel.getQuestionnaireByUrlAndVersion(
+                dr.dataSchemaUrl,
+                questionnaireVersion
+            );
         if (existingQuestionnaire.length == 0) {
             await this.questionnaireModel.addQuestionnaire(
                 dr.dataSchemaUrl,

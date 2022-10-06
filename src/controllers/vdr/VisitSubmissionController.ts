@@ -39,9 +39,10 @@ export class VisitSubmissionController {
                     createdVisitUids.push(visit.visitUid);
                 }
                 for (const dataRecording of visit.dataRecordings) {
-                    const dataRecordingExists: boolean = await this.visitModel.getDataRecordingExistence(
-                        dataRecording.dataRecordingUid
-                    );
+                    const dataRecordingExists: boolean =
+                        await this.visitModel.getDataRecordingExistence(
+                            dataRecording.dataRecordingUid
+                        );
                     if (dataRecordingExists) {
                         await this.visitModel.updateDataRecording(dataRecording);
                     } else {
