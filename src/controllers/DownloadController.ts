@@ -99,7 +99,6 @@ export class DownloadController {
                 UUID: queueEntry.id,
                 SubjectId: queueEntry.subject_id,
                 QuestionnaireId: queueEntry.questionnaire_id ? queueEntry.questionnaire_id : '',
-                Version: queueEntry.version ? queueEntry.version : '',
                 JSON: queueEntry.encrypted_resp,
                 AbsendeDatum: queueEntry.date_sent,
                 ErhaltenDatum: queueEntry.date_received
