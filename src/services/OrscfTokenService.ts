@@ -1,6 +1,6 @@
 import { OrscfAuthConfig } from './../config/OrscfAuthConfig';
 import { SecurityService } from './SecurityService';
-import * as SdrDTOs from 'orscf-subjectdata-contract/dtos';
+import * as SdrDTOs from 'orscf-subjectdata-contract';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 
 interface JwtPayload {

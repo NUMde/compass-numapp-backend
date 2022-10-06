@@ -59,7 +59,7 @@ export class SecurityService {
     public static getOrscfPublicKeyOrSecretByIssuer(issuer: string): string {
         const pubKey = OrscfAuthConfig.getOrscfPublicKeyOrSecretByIssuer(issuer);
         if (pubKey === 'false') {
-            logger.Err('Attention: Using public key from file');
+            logger.err('Attention: Using public key from file');
             return fs.readFileSync('./orscf_public_key.pem', 'utf8');
         } else {
             return pubKey;

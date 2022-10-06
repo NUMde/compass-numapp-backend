@@ -1,6 +1,6 @@
 import { OrscfTokenService } from './../../services/OrscfTokenService';
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { Request, Response } from 'express';
 
 import { Controller, Post } from '@overnightjs/core';
@@ -9,7 +9,7 @@ import {
     GetCapabilitiesResponse,
     GetApiVersionResponse,
     GetPermittedAuthScopesResponse
-} from 'orscf-visitdata-contract/dtos';
+} from 'orscf-visitdata-contract';
 
 @Controller('vdrApiInfo')
 export class VdrApiInfoController {
@@ -22,7 +22,7 @@ export class VdrApiInfoController {
             };
             return resp.status(200).json(returnObject);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -36,7 +36,7 @@ export class VdrApiInfoController {
             };
             return resp.status(200).json(returnObject);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -49,7 +49,7 @@ export class VdrApiInfoController {
                 OrscfTokenService.getPermittedAuthScopes(authorizationHeader);
             return resp.status(200).json(result);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }

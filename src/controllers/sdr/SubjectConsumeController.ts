@@ -1,6 +1,6 @@
 import { OrscfTokenService } from './../../services/OrscfTokenService';
 import { SubjectIdentitiesModel } from './../../models/SubjectIdentitiesModel';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { Controller, Post, ClassMiddleware } from '@overnightjs/core';
 import {
@@ -14,12 +14,12 @@ import {
     SearchChangedSubjectsResponse,
     SearchSubjectsRequest,
     SearchSubjectsResponse
-} from 'orscf-subjectdata-contract/dtos';
+} from 'orscf-subjectdata-contract';
 import {
     SubjectFields,
     SubjectMetaRecord,
     SubjectStructure
-} from 'orscf-subjectdata-contract/models';
+} from 'orscf-subjectdata-contract';
 
 @Controller('subjectConsume')
 @ClassMiddleware((req, res, next) =>
@@ -50,7 +50,7 @@ export class SubjectConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -81,7 +81,7 @@ export class SubjectConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -95,7 +95,7 @@ export class SubjectConsumeController {
                 result: []
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -128,7 +128,7 @@ export class SubjectConsumeController {
 
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -161,7 +161,7 @@ export class SubjectConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -194,7 +194,7 @@ export class SubjectConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }

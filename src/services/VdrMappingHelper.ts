@@ -1,4 +1,4 @@
-import { DataRecordingStructure, VisitFields } from 'orscf-visitdata-contract/models';
+import { DataRecordingStructure, VisitFields } from 'orscf-visitdata-contract';
 export class VdrMappingHelper {
     static drToCamelCase(x: any): DataRecordingStructure {
         return {

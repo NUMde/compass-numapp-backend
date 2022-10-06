@@ -1,12 +1,12 @@
 import { VisitModel2 } from './VisitModel2';
-import { DataRecordingStructure } from 'orscf-visitdata-contract/models';
-import { VisitModel } from './VisitModel';
+import { DataRecordingStructure } from 'orscf-visitdata-contract';
+//import { VisitModel } from './VisitModel';
 import { ExampleStateModel } from './ExampleStateModel';
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { IdHelper } from '../services/IdHelper';
 import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
 import { StateModel } from './StateModel';
-import { resolve } from 'dns';
+//import { resolve } from 'dns';
 
 /**
  * Example model based on the GCS state chart.

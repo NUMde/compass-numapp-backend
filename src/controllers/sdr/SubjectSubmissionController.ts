@@ -2,8 +2,8 @@ import { OrscfTokenService } from './../../services/OrscfTokenService';
 import { SdrMappingHelper } from './../../services/SdrMappingHelper';
 import { ParticipantEntry } from './../../types/ParticipantEntry';
 import { SubjectIdentitiesModel } from './../../models/SubjectIdentitiesModel';
-import * as SdrModels from 'orscf-subjectdata-contract/models';
-import Logger from 'jet-logger';
+import * as SdrModels from 'orscf-subjectdata-contract';
+import logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { Controller, Post, ClassMiddleware } from '@overnightjs/core';
 
@@ -51,7 +51,7 @@ export class SubjectSubmissionController {
                 updatedSubjectUids: updatedSubjectUids
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -85,7 +85,7 @@ export class SubjectSubmissionController {
                 archivedSubjectUids: archivedSubjectUids
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -120,7 +120,7 @@ export class SubjectSubmissionController {
                 fault: null
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -148,7 +148,7 @@ export class SubjectSubmissionController {
                 fault: null
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ faule: error.message, return: null });
         }
     }

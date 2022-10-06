@@ -1,4 +1,4 @@
-// import Logger from 'jet-logger';
+// import logger from 'jet-logger';
 // import { Request, Response } from 'express';
 // import { Controller, Post } from '@overnightjs/core';
 
@@ -9,7 +9,7 @@
 //         try {
 //             return resp.status(200).json({ fault: 'not yet implemented', return: null });
 //         } catch (error) {
-//             Logger.Err(error, true);
+//             logger.err(error, true);
 //             return resp.status(200).json({ fault: error.message, return: null });
 //         }
 //     }

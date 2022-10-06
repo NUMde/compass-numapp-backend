@@ -1,7 +1,7 @@
 import { VisitModel } from './../../models/VisitModel';
 import { OrscfTokenService } from './../../services/OrscfTokenService';
-import * as VdrModels from 'orscf-visitdata-contract/models';
-import Logger from 'jet-logger';
+import * as VdrModels from 'orscf-visitdata-contract';
+import logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { Controller, Post, ClassMiddleware } from '@overnightjs/core';
 
@@ -57,7 +57,7 @@ export class VisitSubmissionController {
                 updatedVisitUids: updatedVisitUids
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -69,7 +69,7 @@ export class VisitSubmissionController {
             const mutationsByVisitUid: {
                 [subjectUid: string]: VdrModels.VisitMutation;
             } = req.body.mutationsByVisitUid;
-            Logger.Info(req.body);
+            logger.info(req.body);
             if (mutationsByVisitUid === undefined || mutationsByVisitUid === null) {
                 return resp.status(200).json({ fault: 'no visits on request', return: null });
             }
@@ -91,7 +91,7 @@ export class VisitSubmissionController {
                 fault: null
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -111,7 +111,7 @@ export class VisitSubmissionController {
 
             const updatedVisitUids: string[] = [];
             for (const visitUid of visitUids) {
-                console.log('visitUid', visitUid);
+                //console.log('visitUid', visitUid);
                 const visitWasUpdated = await this.visitModel.applyVisitMutation(
                     visitUid,
                     mutation
@@ -126,7 +126,7 @@ export class VisitSubmissionController {
                 fault: null
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ faule: error.message, return: null });
         }
     }

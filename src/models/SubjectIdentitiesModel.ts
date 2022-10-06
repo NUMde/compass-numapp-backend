@@ -6,8 +6,8 @@ import logger from 'jet-logger';
 import { DB } from '../server/DB';
 import { SdrMappingHelper } from './../services/SdrMappingHelper';
 import { ParticipantEntry } from './../types/ParticipantEntry';
-import * as SdrDtos from 'orscf-subjectdata-contract/dtos';
-import * as SdrModels from 'orscf-subjectdata-contract/models';
+import * as SdrDtos from 'orscf-subjectdata-contract';
+import * as SdrModels from 'orscf-subjectdata-contract';
 
 export class SubjectIdentitiesModel {
     /**
@@ -43,7 +43,7 @@ export class SubjectIdentitiesModel {
             }
             return true;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -107,7 +107,7 @@ export class SubjectIdentitiesModel {
                 ]
             );
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -153,7 +153,7 @@ export class SubjectIdentitiesModel {
                 ]
             );
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -181,7 +181,7 @@ export class SubjectIdentitiesModel {
             );
             return updateQuery.rows.length > 0;
         } catch (error) {
-            Logger.Err(error);
+            logger.err(error);
             throw error;
         }
     }
@@ -212,7 +212,7 @@ export class SubjectIdentitiesModel {
             );
             return updateQuery.rows;
         } catch (error) {
-            Logger.Err(error);
+            logger.err(error);
             throw error;
         }
     }
@@ -222,7 +222,7 @@ export class SubjectIdentitiesModel {
             const pool: Pool = DB.getPool();
             await pool.query('DELETE FROM studyparticipant where subject_uid = $1', [subjectId]);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -241,24 +241,24 @@ export class SubjectIdentitiesModel {
             }
 
             const minPeriodStartWhereClause =
-                searchRequest.filter.minPeriodStart === undefined
+                searchRequest.filter.periodStart === undefined
                     ? ''
-                    : ` AND '${searchRequest.filter.minPeriodStart}' <= start_date`;
+                    : ` AND '${searchRequest.filter.periodStart}' <= start_date`;
 
             const maxPeriodStartWhereClause =
-                searchRequest.filter.maxPeriodStart === undefined
+                searchRequest.filter.periodStart === undefined
                     ? ''
-                    : ` AND '${searchRequest.filter.maxPeriodStart}' >= start_date`;
+                    : ` AND '${searchRequest.filter.periodStart}' >= start_date`;
 
             const minPeriodEndWhereClause =
-                searchRequest.filter.minPeriodEnd === undefined
+                searchRequest.filter.periodEnd === undefined
                     ? ''
-                    : ` AND '${searchRequest.filter.minPeriodEnd}' <= personal_study_end_date`;
+                    : ` AND '${searchRequest.filter.periodEnd}' <= personal_study_end_date`;
 
             const maxPeriodEndWhereClause =
-                searchRequest.filter.maxPeriodEnd === undefined
+                searchRequest.filter.periodEnd === undefined
                     ? ''
-                    : ` AND '${searchRequest.filter.maxPeriodEnd}' >= personal_study_end_date`;
+                    : ` AND '${searchRequest.filter.periodEnd}' >= personal_study_end_date`;
 
             const changeDateWhereClause = '';
             //minTimestampUtc === undefined ? '' : ` AND '${minTimestampUtc}' <= last_action`;
@@ -332,7 +332,7 @@ export class SubjectIdentitiesModel {
 
             // return searchQuery2.rows;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             //return [] as SubjectMetaRecord[];
             throw err;
         }
@@ -360,7 +360,7 @@ export class SubjectIdentitiesModel {
                 SdrMappingHelper.mapParticipantEntryToSubject(r)
             );
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }

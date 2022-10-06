@@ -95,7 +95,7 @@ export class AuthorizationController {
                 return done(null, false);
             }
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             return done({ name: 'InternalError' }, true);
         }
     }

@@ -3,11 +3,12 @@ import { VdrMappingHelper } from './../services/VdrMappingHelper';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
-import { Pool, QueryResult } from 'pg';
-import Logger from 'jet-logger';
+import { Pool } from 'pg';
+//import { QueryResult } from 'pg';
+import logger from 'jet-logger';
 import { DB } from '../server/DB';
-import * as VdrModels from 'orscf-visitdata-contract/models';
-import * as VdrDtos from 'orscf-visitdata-contract/dtos';
+import * as VdrModels from 'orscf-visitdata-contract';
+import * as VdrDtos from 'orscf-visitdata-contract';
 
 export class VisitModel {
     private questionnaireModel: QuestionnaireModel = new QuestionnaireModel();
@@ -24,7 +25,7 @@ export class VisitModel {
             }
             return true;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -67,13 +68,13 @@ export class VisitModel {
             // Remove last comma
             cmd = cmd.slice(0, cmd.length - 1);
             cmd += ` where id = '${visitUid}'`;
-            Logger.Info(cmd);
+            logger.info(cmd);
             const updateQuery = await pool.query(cmd);
             // console.log('update query', updateQuery);
-            Logger.Info(updateQuery);
+            logger.info(updateQuery);
             return updateQuery.rowCount > 0;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -106,10 +107,10 @@ export class VisitModel {
                 '${visit.executingPerson}',
                 '${visit.studyUid}'
             )`;
-            Logger.Info(cmd);
+            logger.info(cmd);
             await pool.query(cmd);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -130,10 +131,10 @@ export class VisitModel {
                 execution_person = '${visit.executingPerson}',
                 id = '${visit.studyUid}'
             `;
-            Logger.Info(cmd);
+            logger.info(cmd);
             await pool.query(cmd);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -168,12 +169,12 @@ export class VisitModel {
                 '${dr.executingPerson}',
                 '${dr.recordedData}'
             )`;
-            Logger.Info(cmd);
+            logger.info(cmd);
             await pool.query(cmd);
 
             await this.addOrUpdateQuestionnaire(dr);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -221,12 +222,12 @@ export class VisitModel {
                 recorded_data = '${dr.recordedData}'
             where id = '${dr.dataRecordingUid}'
             `;
-            Logger.Info(cmd);
+            logger.info(cmd);
             await pool.query(cmd);
 
             await this.addOrUpdateQuestionnaire(dr);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -253,13 +254,13 @@ export class VisitModel {
     //         FROM datarecordings where subject_identifier = '${subjectIdentifier}' \
     //         `;
 
-    //         Logger.Info(cmd);
+    //         logger.info(cmd);
     //         const getDataRecordingsQuery = await pool.query(cmd);
     //         return getDataRecordingsQuery.rows.map((x) => {
     //             return VdrMappingHelper.drToCamelCase(x);
     //         });
     //     } catch (err) {
-    //         Logger.Err(err);
+    //         logger.err(err);
     //         throw err;
     //     }
     // }
@@ -272,7 +273,7 @@ export class VisitModel {
 
         const searchSql = this.GetSearchVisitsSql(searchRequest, 'visitUid', true, minTimestampUtc);
 
-        Logger.Info(searchSql);
+        logger.info(searchSql);
         const searchQuery = await pool.query(searchSql);
         return searchQuery.rows;
     }
@@ -293,11 +294,11 @@ export class VisitModel {
                 0
             );
 
-            Logger.Info(searchSql);
+            logger.info(searchSql);
             const searchQuery = await pool.query(searchSql);
             return searchQuery.rows;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             //return [] as SubjectMetaRecord[];
             throw err;
         }
@@ -314,24 +315,24 @@ export class VisitModel {
         }
 
         const minScheduledDateUtcWhereClause =
-            searchRequest.filter.minScheduledDateUtc === undefined
+            searchRequest.filter.scheduledDateUtc === undefined
                 ? ''
-                : ` AND '${searchRequest.filter.minScheduledDateUtc}' <= scheduled_date_utc`;
+                : ` AND '${searchRequest.filter.scheduledDateUtc}' <= scheduled_date_utc`;
 
         const maxScheduledDateUtcWhereClause =
-            searchRequest.filter.maxScheduledDateUtc === undefined
+            searchRequest.filter.scheduledDateUtc === undefined
                 ? ''
-                : ` AND '${searchRequest.filter.maxScheduledDateUtc}' >= scheduled_date_utc`;
+                : ` AND '${searchRequest.filter.scheduledDateUtc}' >= scheduled_date_utc`;
 
         const minExecutionDateUtcWhereClause =
-            searchRequest.filter.minExecutionDateUtc === undefined
+            searchRequest.filter.executionDateUtc === undefined
                 ? ''
-                : ` AND '${searchRequest.filter.minExecutionDateUtc}' <= execution_date_utc`;
+                : ` AND '${searchRequest.filter.executionDateUtc}' <= execution_date_utc`;
 
         const maxExecutionDateUtcWhereClause =
-            searchRequest.filter.maxExecutionDateUtc === undefined
+            searchRequest.filter.executionDateUtc === undefined
                 ? ''
-                : ` AND '${searchRequest.filter.maxExecutionDateUtc}' >= execution_date_utc`;
+                : ` AND '${searchRequest.filter.executionDateUtc}' >= execution_date_utc`;
 
         const executionStateWhereClause =
             searchRequest.filter.executionState === undefined
@@ -418,13 +419,13 @@ export class VisitModel {
             FROM visits where id in (${visitUidsIn}) \
             `;
 
-            Logger.Info(cmd);
+            logger.info(cmd);
             const getVisitsQuery = await pool.query(cmd);
             return getVisitsQuery.rows.map((x) => {
                 return VdrMappingHelper.toCamelCase(x);
             });
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -449,13 +450,13 @@ export class VisitModel {
             FROM datarecordings where visit_id = '${visitUid}' \
             `;
 
-            Logger.Info(cmd);
+            logger.info(cmd);
             const getDataRecordingsQuery = await pool.query(cmd);
             return getDataRecordingsQuery.rows.map((x) => {
                 return VdrMappingHelper.drToCamelCase(x);
             });
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
