@@ -1,7 +1,7 @@
 import { VisitModel } from '../../models/VisitModel';
 import { OrscfTokenService } from '../../services/OrscfTokenService';
 import * as VdrModels from 'orscf-visitdata-contract';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { Controller, Post, ClassMiddleware } from '@overnightjs/core';
 

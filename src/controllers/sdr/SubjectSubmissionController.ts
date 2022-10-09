@@ -3,7 +3,7 @@ import { SdrMappingHelper } from './../../services/SdrMappingHelper';
 import { ParticipantEntry } from './../../types/ParticipantEntry';
 import { SubjectIdentitiesModel } from './../../models/SubjectIdentitiesModel';
 import * as SdrModels from 'orscf-subjectdata-contract';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { Controller, Post, ClassMiddleware } from '@overnightjs/core';
 
