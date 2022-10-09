@@ -15,10 +15,15 @@ export class OrscfAuthConfig {
     }
     public static getOrscfPublicKeyOrSecretByIssuer(issuer: string): string {
         issuer = issuer.replace('.', '');
+        issuer = issuer.replace('.', '');
         issuer = issuer.replace(':', '');
         issuer = issuer.replace('/', '');
+        issuer = issuer.replace('/', '');
+        issuer = issuer.replace('/', '');
+        issuer = issuer.replace('//', '');
         issuer = issuer.replace('\\', '');
         issuer = issuer.replace('-', '');
+        console.log('issuer', issuer);
         return env
             .get('ORSCF_JWT_PUBLIC_KEY_OR_SECRET_' + issuer)
             .default('false')

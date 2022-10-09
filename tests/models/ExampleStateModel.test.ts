@@ -19,7 +19,7 @@ describe('signing', () => {
         global.Date.now = realDateNow;
     });
 
-    it('mustGoToInitialState', () => {
+    it('mustGoToInitialState', async () => {
         // given
         const user: ParticipantEntry = {
             subject_id: '1',
@@ -43,7 +43,7 @@ describe('signing', () => {
         const parameters: StateChangeTrigger = {};
 
         // when
-        const result = sut.calculateUpdatedData(user, parameters);
+        const result = await sut.calculateUpdatedData(user, parameters);
 
         // then
 
@@ -67,7 +67,7 @@ describe('signing', () => {
         expect(result.additional_iterations_left).toBe(0);
     });
 
-    it('mustGoToDefaultState', () => {
+    it('mustGoToDefaultState', async () => {
         // given
         const user: ParticipantEntry = {
             subject_id: '1',
@@ -91,7 +91,7 @@ describe('signing', () => {
         const parameters: StateChangeTrigger = {};
 
         // when
-        const result = sut.calculateUpdatedData(user, parameters);
+        const result = await sut.calculateUpdatedData(user, parameters);
 
         // then
         //set up expected values
@@ -115,7 +115,7 @@ describe('signing', () => {
         expect(result.additional_iterations_left).toBe(0);
     });
 
-    it('mustGoToShortTrackState', () => {
+    it('mustGoToShortTrackState', async () => {
         // given
         const user: ParticipantEntry = {
             subject_id: '1',
@@ -139,7 +139,7 @@ describe('signing', () => {
         const parameters: StateChangeTrigger = { basicTrigger: true };
 
         // when
-        const result = sut.calculateUpdatedData(user, parameters);
+        const result = await sut.calculateUpdatedData(user, parameters);
 
         // then
         //set up expected values
@@ -165,7 +165,7 @@ describe('signing', () => {
         expect(result.additional_iterations_left).toBe(0);
     });
 
-    it('mustGoToShortTrackState', () => {
+    it('mustGoToShortTrackState', async () => {
         // given
         const user: ParticipantEntry = {
             subject_id: '1',
@@ -189,7 +189,7 @@ describe('signing', () => {
         const parameters: StateChangeTrigger = { specialTrigger: true };
 
         // when
-        const result = sut.calculateUpdatedData(user, parameters);
+        const result = await sut.calculateUpdatedData(user, parameters);
 
         // then
         //set up expected values
