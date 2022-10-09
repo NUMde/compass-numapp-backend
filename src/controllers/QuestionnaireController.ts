@@ -6,11 +6,11 @@
 
 import { Request, Response } from 'express';
 
-import { Controller, Get, Middleware, Post, Put } from '@overnightjs/core';
+import { Controller, ClassErrorMiddleware, Get, Middleware, Post, Put } from '@overnightjs/core';
 
 import { QuestionnaireModel } from '../models/QuestionnaireModel';
 import { AuthorizationController } from './AuthorizationController';
-import jwt from 'express-jwt';
+import { expressjwt as jwt } from 'express-jwt';
 import { AuthConfig } from '../config/AuthConfig';
 import { COMPASSConfig } from '../config/COMPASSConfig';
 
@@ -21,6 +21,14 @@ import { COMPASSConfig } from '../config/COMPASSConfig';
  * @class QuestionnaireController
  */
 @Controller('questionnaire')
+@ClassErrorMiddleware((err, _req, res, next) => {
+    res.status(err.status).json({
+        errorCode: err.code,
+        errorMessage: err.inner.message,
+        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+    });
+    next(err);
+})
 export class QuestionnaireController {
     private questionnaireModel: QuestionnaireModel = new QuestionnaireModel();
 
@@ -38,7 +46,11 @@ export class QuestionnaireController {
                 res.status(200).send(response);
             },
             (error) => {
-                res.status(500).send;
+                res.status(500).json({
+                    errorCode: 'InternalErr',
+                    errorMessage: 'An internal error occurred.',
+                    errorStack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+                });
             }
         );
     }
@@ -102,6 +114,13 @@ export class QuestionnaireController {
         const version = req.body.version;
         const name = req.body.name;
         const questionnaire = req.body.questionnaire;
+
+        if (!(url && version && name && questionnaire)) {
+            return res.status(400).json({
+                errorCode: 'InvalidQuery',
+                errMessage: 'Invalid query: params missing'
+            });
+        }
 
         this.questionnaireModel.addQuestionnaire(url, version, name, questionnaire).then(
             () => {

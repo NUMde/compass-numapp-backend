@@ -1,6 +1,6 @@
 import { OrscfTokenService } from './../../services/OrscfTokenService';
 import { SubjectIdentitiesModel } from './../../models/SubjectIdentitiesModel';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { Controller, Post, ClassMiddleware } from '@overnightjs/core';
 import {
@@ -46,7 +46,7 @@ export class SubjectConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -77,7 +77,7 @@ export class SubjectConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -91,7 +91,7 @@ export class SubjectConsumeController {
                 result: []
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -106,9 +106,10 @@ export class SubjectConsumeController {
             const availableSubjectUids: string[] = [];
 
             for (const subjectUid of subjectUids) {
-                const subjectExists: boolean = await this.subjectIdentityModel.getSubjectIdentityExistenceBySubjectUid(
-                    subjectUid
-                );
+                const subjectExists: boolean =
+                    await this.subjectIdentityModel.getSubjectIdentityExistenceBySubjectUid(
+                        subjectUid
+                    );
                 if (subjectExists) {
                     availableSubjectUids.push(subjectUid);
                 } else {
@@ -123,7 +124,7 @@ export class SubjectConsumeController {
 
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -156,7 +157,7 @@ export class SubjectConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -189,7 +190,7 @@ export class SubjectConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }

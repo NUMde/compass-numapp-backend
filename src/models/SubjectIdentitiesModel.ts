@@ -3,7 +3,7 @@ import { SearchFilterService } from './../services/SearchFilterService';
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 import { Pool } from 'pg';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { DB } from '../server/DB';
 import { SdrMappingHelper } from './../services/SdrMappingHelper';
 import { ParticipantEntry } from './../types/ParticipantEntry';
@@ -27,7 +27,7 @@ export class SubjectIdentitiesModel {
             }
             return true;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -44,7 +44,7 @@ export class SubjectIdentitiesModel {
             }
             return true;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -58,7 +58,7 @@ export class SubjectIdentitiesModel {
             const pool: Pool = DB.getPool();
             await pool.query('INSERT INTO studyparticipant(subject_id) VALUES ($1);', [subjectID]);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
         return;
@@ -108,7 +108,7 @@ export class SubjectIdentitiesModel {
                 ]
             );
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -154,7 +154,7 @@ export class SubjectIdentitiesModel {
                 ]
             );
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -182,7 +182,7 @@ export class SubjectIdentitiesModel {
             );
             return updateQuery.rows.length > 0;
         } catch (error) {
-            Logger.Err(error);
+            logger.err(error);
             throw error;
         }
     }
@@ -213,7 +213,7 @@ export class SubjectIdentitiesModel {
             );
             return updateQuery.rows;
         } catch (error) {
-            Logger.Err(error);
+            logger.err(error);
             throw error;
         }
     }
@@ -223,7 +223,7 @@ export class SubjectIdentitiesModel {
             const pool: Pool = DB.getPool();
             await pool.query('DELETE FROM studyparticipant where subject_uid = $1', [subjectId]);
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
@@ -302,7 +302,7 @@ export class SubjectIdentitiesModel {
 
             // return searchQuery2.rows;
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             //return [] as SubjectMetaRecord[];
             throw err;
         }
@@ -330,7 +330,7 @@ export class SubjectIdentitiesModel {
                 SdrMappingHelper.mapParticipantEntryToSubject(r)
             );
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }

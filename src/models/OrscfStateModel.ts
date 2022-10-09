@@ -6,7 +6,7 @@ import { COMPASSConfig } from '../config/COMPASSConfig';
 import { IdHelper } from '../services/IdHelper';
 import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
 import { StateModel } from './StateModel';
-import { resolve } from 'dns';
+//import { resolve } from 'dns';
 
 /**
  * Example model based on the GCS state chart.

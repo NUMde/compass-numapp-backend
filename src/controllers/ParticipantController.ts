@@ -6,7 +6,7 @@
 
 import { Request, Response } from 'express';
 import { Controller, Get, Post, Middleware } from '@overnightjs/core';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { ParticipantEntry } from '../types/ParticipantEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
@@ -31,9 +31,10 @@ export class ParticipantController {
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
     public async getParticipant(req: Request, res: Response) {
         try {
-            const participant: ParticipantEntry = await this.participantModel.getAndUpdateParticipantBySubjectID(
-                req.params.subjectID
-            );
+            const participant: ParticipantEntry =
+                await this.participantModel.getAndUpdateParticipantBySubjectID(
+                    req.params.subjectID
+                );
             this.participantModel.updateLastAction(req.params.subjectID);
 
             const returnObject = {
@@ -55,7 +56,7 @@ export class ParticipantController {
             };
             return res.status(200).json(returnObject);
         } catch (err) {
-            Logger.Err(err, true);
+            logger.err(err, true);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error ocurred.',
@@ -86,7 +87,7 @@ export class ParticipantController {
 
             return res.sendStatus(204);
         } catch (err) {
-            Logger.Err(err, true);
+            logger.err(err, true);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error ocurred.',
@@ -111,7 +112,7 @@ export class ParticipantController {
 
             return resp.sendStatus(204);
         } catch (err) {
-            Logger.Err(err, true);
+            logger.err(err, true);
             return resp.sendStatus(500);
         }
     }

@@ -6,12 +6,12 @@
 
 import { Request, Response } from 'express';
 
-import { Post, Controller, ClassMiddleware } from '@overnightjs/core';
-import Logger from 'jet-logger';
+import { Post, Controller, ClassMiddleware, ClassErrorMiddleware } from '@overnightjs/core';
+import logger from 'jet-logger';
 
 import { SubjectIdentitiesModel } from '../models/SubjectIdentitiesModel';
 import { AuthorizationController } from './AuthorizationController';
-import jwt from 'express-jwt';
+import { expressjwt as jwt } from 'express-jwt';
 import { AuthConfig } from '../config/AuthConfig';
 
 /**
@@ -29,6 +29,14 @@ import { AuthConfig } from '../config/AuthConfig';
         isRevoked: AuthorizationController.checkApiUserLogin
     })
 )
+@ClassErrorMiddleware((err, _req, res, next) => {
+    res.status(err.status).json({
+        errorCode: err.code,
+        errorMessage: err.inner.message,
+        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+    });
+    next(err);
+})
 export class SubjectIdentitiesController {
     private subjectIdentityModel: SubjectIdentitiesModel = new SubjectIdentitiesModel();
 
@@ -46,9 +54,10 @@ export class SubjectIdentitiesController {
                 });
             }
 
-            const subjectIdentityExistence: boolean = await this.subjectIdentityModel.getSubjectIdentityExistence(
-                req.body.subjectIdentity.recordId
-            );
+            const subjectIdentityExistence: boolean =
+                await this.subjectIdentityModel.getSubjectIdentityExistence(
+                    req.body.subjectIdentity.recordId
+                );
 
             if (subjectIdentityExistence) {
                 return res.status(409).send({
@@ -64,7 +73,7 @@ export class SubjectIdentitiesController {
                 return: true
             });
         } catch (err) {
-            Logger.Err(err, true);
+            logger.err(err, true);
             return res.status(500).json({
                 errorCode: 'InternalErr',
                 errorMessage: 'An internal error ocurred.',

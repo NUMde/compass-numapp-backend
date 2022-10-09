@@ -48,7 +48,7 @@ export class DataRecordingSubmissionController {
                 updatedDataRecordingUids: updatedDataRecordingUids
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }

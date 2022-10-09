@@ -2,7 +2,7 @@
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 
 import { MeasurementObject } from '../types/MeasurementObject';
 import { IdHelper } from './IdHelper';
@@ -43,12 +43,12 @@ export class PerformanceLogger {
         const timeEnd = new Date();
 
         if (this.performanceMap[uuid] === undefined) {
-            Logger.Err(`[PerformanceLogger] uuid ${uuid} does not exist. No Measurement.`);
+            logger.err(`[PerformanceLogger] uuid ${uuid} does not exist. No Measurement.`);
         } else {
             const measurementObject = this.performanceMap[uuid];
             const timeStart = measurementObject.timeStart;
             const diff = Math.abs(timeStart.getTime() - timeEnd.getTime()) / 1000;
-            Logger.Info(
+            logger.info(
                 `[PerformanceLogger]${measurementObject.className}.${measurementObject.methodName} took ${diff}s.`
             );
             delete this.performanceMap[uuid];

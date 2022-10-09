@@ -1,6 +1,6 @@
 import { OrscfTokenService } from './../../services/OrscfTokenService';
 import { VisitModel } from './../../models/VisitModel';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { Controller, Post, ClassMiddleware } from '@overnightjs/core';
 import {
@@ -45,7 +45,7 @@ export class VisitConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -70,7 +70,7 @@ export class VisitConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -84,7 +84,7 @@ export class VisitConsumeController {
                 result: []
             });
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -116,7 +116,7 @@ export class VisitConsumeController {
 
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -147,7 +147,7 @@ export class VisitConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }
@@ -182,7 +182,7 @@ export class VisitConsumeController {
             };
             return resp.status(200).json(response);
         } catch (error) {
-            Logger.Err(error, true);
+            logger.err(error, true);
             return resp.status(200).json({ fault: error.message, return: null });
         }
     }

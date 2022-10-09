@@ -3,7 +3,7 @@ import { VdrMappingHelper } from '../services/VdrMappingHelper';
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 import { Pool } from 'pg';
-import Logger from 'jet-logger';
+import logger from 'jet-logger';
 import { DB } from '../server/DB';
 import * as VdrModels from 'orscf-visitdata-contract';
 
@@ -30,13 +30,13 @@ export class VisitModel2 {
             FROM datarecordings dr inner join visits v on v.Id = dr.visit_id where v.subject_identifier = '${subjectIdentifier}' \
             `;
 
-            Logger.Info(cmd);
+            logger.info(cmd);
             const getDataRecordingsQuery = await pool.query(cmd);
             return getDataRecordingsQuery.rows.map((x) => {
                 return VdrMappingHelper.drToCamelCase(x);
             });
         } catch (err) {
-            Logger.Err(err);
+            logger.err(err);
             throw err;
         }
     }
