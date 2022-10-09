@@ -118,7 +118,7 @@ export class VisitSubmissionController {
                     updatedVisitUids.push(visitUid);
                 }
             }
-
+            // test
             return resp.status(200).json({
                 updatedVisitUids: updatedVisitUids,
                 fault: null
