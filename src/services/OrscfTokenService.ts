@@ -1,6 +1,6 @@
 import { OrscfAuthConfig } from './../config/OrscfAuthConfig';
 import { SecurityService } from './SecurityService';
-import * as SdrDTOs from 'orscf-subjectdata-contract/dtos';
+import * as SdrDTOs from 'orscf-subjectdata-contract';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 
 interface JwtPayload {
@@ -27,8 +27,6 @@ export class OrscfTokenService {
             const decodedToken = jwt.decode(bearerToken);
             const jwtPayload: JwtPayload = <JwtPayload>decodedToken;
             const allowedIssuers: string[] = OrscfAuthConfig.getAllowedIssuers();
-            console.log(jwtPayload);
-            console.log(allowedIssuers);
 
             jwt.verify(
                 bearerToken,
@@ -48,7 +46,6 @@ export class OrscfTokenService {
                 return: jwtPayload?.scope
             };
         } catch (error) {
-            console.log(error);
             if (error instanceof TokenExpiredError) {
                 return {
                     authState: -1,

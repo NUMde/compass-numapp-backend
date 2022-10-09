@@ -14,20 +14,20 @@ export class OrscfAuthConfig {
         return env.get('ORSCF_PUBLIC_KEY').default('false').asString().replace(/\\n/g, '\n');
     }
     public static getOrscfPublicKeyOrSecretByIssuer(issuer: string): string {
-        issuer = issuer.replace('.', '');
-        issuer = issuer.replace('.', '');
-        issuer = issuer.replace(':', '');
-        issuer = issuer.replace('/', '');
-        issuer = issuer.replace('/', '');
-        issuer = issuer.replace('/', '');
-        issuer = issuer.replace('//', '');
-        issuer = issuer.replace('\\', '');
-        issuer = issuer.replace('-', '');
-        console.log('issuer', issuer);
+        issuer = OrscfAuthConfig.replaceAll(issuer, '.', '');
+        issuer = OrscfAuthConfig.replaceAll(issuer, ':', '');
+        issuer = OrscfAuthConfig.replaceAll(issuer, '/', '');
+        issuer = OrscfAuthConfig.replaceAll(issuer, '//', '');
+        issuer = OrscfAuthConfig.replaceAll(issuer, '\\', '');
+        issuer = OrscfAuthConfig.replaceAll(issuer, '-', '');
         return env
             .get('ORSCF_JWT_PUBLIC_KEY_OR_SECRET_' + issuer)
             .default('false')
             .asString()
             .replace(/\\n/g, '\n');
+    }
+
+    private static replaceAll(input: string, search: string, replaceWith: string): string {
+        return input.split(search).join(replaceWith);
     }
 }

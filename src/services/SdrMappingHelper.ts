@@ -1,5 +1,5 @@
 import { ParticipantEntry, ParticipationStatus } from './../types/ParticipantEntry';
-import * as SdrModels from 'orscf-subjectdata-contract/models';
+import * as SdrModels from 'orscf-subjectdata-contract';
 
 export class SdrMappingHelper {
     public static mapParticipantEntryToSubject(

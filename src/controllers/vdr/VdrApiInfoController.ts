@@ -9,7 +9,7 @@ import {
     GetCapabilitiesResponse,
     GetApiVersionResponse,
     GetPermittedAuthScopesResponse
-} from 'orscf-visitdata-contract/dtos';
+} from 'orscf-visitdata-contract';
 
 @Controller('vdrApiInfo')
 export class VdrApiInfoController {

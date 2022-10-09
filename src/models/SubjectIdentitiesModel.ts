@@ -1,3 +1,4 @@
+import { SearchFilterService } from './../services/SearchFilterService';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
@@ -6,8 +7,8 @@ import Logger from 'jet-logger';
 import { DB } from '../server/DB';
 import { SdrMappingHelper } from './../services/SdrMappingHelper';
 import { ParticipantEntry } from './../types/ParticipantEntry';
-import * as SdrDtos from 'orscf-subjectdata-contract/dtos';
-import * as SdrModels from 'orscf-subjectdata-contract/models';
+import * as SdrDtos from 'orscf-subjectdata-contract';
+import * as SdrModels from 'orscf-subjectdata-contract';
 
 export class SubjectIdentitiesModel {
     /**
@@ -239,36 +240,40 @@ export class SubjectIdentitiesModel {
             if (searchRequest.filter === undefined || searchRequest.filter == null) {
                 searchRequest.filter = {} as SdrModels.SubjectFilter;
             }
+            // const minPeriodStartWhereClause =
+            //     searchRequest.filter.minPeriodStart === undefined
+            //         ? ''
+            //         : ` AND '${searchRequest.filter.minPeriodStart}' <= start_date`;
 
-            const minPeriodStartWhereClause =
-                searchRequest.filter.minPeriodStart === undefined
-                    ? ''
-                    : ` AND '${searchRequest.filter.minPeriodStart}' <= start_date`;
+            // const maxPeriodStartWhereClause =
+            //     searchRequest.filter.maxPeriodStart === undefined
+            //         ? ''
+            //         : ` AND '${searchRequest.filter.maxPeriodStart}' >= start_date`;
 
-            const maxPeriodStartWhereClause =
-                searchRequest.filter.maxPeriodStart === undefined
-                    ? ''
-                    : ` AND '${searchRequest.filter.maxPeriodStart}' >= start_date`;
+            // const minPeriodEndWhereClause =
+            //     searchRequest.filter.minPeriodEnd === undefined
+            //         ? ''
+            //         : ` AND '${searchRequest.filter.minPeriodEnd}' <= personal_study_end_date`;
 
-            const minPeriodEndWhereClause =
-                searchRequest.filter.minPeriodEnd === undefined
-                    ? ''
-                    : ` AND '${searchRequest.filter.minPeriodEnd}' <= personal_study_end_date`;
+            // const maxPeriodEndWhereClause =
+            //     searchRequest.filter.maxPeriodEnd === undefined
+            //         ? ''
+            //         : ` AND '${searchRequest.filter.maxPeriodEnd}' >= personal_study_end_date`;
 
-            const maxPeriodEndWhereClause =
-                searchRequest.filter.maxPeriodEnd === undefined
-                    ? ''
-                    : ` AND '${searchRequest.filter.maxPeriodEnd}' >= personal_study_end_date`;
-
-            const changeDateWhereClause = '';
+            // const changeDateWhereClause = '';
             //minTimestampUtc === undefined ? '' : ` AND '${minTimestampUtc}' <= last_action`;
 
-            const timeStampWhereClause =
-                minPeriodStartWhereClause +
-                maxPeriodStartWhereClause +
-                minPeriodEndWhereClause +
-                maxPeriodEndWhereClause +
-                changeDateWhereClause;
+            // const timeStampWhereClause =
+            //     minPeriodStartWhereClause +
+            //     maxPeriodStartWhereClause +
+            //     minPeriodEndWhereClause +
+            //     maxPeriodEndWhereClause +
+            //     changeDateWhereClause;
+
+            const filterClause: string = SearchFilterService.buildSubjectFilterSqlClause(
+                searchRequest.filter,
+                'sp'
+            );
 
             const searchSql = `SELECT \
                 subject_uid AS "subjectUid", \
@@ -277,42 +282,7 @@ export class SubjectIdentitiesModel {
                 actual_site_uid AS "actualSiteUid", \
                 0 AS "isArchived", \
                 0 AS modiciationTimestampUtc \
-                FROM studyparticipant where \
-                    1 = 1 \
-                    And (\
-                        '${searchRequest.filter.studyUid}' = 'undefined' or \
-                        ('${searchRequest.filter.studyUid}' = 'null' and study_uid is null) or \
-                        '${searchRequest.filter.studyUid}' = study_uid\
-                    ) \
-                    And (\
-                        '${searchRequest.filter.siteUid}' = 'undefined' or \
-                        ('${
-                            searchRequest.filter.siteUid
-                        }' = 'null' and actual_site_uid is null) or \
-                        '${searchRequest.filter.siteUid}' = actual_site_uid\
-                    ) \
-                    And (\
-                        '${searchRequest.filter.subjectIdentifier}' = 'undefined' or \
-                        ('${
-                            searchRequest.filter.subjectIdentifier
-                        }' = 'null' and subject_id is null) or \
-                        '${searchRequest.filter.subjectIdentifier}' = subject_id\
-                    ) \
-                    And (\
-                        '${searchRequest.filter.status}' = 'undefined' or \
-                        '${searchRequest.filter.status}' = status\
-                    ) \
-                    And (\
-                        '${
-                            searchRequest.filter.actualSiteDefinedPatientIdentifier
-                        }' = 'undefined' or \
-                        ('${
-                            searchRequest.filter.actualSiteDefinedPatientIdentifier
-                        }' = 'null' and actual_site_defined_patient_identifier is null) or \
-                        '${
-                            searchRequest.filter.actualSiteDefinedPatientIdentifier
-                        }' = actual_site_defined_patient_identifier\
-                    ) ${timeStampWhereClause}
+                FROM studyparticipant sp where ${filterClause}
                 ORDER BY ${SdrMappingHelper.mapSdrSubjectPropnameToParticipantPropName(
                     sortingField
                 )} ${sortDescending ? ' DESC' : ''}\

@@ -9,7 +9,7 @@ import {
     GetCapabilitiesResponse,
     GetApiVersionResponse,
     GetPermittedAuthScopesResponse
-} from 'orscf-subjectdata-contract/dtos';
+} from 'orscf-subjectdata-contract';
 
 @Controller('sdrApiInfo')
 export class SdrApiInfoController {

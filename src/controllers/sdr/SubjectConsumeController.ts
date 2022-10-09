@@ -14,12 +14,8 @@ import {
     SearchChangedSubjectsResponse,
     SearchSubjectsRequest,
     SearchSubjectsResponse
-} from 'orscf-subjectdata-contract/dtos';
-import {
-    SubjectFields,
-    SubjectMetaRecord,
-    SubjectStructure
-} from 'orscf-subjectdata-contract/models';
+} from 'orscf-subjectdata-contract';
+import { SubjectFields, SubjectMetaRecord, SubjectStructure } from 'orscf-subjectdata-contract';
 
 @Controller('subjectConsume')
 @ClassMiddleware((req, res, next) =>

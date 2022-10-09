@@ -1,3 +1,4 @@
+import { SearchFilterService } from './../services/SearchFilterService';
 import { QuestionnaireModel } from './QuestionnaireModel';
 import { VdrMappingHelper } from './../services/VdrMappingHelper';
 /*
@@ -6,8 +7,8 @@ import { VdrMappingHelper } from './../services/VdrMappingHelper';
 import { Pool, QueryResult } from 'pg';
 import Logger from 'jet-logger';
 import { DB } from '../server/DB';
-import * as VdrModels from 'orscf-visitdata-contract/models';
-import * as VdrDtos from 'orscf-visitdata-contract/dtos';
+import * as VdrModels from 'orscf-visitdata-contract';
+import * as VdrDtos from 'orscf-visitdata-contract';
 
 export class VisitModel {
     private questionnaireModel: QuestionnaireModel = new QuestionnaireModel();
@@ -312,40 +313,45 @@ export class VisitModel {
             searchRequest.filter = {} as VdrModels.VisitFilter;
         }
 
-        const minScheduledDateUtcWhereClause =
-            searchRequest.filter.minScheduledDateUtc === undefined
-                ? ''
-                : ` AND '${searchRequest.filter.minScheduledDateUtc}' <= scheduled_date_utc`;
+        // const minScheduledDateUtcWhereClause =
+        //     searchRequest.filter.minScheduledDateUtc === undefined
+        //         ? ''
+        //         : ` AND '${searchRequest.filter.minScheduledDateUtc}' <= scheduled_date_utc`;
 
-        const maxScheduledDateUtcWhereClause =
-            searchRequest.filter.maxScheduledDateUtc === undefined
-                ? ''
-                : ` AND '${searchRequest.filter.maxScheduledDateUtc}' >= scheduled_date_utc`;
+        // const maxScheduledDateUtcWhereClause =
+        //     searchRequest.filter.maxScheduledDateUtc === undefined
+        //         ? ''
+        //         : ` AND '${searchRequest.filter.maxScheduledDateUtc}' >= scheduled_date_utc`;
 
-        const minExecutionDateUtcWhereClause =
-            searchRequest.filter.minExecutionDateUtc === undefined
-                ? ''
-                : ` AND '${searchRequest.filter.minExecutionDateUtc}' <= execution_date_utc`;
+        // const minExecutionDateUtcWhereClause =
+        //     searchRequest.filter.minExecutionDateUtc === undefined
+        //         ? ''
+        //         : ` AND '${searchRequest.filter.minExecutionDateUtc}' <= execution_date_utc`;
 
-        const maxExecutionDateUtcWhereClause =
-            searchRequest.filter.maxExecutionDateUtc === undefined
-                ? ''
-                : ` AND '${searchRequest.filter.maxExecutionDateUtc}' >= execution_date_utc`;
+        // const maxExecutionDateUtcWhereClause =
+        //     searchRequest.filter.maxExecutionDateUtc === undefined
+        //         ? ''
+        //         : ` AND '${searchRequest.filter.maxExecutionDateUtc}' >= execution_date_utc`;
 
-        const executionStateWhereClause =
-            searchRequest.filter.executionState === undefined
-                ? ''
-                : ` AND ${searchRequest.filter.executionState} = execution_state`;
+        // const executionStateWhereClause =
+        //     searchRequest.filter.executionState === undefined
+        //         ? ''
+        //         : ` AND ${searchRequest.filter.executionState} = execution_state`;
 
-        const changeDateWhereClause = '';
-        //minTimestampUtc === undefined ? '' : ` AND '${minTimestampUtc}' <= last_action`;
-        const timeStampWhereClause =
-            minScheduledDateUtcWhereClause +
-            maxScheduledDateUtcWhereClause +
-            minExecutionDateUtcWhereClause +
-            maxExecutionDateUtcWhereClause +
-            executionStateWhereClause +
-            changeDateWhereClause;
+        // const changeDateWhereClause = '';
+        // //minTimestampUtc === undefined ? '' : ` AND '${minTimestampUtc}' <= last_action`;
+        // const timeStampWhereClause =
+        //     minScheduledDateUtcWhereClause +
+        //     maxScheduledDateUtcWhereClause +
+        //     minExecutionDateUtcWhereClause +
+        //     maxExecutionDateUtcWhereClause +
+        //     executionStateWhereClause +
+        //     changeDateWhereClause;
+
+        const filterClause: string = SearchFilterService.buildVisitFilterSqlClause(
+            searchRequest.filter,
+            'v'
+        );
 
         let searchSql = `SELECT
                 id AS "visitUid",
@@ -354,33 +360,9 @@ export class VisitModel {
                 subject_identifier AS "subjectIfentifier",
                 0 AS "isArchived",
                 0 AS modiciationTimestampUtc
-                FROM visits where
+                FROM visits v where
                     modification_timestamp_utc >= ${minTimestampUtc}
-                    And (
-                        '${searchRequest.filter.studyUid}' = 'undefined' or
-                        ('${searchRequest.filter.studyUid}' = 'null' and study_uid is null) or
-                        '${searchRequest.filter.studyUid}' = study_uid
-                    )
-                    And (
-                        '${searchRequest.filter.siteUid}' = 'undefined' or
-                        ('${searchRequest.filter.siteUid}' = 'null' and site_uid is null) or
-                        '${searchRequest.filter.siteUid}' = site_uid
-                    )
-                    And (
-                        '${searchRequest.filter.subjectIdentifier}' = 'undefined' or
-                        ('${
-                            searchRequest.filter.subjectIdentifier
-                        }' = 'null' and subject_identifier is null) or
-                        '${searchRequest.filter.subjectIdentifier}' = subject_identifier
-                    )
-                    And (
-                        '${searchRequest.filter.visitProcedureName}' = 'undefined' or
-                        '${searchRequest.filter.visitProcedureName}' = visit_procedure_name
-                    )
-                    And (
-                        '${searchRequest.filter.visitExecutionTitle}' = 'undefined' or
-                        '${searchRequest.filter.visitExecutionTitle}' = visit_execution_title
-                    ) ${timeStampWhereClause}
+                    where ${filterClause}
                 ORDER BY ${VdrMappingHelper.mapVdrPropnameToDbName(sortingField)} ${
             sortDescending ? ' DESC' : ''
         }`;

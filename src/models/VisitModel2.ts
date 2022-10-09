@@ -5,7 +5,7 @@ import { VdrMappingHelper } from '../services/VdrMappingHelper';
 import { Pool } from 'pg';
 import Logger from 'jet-logger';
 import { DB } from '../server/DB';
-import * as VdrModels from 'orscf-visitdata-contract/models';
+import * as VdrModels from 'orscf-visitdata-contract';
 
 export class VisitModel2 {
     public async getDataRecordingsForParticipant(

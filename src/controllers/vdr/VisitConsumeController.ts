@@ -13,8 +13,8 @@ import {
     SearchChangedVisitsRequest,
     SearchVisitsRequest,
     SearchVisitsResponse
-} from 'orscf-visitdata-contract/dtos';
-import { VisitFields, VisitMetaRecord, VisitStructure } from 'orscf-visitdata-contract/models';
+} from 'orscf-visitdata-contract';
+import { VisitFields, VisitMetaRecord, VisitStructure } from 'orscf-visitdata-contract';
 
 @Controller('visitConsume')
 @ClassMiddleware((req, res, next) =>
@@ -169,7 +169,6 @@ export class VisitConsumeController {
             const result: VisitStructure[] = await this.visitModel.getVisits(visitUids);
 
             for (const visit of result) {
-                console.log('visit', visit);
                 visit.dataRecordings = await this.visitModel.getDataRecordings(visit.visitUid);
             }
 
