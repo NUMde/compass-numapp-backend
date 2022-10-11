@@ -237,7 +237,7 @@ export class SubjectIdentitiesModel {
         try {
             const pool: Pool = DB.getPool();
 
-            if(searchRequest.limitResults < 1)searchRequest.limitResults = 10000;
+            if (searchRequest.limitResults < 1) searchRequest.limitResults = 10000;
 
             if (searchRequest.filter === undefined || searchRequest.filter == null) {
                 searchRequest.filter = {} as SdrModels.SubjectFilter;
