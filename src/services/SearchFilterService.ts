@@ -8,24 +8,21 @@ import { VisitFilter } from 'orscf-visitdata-contract';
 
 export class SearchFilterService {
     public static buildSubjectFilterSqlClause(filter: SubjectFilter, varName: string): string {
-        let result = '1 = 1';
-
-        result +=
-            ' and ' + SearchFilterService.buildUidClause(filter.studyUid, varName, 'study_uid');
-        result +=
-            ' and ' +
-            SearchFilterService.buildUidClause(filter.siteUid, varName, 'actual_site_uid');
-
+        let result = '';
+        result = SearchFilterService.appendAndFilter(result, SearchFilterService.buildUidClause(filter.studyUid, varName, 'study_uid'));
+        result = SearchFilterService.appendAndFilter(result, SearchFilterService.buildUidClause(filter.siteUid, varName, 'actual_site_uid'));
+        if(result != '') result = 'where ' + result;
         return result;
     }
 
-    public static buildVisitFilterSqlClause(filter: VisitFilter, varName: string): string {
-        let result = '1 = 1';
-
-        result +=
-            ' and ' + SearchFilterService.buildUidClause(filter.studyUid, varName, 'study_uid');
-        result += ' and ' + SearchFilterService.buildUidClause(filter.siteUid, varName, 'site_uid');
-
+    public static buildVisitFilterSqlClause(filter: VisitFilter, minTimestampUtc: number, varName: string): string {
+        let result = '';
+        if(minTimestampUtc !== null){
+           result = SearchFilterService.appendAndFilter(result, `modification_timestamp_utc >= ${minTimestampUtc}`);
+        }
+        result = SearchFilterService.appendAndFilter(result, SearchFilterService.buildUidClause(filter.studyUid, varName, 'study_uid'));
+        result = SearchFilterService.appendAndFilter(result, SearchFilterService.buildUidClause(filter.siteUid, varName, 'site_uid'));
+        if(result != '') result = 'where ' + result;
         return result;
     }
 
@@ -87,4 +84,16 @@ export class SearchFilterService {
 
         return result;
     }
+
+    public static appendAndFilter(current: string, append: string): string {
+        if(current == null || current == ''){
+            if(append == null || append == '') return ''
+            else return append
+        }
+        else {
+            if(append == null || append == '') return current
+            else return append + ' and ' + current
+        }
+    }
+
 }

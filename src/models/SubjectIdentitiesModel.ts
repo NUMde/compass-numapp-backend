@@ -237,6 +237,8 @@ export class SubjectIdentitiesModel {
         try {
             const pool: Pool = DB.getPool();
 
+            if(searchRequest.limitResults < 1)searchRequest.limitResults = 10000;
+
             if (searchRequest.filter === undefined || searchRequest.filter == null) {
                 searchRequest.filter = {} as SdrModels.SubjectFilter;
             }
@@ -282,7 +284,7 @@ export class SubjectIdentitiesModel {
                 actual_site_uid AS "actualSiteUid", \
                 0 AS "isArchived", \
                 0 AS modiciationTimestampUtc \
-                FROM studyparticipant sp where ${filterClause}
+                FROM studyparticipant sp ${filterClause}
                 ORDER BY ${SdrMappingHelper.mapSdrSubjectPropnameToParticipantPropName(
                     sortingField
                 )} ${sortDescending ? ' DESC' : ''}\

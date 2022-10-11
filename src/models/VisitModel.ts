@@ -352,6 +352,7 @@ export class VisitModel {
 
         const filterClause: string = SearchFilterService.buildVisitFilterSqlClause(
             searchRequest.filter,
+            minTimestampUtc,
             'v'
         );
 
@@ -362,9 +363,7 @@ export class VisitModel {
                 subject_identifier AS "subjectIfentifier",
                 0 AS "isArchived",
                 0 AS modiciationTimestampUtc
-                FROM visits v where
-                    modification_timestamp_utc >= ${minTimestampUtc}
-                    where ${filterClause}
+                FROM visits v ${filterClause}
                 ORDER BY ${VdrMappingHelper.mapVdrPropnameToDbName(sortingField)} ${
             sortDescending ? ' DESC' : ''
         }`;

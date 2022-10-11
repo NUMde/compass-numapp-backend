@@ -18,7 +18,7 @@ export class VdrApiInfoController {
         try {
             const returnObject: GetApiVersionResponse = {
                 fault: null,
-                return: '1.7.0'
+                return: '1.9.0'
             };
             return resp.status(200).json(returnObject);
         } catch (error) {
