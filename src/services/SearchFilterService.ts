@@ -30,11 +30,7 @@ export class SearchFilterService {
         // strings
         result = SearchFilterService.appendAndFilter(
             result,
-            SearchFilterService.buildStringClause(
-                filter.subjectIdentifier,
-                varName,
-                'subject_uid'
-            )
+            SearchFilterService.buildStringClause(filter.subjectIdentifier, varName, 'subject_uid')
         );
         result = SearchFilterService.appendAndFilter(
             result,
