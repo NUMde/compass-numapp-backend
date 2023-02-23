@@ -159,7 +159,7 @@ export class SearchFilterService {
     ): string {
         let result = '';
 
-        if (uidFilter == undefined || uidFilter == null) {
+        if (uidFilter == undefined) {
             return '';
         }
         let equalities = '';
@@ -218,7 +218,7 @@ export class SearchFilterService {
     ): string {
         let result = '';
 
-        if (stringFilter == undefined || stringFilter == null) {
+        if (stringFilter == undefined) {
             return '';
         }
         let equalities = '';
@@ -285,7 +285,7 @@ export class SearchFilterService {
     ): string {
         let result = '';
 
-        if (filter == undefined || filter == null) {
+        if (filter == undefined) {
             return '';
         }
         let includeCriterias = '';
@@ -370,7 +370,7 @@ export class SearchFilterService {
     ): string {
         let result = '';
 
-        if (filter == undefined || filter == null) {
+        if (filter == undefined) {
             return '';
         }
         let includeCriterias = '';
