@@ -13,9 +13,6 @@ export class DataRecordingSubmissionController {
     private visitModel: VisitModel = new VisitModel();
 
     @Post('importDataRecordings')
-    // @Middleware((req, res, next) =>
-    //     OrscfTokenService.authorizeOrscf(req, res, next, ['api:importSubjects'])
-    // )
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async importDataRecordings(req: Request, resp: Response) {
         try {

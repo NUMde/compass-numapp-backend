@@ -13,9 +13,6 @@ export class VisitSubmissionController {
     private visitModel: VisitModel = new VisitModel();
 
     @Post('importVisits')
-    // @Middleware((req, res, next) =>
-    //     OrscfTokenService.authorizeOrscf(req, res, next, ['api:importSubjects'])
-    // )
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async importVisits(req: Request, resp: Response) {
         try {
@@ -101,11 +98,11 @@ export class VisitSubmissionController {
     public async applyVisitBatchMutation(req: Request, resp: Response) {
         try {
             const visitUids: string[] = req.body.visitUids;
-            if (visitUids === undefined || visitUids === null) {
+            if (visitUids == undefined || visitUids == null) {
                 return resp.status(200).json({ fault: 'no visits on request', return: null });
             }
             const mutation: VdrModels.BatchableVisitMutation = req.body.mutation;
-            if (mutation === undefined || visitUids === null) {
+            if (mutation == undefined || mutation == null) {
                 return resp.status(200).json({ fault: 'no mutation on request', return: null });
             }
 

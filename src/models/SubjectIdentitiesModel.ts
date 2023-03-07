@@ -195,13 +195,14 @@ export class SubjectIdentitiesModel {
             const pool: Pool = DB.getPool();
             let subjectUidsIn = '';
             // TODO: Performance des womöglich großen where in ???
-            for (let i = 0; i < subjectUids.length; i++) {
-                const subjectUid: string = subjectUids[i];
+            let i = 0;
+            subjectUids.forEach((subjectUid: string) => {
                 subjectUidsIn += `'${subjectUid}'`;
                 if (i < subjectUids.length - 1) {
                     subjectUidsIn += ',';
                 }
-            }
+                i += 1;
+            });
 
             const updateQuery = await pool.query(
                 `UPDATE studyparticipant SET \
@@ -242,35 +243,6 @@ export class SubjectIdentitiesModel {
             if (searchRequest.filter === undefined || searchRequest.filter == null) {
                 searchRequest.filter = {} as SdrModels.SubjectFilter;
             }
-            // const minPeriodStartWhereClause =
-            //     searchRequest.filter.minPeriodStart === undefined
-            //         ? ''
-            //         : ` AND '${searchRequest.filter.minPeriodStart}' <= start_date`;
-
-            // const maxPeriodStartWhereClause =
-            //     searchRequest.filter.maxPeriodStart === undefined
-            //         ? ''
-            //         : ` AND '${searchRequest.filter.maxPeriodStart}' >= start_date`;
-
-            // const minPeriodEndWhereClause =
-            //     searchRequest.filter.minPeriodEnd === undefined
-            //         ? ''
-            //         : ` AND '${searchRequest.filter.minPeriodEnd}' <= personal_study_end_date`;
-
-            // const maxPeriodEndWhereClause =
-            //     searchRequest.filter.maxPeriodEnd === undefined
-            //         ? ''
-            //         : ` AND '${searchRequest.filter.maxPeriodEnd}' >= personal_study_end_date`;
-
-            // const changeDateWhereClause = '';
-            //minTimestampUtc === undefined ? '' : ` AND '${minTimestampUtc}' <= last_action`;
-
-            // const timeStampWhereClause =
-            //     minPeriodStartWhereClause +
-            //     maxPeriodStartWhereClause +
-            //     minPeriodEndWhereClause +
-            //     maxPeriodEndWhereClause +
-            //     changeDateWhereClause;
 
             const filterClause: string = SearchFilterService.buildSubjectFilterSqlClause(
                 searchRequest.filter,
@@ -315,13 +287,14 @@ export class SubjectIdentitiesModel {
             const pool: Pool = DB.getPool();
             let subjectUidsIn = '';
             // TODO: Performance des womöglich großen where in ???
-            for (let i = 0; i < subjectUids.length; i++) {
-                const subjectUid: string = subjectUids[i];
+            let i = 0;
+            subjectUids.forEach((subjectUid: string) => {
                 subjectUidsIn += `'${subjectUid}'`;
                 if (i < subjectUids.length - 1) {
                     subjectUidsIn += ',';
                 }
-            }
+                i += 1;
+            });
 
             const getSubjetsQuery = await pool.query(
                 `SELECT * \

@@ -30,11 +30,7 @@ export class SearchFilterService {
         // strings
         result = SearchFilterService.appendAndFilter(
             result,
-            SearchFilterService.buildStringClause(
-                filter.subjectIdentifier,
-                varName,
-                'subject_uid'
-            )
+            SearchFilterService.buildStringClause(filter.subjectIdentifier, varName, 'subject_uid')
         );
         result = SearchFilterService.appendAndFilter(
             result,
@@ -471,10 +467,10 @@ export class SearchFilterService {
 
         return result;
     }
+
     static ToSqlDateString(value: Date): string {
         const d = new Date(value);
         return d.toUTCString();
-        return `${d.getUTCFullYear()}-${d.getUTCMonth()}-${d.getUTCDay()} ${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}.${d.getUTCMilliseconds()}`;
     }
 
     public static appendAndFilter(current: string, append: string): string {

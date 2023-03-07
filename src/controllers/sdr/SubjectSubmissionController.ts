@@ -15,9 +15,6 @@ export class SubjectSubmissionController {
     private subjectIdentityModel: SubjectIdentitiesModel = new SubjectIdentitiesModel();
 
     @Post('importSubjects')
-    // @Middleware((req, res, next) =>
-    //     OrscfTokenService.authorizeOrscf(req, res, next, ['api:importSubjects'])
-    // )
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async importSubjects(req: Request, resp: Response) {
         try {
@@ -130,11 +127,11 @@ export class SubjectSubmissionController {
     public async applySubjectBatchMutation(req: Request, resp: Response) {
         try {
             const subjectUids: string[] = req.body.subjectUids;
-            if (subjectUids === undefined || subjectUids === null) {
+            if (subjectUids == undefined || subjectUids == null) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
             const mutation: SdrModels.BatchableSubjectMutation = req.body.mutation;
-            if (mutation === undefined || subjectUids === null) {
+            if (mutation == undefined || mutation == null) {
                 return resp.status(200).json({ fault: 'no mutation on request', return: null });
             }
 

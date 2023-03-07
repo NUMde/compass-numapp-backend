@@ -1,11 +1,7 @@
 import { SearchFilterService } from './../services/SearchFilterService';
 import { QuestionnaireModel } from './QuestionnaireModel';
 import { VdrMappingHelper } from './../services/VdrMappingHelper';
-/*
- * Copyright (c) 2021, IBM Deutschland GmbH
- */
 import { Pool } from 'pg';
-//import { QueryResult } from 'pg';
 import logger from 'jet-logger';
 import { DB } from '../server/DB';
 import * as VdrModels from 'orscf-visitdata-contract';
@@ -106,7 +102,7 @@ export class VisitModel {
                 '${visit.executionDateUtc}',
                 ${visit.executionState},
                 '${visit.executingPerson}',
-                '${visit.studyUid}'
+                '${visit.visitUid}'
             )`;
             logger.info(cmd);
             await pool.query(cmd);
@@ -130,7 +126,7 @@ export class VisitModel {
                 execution_date_utc = '${visit.executionDateUtc}',
                 execution_state = ${visit.executionState},
                 execution_person = '${visit.executingPerson}',
-                id = '${visit.studyUid}'
+                id = '${visit.visitUid}'
             `;
             logger.info(cmd);
             await pool.query(cmd);
@@ -240,19 +236,19 @@ export class VisitModel {
     //         const pool: Pool = DB.getPool();
 
     //         const cmd = `SELECT
-    //             id dataRecordingUid
-    //             ,visit_id visitUid
-    //             ,modification_timestamp_utc modificationTimestampUtc
-    //             ,data_recording_name dataRecordingName
-    //             ,task_execution_title taskExecutionTitle
-    //             ,scheduled_date_utc scheduleDateUtc
-    //             ,execution_date_utc executionDateUtc
-    //             ,execution_state executionState
-    //             ,data_scheme_url dataSchemaUrl
-    //             ,notes_regarding_outcome notesRegardingOutcome
-    //             ,execution_person executingPerson
-    //             ,recorded_data recordedData
-    //         FROM datarecordings where subject_identifier = '${subjectIdentifier}' \
+    //              dr.id dataRecordingUid
+    //             ,dr.visit_id visitUid
+    //             ,dr.modification_timestamp_utc modificationTimestampUtc
+    //             ,dr.data_recording_name dataRecordingName
+    //             ,dr.task_execution_title taskExecutionTitle
+    //             ,dr.scheduled_date_utc scheduleDateUtc
+    //             ,dr.execution_date_utc executionDateUtc
+    //             ,dr.execution_state executionState
+    //             ,dr.data_scheme_url dataSchemaUrl
+    //             ,dr.notes_regarding_outcome notesRegardingOutcome
+    //             ,dr.execution_person executingPerson
+    //             ,dr.recorded_data recordedData
+    //         FROM datarecordings dr inner join visits v on v.Id = dr.visit_id where v.subject_identifier = '${subjectIdentifier}' \
     //         `;
 
     //         logger.info(cmd);
@@ -315,41 +311,6 @@ export class VisitModel {
             searchRequest.filter = {} as VdrModels.VisitFilter;
         }
 
-        // const minScheduledDateUtcWhereClause =
-        //     searchRequest.filter.minScheduledDateUtc === undefined
-        //         ? ''
-        //         : ` AND '${searchRequest.filter.minScheduledDateUtc}' <= scheduled_date_utc`;
-
-        // const maxScheduledDateUtcWhereClause =
-        //     searchRequest.filter.maxScheduledDateUtc === undefined
-        //         ? ''
-        //         : ` AND '${searchRequest.filter.maxScheduledDateUtc}' >= scheduled_date_utc`;
-
-        // const minExecutionDateUtcWhereClause =
-        //     searchRequest.filter.minExecutionDateUtc === undefined
-        //         ? ''
-        //         : ` AND '${searchRequest.filter.minExecutionDateUtc}' <= execution_date_utc`;
-
-        // const maxExecutionDateUtcWhereClause =
-        //     searchRequest.filter.maxExecutionDateUtc === undefined
-        //         ? ''
-        //         : ` AND '${searchRequest.filter.maxExecutionDateUtc}' >= execution_date_utc`;
-
-        // const executionStateWhereClause =
-        //     searchRequest.filter.executionState === undefined
-        //         ? ''
-        //         : ` AND ${searchRequest.filter.executionState} = execution_state`;
-
-        // const changeDateWhereClause = '';
-        // //minTimestampUtc === undefined ? '' : ` AND '${minTimestampUtc}' <= last_action`;
-        // const timeStampWhereClause =
-        //     minScheduledDateUtcWhereClause +
-        //     maxScheduledDateUtcWhereClause +
-        //     minExecutionDateUtcWhereClause +
-        //     maxExecutionDateUtcWhereClause +
-        //     executionStateWhereClause +
-        //     changeDateWhereClause;
-
         const filterClause: string = SearchFilterService.buildVisitFilterSqlClause(
             searchRequest.filter,
             minTimestampUtc,
@@ -377,13 +338,14 @@ export class VisitModel {
         try {
             const pool: Pool = DB.getPool();
             let visitUidsIn = '';
-            for (let i = 0; i < visitUids.length; i++) {
-                const subjectUid: string = visitUids[i];
-                visitUidsIn += `'${subjectUid}'`;
+            let i = 0;
+            visitUids.forEach((visitUid: string) => {
+                visitUidsIn += `'${visitUid}'`;
                 if (i < visitUids.length - 1) {
                     visitUidsIn += ',';
                 }
-            }
+                i += 1;
+            });
 
             const cmd = `SELECT
                 id visitUid
