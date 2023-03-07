@@ -1,6 +1,5 @@
 import { VisitModel2 } from './VisitModel2';
 import { DataRecordingStructure } from 'orscf-visitdata-contract';
-import { VisitModel } from './VisitModel';
 import { ExampleStateModel } from './ExampleStateModel';
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { IdHelper } from '../services/IdHelper';
