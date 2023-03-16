@@ -126,11 +126,11 @@ export class SubjectSubmissionController {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async applySubjectBatchMutation(req: Request, resp: Response) {
         try {
-            const subjectUids: string[] = req.body.subjectUids;
+            const subjectUids: string[] | undefined | null = req.body.subjectUids;
             if (subjectUids == undefined || subjectUids == null) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
-            const mutation: SdrModels.BatchableSubjectMutation = req.body.mutation;
+            const mutation: SdrModels.BatchableSubjectMutation | undefined | null = req.body.mutation;
             if (mutation == undefined || mutation == null) {
                 return resp.status(200).json({ fault: 'no mutation on request', return: null });
             }
