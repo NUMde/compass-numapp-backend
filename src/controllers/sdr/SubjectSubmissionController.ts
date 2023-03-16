@@ -130,7 +130,8 @@ export class SubjectSubmissionController {
             if (subjectUids == undefined || subjectUids == null) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
-            const mutation: SdrModels.BatchableSubjectMutation | undefined | null = req.body.mutation;
+            const mutation: SdrModels.BatchableSubjectMutation | undefined | null =
+                req.body.mutation;
             if (mutation == undefined || mutation == null) {
                 return resp.status(200).json({ fault: 'no mutation on request', return: null });
             }

@@ -1,23 +1,13 @@
-import { VisitModel2 } from './VisitModel2';
+import { VisitModelHelper } from './VisitModelHelper';
 import { DataRecordingStructure } from 'orscf-visitdata-contract';
 import { ExampleStateModel } from './ExampleStateModel';
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { IdHelper } from '../services/IdHelper';
 import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
 import { StateModel } from './StateModel';
-//import { resolve } from 'dns';
 
-/**
- * Example model based on the GCS state chart.
- * It uses four different questionnaires that are send to the participant depending on some conditions.
- *
- * @export
- * @class ExampleStateModel
- * @implements {StateModel}
- */
 export class OrscfStateModel implements StateModel {
     private fallbackModel: ExampleStateModel = new ExampleStateModel();
-    private visitModel: VisitModel2 = new VisitModel2();
 
     async calculateUpdatedData(
         participant: ParticipantEntry,
@@ -60,7 +50,7 @@ export class OrscfStateModel implements StateModel {
     private async tryGetNextDataRecording(
         participant: ParticipantEntry
     ): Promise<DataRecordingStructure> {
-        const drs = await this.visitModel.getDataRecordingsForParticipant(participant.subject_uid);
+        const drs = await VisitModelHelper.getDataRecordingsForParticipant(participant.subject_uid);
         if (drs.length == 0) {
             return null;
         }

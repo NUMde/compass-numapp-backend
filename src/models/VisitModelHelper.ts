@@ -1,14 +1,11 @@
 import { VdrMappingHelper } from '../services/VdrMappingHelper';
-/*
- * Copyright (c) 2021, IBM Deutschland GmbH
- */
 import { Pool } from 'pg';
 import logger from 'jet-logger';
 import { DB } from '../server/DB';
 import * as VdrModels from 'orscf-visitdata-contract';
 
-export class VisitModel2 {
-    public async getDataRecordingsForParticipant(
+export class VisitModelHelper {
+    public static async getDataRecordingsForParticipant(
         subjectIdentifier: string
     ): Promise<VdrModels.DataRecordingStructure[]> {
         try {
