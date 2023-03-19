@@ -9,8 +9,14 @@ import { SdrMappingHelper } from './../services/SdrMappingHelper';
 import { ParticipantEntry } from './../types/ParticipantEntry';
 import * as SdrDtos from 'orscf-subjectdata-contract';
 import * as SdrModels from 'orscf-subjectdata-contract';
+import { StateModel } from './StateModel';
+import { OrscfStateModel } from './OrscfStateModel';
+import { QuestionnaireModel } from './QuestionnaireModel';
 
 export class SubjectIdentitiesModel {
+    private stateModel: StateModel = new OrscfStateModel();
+    private questoinnaireHistoryModel = new QuestionnaireModel();
+
     /**
      * Verify if participant exists in database.
      * @param subjectID The participant id
@@ -67,6 +73,8 @@ export class SubjectIdentitiesModel {
     public async createStudyParticipant(studyParticipant: ParticipantEntry): Promise<void> {
         try {
             const pool: Pool = DB.getPool();
+            studyParticipant = await this.stateModel.calculateUpdatedData(studyParticipant, {});
+
             await pool.query(
                 'INSERT INTO studyparticipant(\
                     subject_id,\
@@ -106,6 +114,13 @@ export class SubjectIdentitiesModel {
                     studyParticipant.actual_site_defined_patient_identifier,
                     studyParticipant.last_action
                 ]
+            );
+
+            //HACK getQuestionnaire will create initial entry in questionnairehistory
+            const questionnaire = this.questoinnaireHistoryModel.getQuestionnaire(
+                studyParticipant.subject_id,
+                studyParticipant.current_questionnaire_id,
+                'DE'
             );
         } catch (err) {
             logger.err(err);

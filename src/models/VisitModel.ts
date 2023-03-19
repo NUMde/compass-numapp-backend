@@ -6,9 +6,12 @@ import logger from 'jet-logger';
 import { DB } from '../server/DB';
 import * as VdrModels from 'orscf-visitdata-contract';
 import * as VdrDtos from 'orscf-visitdata-contract';
+import { COMPASSConfig } from '../config/COMPASSConfig';
+import { ParticipantModel } from './ParticipantModel';
 
 export class VisitModel {
     private questionnaireModel: QuestionnaireModel = new QuestionnaireModel();
+    private participantModel: ParticipantModel = new ParticipantModel();
 
     public async getDataRecordingExistence(datarecordingId: string): Promise<boolean> {
         try {
@@ -115,6 +118,31 @@ export class VisitModel {
     public async updateVisit(visit: VdrModels.VisitStructure): Promise<void> {
         try {
             const pool: Pool = DB.getPool();
+            const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
+                visit.subjectIdentifier
+            );
+            const res = await pool.query('SELECT * FROM questionnaires WHERE id = $1', [visit.visitProcedureName]);
+            if (res.rows.length == 0) {
+                throw { code: 404 };
+            }
+
+            const dbId =
+                visit.visitProcedureName +
+                '-' +
+                visit.subjectIdentifier +
+                '-' +
+                (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
+
+            const updateQuestionnaireHistorySql1 = `update public.questionnairehistory set questionnaire_id = '${visit.visitProcedureName}' where id = '${visit.visitUid}'`;
+            await pool.query(updateQuestionnaireHistorySql1);
+
+            const updateQuestionnaireHistorySql2 = `update public.questionnairehistory set id = '${dbId}' where id = '${visit.visitUid}'`;
+            await pool.query(updateQuestionnaireHistorySql2);
+
+            const updateStudyParticipantSql = `update public.studyparticipant set due_date = '${visit.scheduledDateUtc}' where subject_id = '${visit.subjectIdentifier}'`;
+            await pool.query(updateStudyParticipantSql);
+
+            return;
             const cmd = `update visits set
                 study_uid = '${visit.studyUid}',
                 site_uid = '${visit.siteUid}',
@@ -229,7 +257,7 @@ export class VisitModel {
     ): Promise<VdrModels.VisitMetaRecord[]> {
         const pool: Pool = DB.getPool();
 
-        const searchSql = this.GetSearchVisitsSql(searchRequest, 'visitUid', true, minTimestampUtc);
+        const searchSql = this.GetSearchVisitsSql_QuestionnaireHistory(searchRequest, 'visitUid', true, minTimestampUtc);
 
         logger.info(searchSql);
         const searchQuery = await pool.query(searchSql);
@@ -245,7 +273,7 @@ export class VisitModel {
         try {
             const pool: Pool = DB.getPool();
 
-            const searchSql = this.GetSearchVisitsSql(
+            const searchSql = this.GetSearchVisitsSql_QuestionnaireHistory(
                 searchRequest,
                 sortingField,
                 sortDescending,
@@ -295,6 +323,39 @@ export class VisitModel {
         return searchSql;
     }
 
+    private GetSearchVisitsSql_QuestionnaireHistory(
+        searchRequest: VdrDtos.SearchVisitsRequest,
+        sortingField: string,
+        sortDescending: boolean,
+        minTimestampUtc: number
+    ) {
+        if (searchRequest.filter === undefined || searchRequest.filter == null) {
+            searchRequest.filter = {} as VdrModels.VisitFilter;
+        }
+
+        const filterClause: string = SearchFilterService.buildVisitFilterSqlClause_QuestionnaireHistory(
+            searchRequest.filter,
+            minTimestampUtc,
+            'v'
+        );
+
+        let searchSql = `SELECT
+                id AS "visitUid",
+                instance_id AS "studyUid",
+                instance_id AS "siteUid",
+                subject_id AS "subjectIfentifier",
+                0 AS "isArchived",
+                0 AS modiciationTimestampUtc
+                FROM questionnairehistory v ${filterClause}
+                ORDER BY ${VdrMappingHelper.mapVdrPropnameToDbName(sortingField)} ${
+            sortDescending ? ' DESC' : ''
+        }`;
+        if (searchRequest.limitResults !== undefined) {
+            searchSql += ` LIMIT ${searchRequest.limitResults}`;
+        }
+        return searchSql;
+    }
+
     public async getVisits(visitUids: string[]): Promise<VdrModels.VisitFields[]> {
         try {
             const pool: Pool = DB.getPool();
@@ -321,6 +382,45 @@ export class VisitModel {
                 ,execution_state executionState
                 ,execution_person executingPerson
             FROM visits where id in (${visitUidsIn}) \
+            `;
+
+            logger.info(cmd);
+            const getVisitsQuery = await pool.query(cmd);
+            return getVisitsQuery.rows.map((x) => {
+                return VdrMappingHelper.toCamelCase(x);
+            });
+        } catch (err) {
+            logger.err(err);
+            throw err;
+        }
+    }
+
+    public async getVisits_QuestionnaireHistory(visitUids: string[]): Promise<VdrModels.VisitFields[]> {
+        try {
+            const pool: Pool = DB.getPool();
+            let visitUidsIn = '';
+            let i = 0;
+            visitUids.forEach((visitUid: string) => {
+                visitUidsIn += `'${visitUid}'`;
+                if (i < visitUids.length - 1) {
+                    visitUidsIn += ',';
+                }
+                i += 1;
+            });
+
+            const cmd = `SELECT
+                id visitUid
+                ,instance_id studyUid
+                ,instance_id siteUid
+                ,subject_id subjectIdentifier
+                ,null modificationTimestampUtc
+                ,questionnaire_id visitProcedureName
+                ,questionnaire_id visitExecutionTitle
+                ,date_received scheduleDateUtc
+                ,date_received executionDateUtc
+                ,0 executionState
+                ,'' executingPerson
+            FROM questionnairehistory where id in (${visitUidsIn}) \
             `;
 
             logger.info(cmd);

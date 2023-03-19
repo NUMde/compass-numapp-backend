@@ -152,6 +152,46 @@ export class SearchFilterService {
         return result;
     }
 
+    public static buildVisitFilterSqlClause_QuestionnaireHistory(
+        filter: VisitFilter,
+        minTimestampUtc: number,
+        varName: string
+    ): string {
+        let result = '';
+
+        // uids
+        result = SearchFilterService.appendAndFilter(
+            result,
+            SearchFilterService.buildUidClause(filter.studyUid, varName, 'instance_id')
+        );
+
+        // strings
+        result = SearchFilterService.appendAndFilter(
+            result,
+            SearchFilterService.buildStringClause(filter.subjectIdentifier, varName, 'subject_id')
+        );
+        result = SearchFilterService.appendAndFilter(
+            result,
+            SearchFilterService.buildStringClause(
+                filter.visitProcedureName,
+                varName,
+                'questionnaire_id'
+            )
+        );
+
+        // integers
+
+        // dates
+
+        result = SearchFilterService.appendAndFilter(
+            result,
+            SearchFilterService.buildDateClause(filter.executionDateUtc, varName, 'date_received')
+        );
+
+        if (result != '') result = 'where ' + result;
+        return result;
+    }
+
     private static buildUidClause(
         uidFilter: UidFieldFilter | undefined,
         sqlVarName: string,

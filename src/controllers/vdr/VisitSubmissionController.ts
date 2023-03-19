@@ -25,6 +25,9 @@ export class VisitSubmissionController {
             const updatedVisitUids: string[] = [];
 
             for (const visit of visits) {
+                await this.visitModel.updateVisit(visit);
+                updatedVisitUids.push(visit.visitUid);
+                continue;
                 const visitExists: boolean = await this.visitModel.getDataRecordingExistence(
                     visit.visitUid
                 );

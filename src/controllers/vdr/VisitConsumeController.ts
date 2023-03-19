@@ -135,7 +135,9 @@ export class VisitConsumeController {
                     fault: null
                 });
             }
-            const result: VisitFields[] = await this.visitModel.getVisits(visitUids);
+            const result: VisitFields[] = await this.visitModel.getVisits_QuestionnaireHistory(
+                visitUids
+            );
 
             const unavailableVisitUids: string[] = visitUids.filter(
                 (s) => result.map((r) => r.visitUid).indexOf(s) < 0
@@ -166,7 +168,9 @@ export class VisitConsumeController {
                     fault: null
                 });
             }
-            const result: VisitStructure[] = await this.visitModel.getVisits(visitUids);
+            const result: VisitStructure[] = await this.visitModel.getVisits_QuestionnaireHistory(
+                visitUids
+            );
 
             for (const visit of result) {
                 visit.dataRecordings = await this.visitModel.getDataRecordings(visit.visitUid);
