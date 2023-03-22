@@ -35,9 +35,8 @@ export class VisitModel {
         visitUid: string,
         visit: VdrModels.VisitMutation
     ): Promise<boolean> {
-
         //TODO: also needs refactoring to use the 'history' table instead of 'visits'
-        throw { message: "Not implemented in the backend!" };
+        throw { message: 'Not implemented in the backend!' };
 
         try {
             const pool: Pool = DB.getPool();
@@ -86,13 +85,12 @@ export class VisitModel {
 
     public async createVisit(visit: VdrModels.VisitStructure): Promise<void> {
         try {
-
             const studyUid = OrscfAuthConfig.getStudyUid();
             if (visit.studyUid != studyUid) {
-                throw { message: "This backend is dedicated for studyUid '" + studyUid + "'"};
+                throw { message: "This backend is dedicated for studyUid '" + studyUid + "'" };
             }
 
-            throw { message: "Not implemented in the backend!" };
+            throw { message: 'Not implemented in the backend!' };
 
             //TODO: also needs refactoring to use the 'history' table instead of 'visits'
             throw { code: 404 };
@@ -138,14 +136,21 @@ export class VisitModel {
                 visit.subjectIdentifier
             );
 
-            const res = await pool.query('SELECT * FROM questionnaires WHERE id = $1', [visit.visitProcedureName]);
+            const res = await pool.query('SELECT * FROM questionnaires WHERE id = $1', [
+                visit.visitProcedureName
+            ]);
             if (res.rows.length == 0) {
-                throw { message: "There must be a questionaire named '" + visit.visitProcedureName + "' inside of the DB!" };
+                throw {
+                    message:
+                        "There must be a questionaire named '" +
+                        visit.visitProcedureName +
+                        "' inside of the DB!"
+                };
             }
 
             //we want to offer any update-logic ONLY FOR THE NEXT QUESTIONAIRE!
-            if(participant.current_instance_id != visit.visitUid){
-                throw { message: "Cannot update already executed visits!" };
+            if (participant.current_instance_id != visit.visitUid) {
+                throw { message: 'Cannot update already executed visits!' };
                 return;
             }
 
@@ -278,7 +283,12 @@ export class VisitModel {
     ): Promise<VdrModels.VisitMetaRecord[]> {
         const pool: Pool = DB.getPool();
 
-        const searchSql = this.GetSearchVisitsSql_QuestionnaireHistory(searchRequest, 'visitUid', true, minTimestampUtc);
+        const searchSql = this.GetSearchVisitsSql_QuestionnaireHistory(
+            searchRequest,
+            'visitUid',
+            true,
+            minTimestampUtc
+        );
 
         logger.info(searchSql);
         const searchQuery = await pool.query(searchSql);
@@ -356,11 +366,12 @@ export class VisitModel {
             searchRequest.filter = {} as VdrModels.VisitFilter;
         }
 
-        const filterClause: string = SearchFilterService.buildVisitFilterSqlClause_QuestionnaireHistory(
-            searchRequest.filter,
-            minTimestampUtc,
-            'v'
-        );
+        const filterClause: string =
+            SearchFilterService.buildVisitFilterSqlClause_QuestionnaireHistory(
+                searchRequest.filter,
+                minTimestampUtc,
+                'v'
+            );
 
         const studyUid = OrscfAuthConfig.getStudyUid();
         let searchSql = `SELECT
@@ -419,7 +430,9 @@ export class VisitModel {
         }
     }
 
-    public async getVisits_QuestionnaireHistory(visitUids: string[]): Promise<VdrModels.VisitFields[]> {
+    public async getVisits_QuestionnaireHistory(
+        visitUids: string[]
+    ): Promise<VdrModels.VisitFields[]> {
         try {
             const pool: Pool = DB.getPool();
             let visitUidsIn = '';

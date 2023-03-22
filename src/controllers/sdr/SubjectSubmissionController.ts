@@ -29,9 +29,8 @@ export class SubjectSubmissionController {
             const updatedSubjectUids: string[] = [];
 
             for (const subject of subjects) {
-
                 if (subject.studyUid != studyUid) {
-                    throw { message: "This backend is dedicated for studyUid '" + studyUid + "'"};
+                    throw { message: "This backend is dedicated for studyUid '" + studyUid + "'" };
                 }
 
                 const participant: ParticipantEntry =
