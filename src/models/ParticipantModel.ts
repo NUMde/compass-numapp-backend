@@ -1,3 +1,4 @@
+import { OrscfStateModel } from './OrscfStateModel';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
@@ -7,11 +8,10 @@ import logger from 'jet-logger';
 
 import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
 import { DB } from '../server/DB';
-import { ExampleStateModel } from './ExampleStateModel';
 import { StateModel } from './StateModel';
 export class ParticipantModel {
     // the model that determines which questionnaire to send - replace this with you custom model
-    private stateModel: StateModel = new ExampleStateModel();
+    private stateModel: StateModel = new OrscfStateModel();
 
     /**
      * Update the participants current questionnaire, the start and due date and short interval usage.
@@ -39,7 +39,7 @@ export class ParticipantModel {
 
             // calculate new state values
             const triggerValues: StateChangeTrigger = JSON.parse(parameters);
-            const updatedParticipant = this.stateModel.calculateUpdatedData(
+            const updatedParticipant = await this.stateModel.calculateUpdatedData(
                 participant,
                 triggerValues
             );
