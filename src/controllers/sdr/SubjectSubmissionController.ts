@@ -6,6 +6,7 @@ import * as SdrModels from 'orscf-subjectdata-contract';
 import logger from 'jet-logger';
 import { Request, Response } from 'express';
 import { Controller, Post, ClassMiddleware } from '@overnightjs/core';
+import { OrscfAuthConfig } from '../../config/OrscfAuthConfig';
 
 @Controller('subjectSubmission')
 @ClassMiddleware((req, res, next) =>
@@ -23,10 +24,16 @@ export class SubjectSubmissionController {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
 
+            const studyUid = OrscfAuthConfig.getStudyUid();
             const createdSubjectUids: string[] = [];
             const updatedSubjectUids: string[] = [];
 
             for (const subject of subjects) {
+
+                if (subject.studyUid != studyUid) {
+                    throw { message: "This backend is dedicated for studyUid '" + studyUid + "'"};
+                }
+
                 const participant: ParticipantEntry =
                     SdrMappingHelper.mapSubjectToParticipantEntry(subject);
                 const subjectIdentityExistence: boolean =

@@ -1,12 +1,13 @@
 import { SearchFilterService } from './../services/SearchFilterService';
 import { QuestionnaireModel } from './QuestionnaireModel';
 import { VdrMappingHelper } from './../services/VdrMappingHelper';
+import { OrscfAuthConfig } from './../config/OrscfAuthConfig';
 import { Pool } from 'pg';
 import logger from 'jet-logger';
 import { DB } from '../server/DB';
 import * as VdrModels from 'orscf-visitdata-contract';
 import * as VdrDtos from 'orscf-visitdata-contract';
-import { COMPASSConfig } from '../config/COMPASSConfig';
+//import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantModel } from './ParticipantModel';
 
 export class VisitModel {
@@ -34,6 +35,10 @@ export class VisitModel {
         visitUid: string,
         visit: VdrModels.VisitMutation
     ): Promise<boolean> {
+
+        //TODO: also needs refactoring to use the 'history' table instead of 'visits'
+        throw { message: "Not implemented in the backend!" };
+
         try {
             const pool: Pool = DB.getPool();
             let cmd = 'UPDATE visits set';
@@ -81,6 +86,17 @@ export class VisitModel {
 
     public async createVisit(visit: VdrModels.VisitStructure): Promise<void> {
         try {
+
+            const studyUid = OrscfAuthConfig.getStudyUid();
+            if (visit.studyUid != studyUid) {
+                throw { message: "This backend is dedicated for studyUid '" + studyUid + "'"};
+            }
+
+            throw { message: "Not implemented in the backend!" };
+
+            //TODO: also needs refactoring to use the 'history' table instead of 'visits'
+            throw { code: 404 };
+
             const pool: Pool = DB.getPool();
             const cmd = `INSERT INTO visits(
                 study_uid,
@@ -103,7 +119,7 @@ export class VisitModel {
                 '${visit.visitExecutionTitle}',
                 '${visit.scheduledDateUtc}',
                 '${visit.executionDateUtc}',
-                ${visit.executionState},
+                 ${visit.executionState},
                 '${visit.executingPerson}',
                 '${visit.visitUid}'
             )`;
@@ -121,28 +137,33 @@ export class VisitModel {
             const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
                 visit.subjectIdentifier
             );
+
             const res = await pool.query('SELECT * FROM questionnaires WHERE id = $1', [visit.visitProcedureName]);
             if (res.rows.length == 0) {
-                throw { code: 404 };
+                throw { message: "There must be a questionaire named '" + visit.visitProcedureName + "' inside of the DB!" };
             }
 
-            const dbId =
-                visit.visitProcedureName +
-                '-' +
-                visit.subjectIdentifier +
-                '-' +
-                (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
+            //we want to offer any update-logic ONLY FOR THE NEXT QUESTIONAIRE!
+            if(participant.current_instance_id != visit.visitUid){
+                throw { message: "Cannot update already executed visits!" };
+                return;
+            }
 
-            const updateQuestionnaireHistorySql1 = `update public.questionnairehistory set questionnaire_id = '${visit.visitProcedureName}' where id = '${visit.visitUid}'`;
-            await pool.query(updateQuestionnaireHistorySql1);
+            //ONLY 'due_date' & 'questionaireId' CAN BE UPDATED,
+            //and last one must be updated on participants AND history table synchonously:
+            const studyParticipantSql_DueDate_UpdateSql = `update public.studyparticipant set due_date = '${visit.scheduledDateUtc}', current_questionnaire_id = '${visit.visitProcedureName}' where subject_id = '${visit.subjectIdentifier}'`;
+            await pool.query(studyParticipantSql_DueDate_UpdateSql);
+            const updateQuestionnaireHistory_QuestionaireId_UpdateSqlSql = `update public.questionnairehistory set questionnaire_id = '${visit.visitProcedureName}' where instance_id = '${visit.visitUid}'`;
+            await pool.query(updateQuestionnaireHistory_QuestionaireId_UpdateSqlSql);
 
-            const updateQuestionnaireHistorySql2 = `update public.questionnairehistory set id = '${dbId}' where id = '${visit.visitUid}'`;
-            await pool.query(updateQuestionnaireHistorySql2);
-
-            const updateStudyParticipantSql = `update public.studyparticipant set due_date = '${visit.scheduledDateUtc}' where subject_id = '${visit.subjectIdentifier}'`;
-            await pool.query(updateStudyParticipantSql);
+            //after changing the 'questionaireId', the 'id' of the history-
+            //record becomes inconsistent and needs to be re-calculated:
+            const questionnaireHistory_Id_RepairSql = `update public.questionnairehistory set id = CONCAT(questionnaire_id,'-',subject_id,'-',instance_id) where instance_id = '${visit.visitUid}'`;
+            await pool.query(questionnaireHistory_Id_RepairSql);
 
             return;
+
+            //OLD WAY with separate visit-table - well be removed in mid term
             const cmd = `update visits set
                 study_uid = '${visit.studyUid}',
                 site_uid = '${visit.siteUid}',
@@ -296,6 +317,7 @@ export class VisitModel {
         sortDescending: boolean,
         minTimestampUtc: number
     ) {
+        if (searchRequest.limitResults < 1) searchRequest.limitResults = 10000;
         if (searchRequest.filter === undefined || searchRequest.filter == null) {
             searchRequest.filter = {} as VdrModels.VisitFilter;
         }
@@ -317,7 +339,7 @@ export class VisitModel {
                 ORDER BY ${VdrMappingHelper.mapVdrPropnameToDbName(sortingField)} ${
             sortDescending ? ' DESC' : ''
         }`;
-        if (searchRequest.limitResults !== undefined) {
+        if (searchRequest.limitResults !== undefined && searchRequest.limitResults > 0) {
             searchSql += ` LIMIT ${searchRequest.limitResults}`;
         }
         return searchSql;
@@ -329,6 +351,7 @@ export class VisitModel {
         sortDescending: boolean,
         minTimestampUtc: number
     ) {
+        if (searchRequest.limitResults < 1) searchRequest.limitResults = 10000;
         if (searchRequest.filter === undefined || searchRequest.filter == null) {
             searchRequest.filter = {} as VdrModels.VisitFilter;
         }
@@ -339,18 +362,19 @@ export class VisitModel {
             'v'
         );
 
+        const studyUid = OrscfAuthConfig.getStudyUid();
         let searchSql = `SELECT
-                id AS "visitUid",
-                instance_id AS "studyUid",
-                instance_id AS "siteUid",
+                instance_id AS "visitUid",
+                '${studyUid}' studyUid,
+                '00000000-0000-0000-0000-000000000000' siteUid,
                 subject_id AS "subjectIfentifier",
                 0 AS "isArchived",
-                0 AS modiciationTimestampUtc
+                extract(epoch from date_received) AS modiciationTimestampUtc
                 FROM questionnairehistory v ${filterClause}
                 ORDER BY ${VdrMappingHelper.mapVdrPropnameToDbName(sortingField)} ${
             sortDescending ? ' DESC' : ''
         }`;
-        if (searchRequest.limitResults !== undefined) {
+        if (searchRequest.limitResults !== undefined && searchRequest.limitResults > 0) {
             searchSql += ` LIMIT ${searchRequest.limitResults}`;
         }
         return searchSql;
@@ -408,19 +432,43 @@ export class VisitModel {
                 i += 1;
             });
 
-            const cmd = `SELECT
-                id visitUid
-                ,instance_id studyUid
-                ,instance_id siteUid
-                ,subject_id subjectIdentifier
-                ,null modificationTimestampUtc
-                ,questionnaire_id visitProcedureName
-                ,questionnaire_id visitExecutionTitle
-                ,date_received scheduleDateUtc
-                ,date_received executionDateUtc
-                ,0 executionState
-                ,'' executingPerson
-            FROM questionnairehistory where id in (${visitUidsIn}) \
+            const studyUid = OrscfAuthConfig.getStudyUid();
+            const cmd = `
+SELECT
+          instance_id visitUid
+         ,'${studyUid}' studyUid
+         ,'00000000-0000-0000-0000-000000000000' siteUid
+         ,subject_id subjectIdentifier
+         ,extract(epoch from date_received) modificationTimestampUtc
+         ,questionnaire_id visitProcedureName
+         ,questionnaire_id visitExecutionTitle
+         ,date_sent scheduleDateUtc
+         ,date_sent executionDateUtc
+         ,2 executionState
+         ,'(participant)' executingPerson
+         ,0 AS "isArchived"
+     FROM questionnairehistory
+     WHERE date_sent is not null and
+           instance_id in (${visitUidsIn})
+UNION
+SELECT
+          questionnairehistory.instance_id visitUid
+         ,'${studyUid}' studyUid
+         ,'00000000-0000-0000-0000-000000000000' siteUid
+         ,questionnairehistory.subject_id subjectIdentifier
+         ,extract(epoch from date_received) modificationTimestampUtc
+         ,questionnairehistory.questionnaire_id visitProcedureName
+         ,questionnairehistory.questionnaire_id visitExecutionTitle
+         ,studyparticipant.due_date scheduleDateUtc
+         ,questionnairehistory.date_sent executionDateUtc
+         ,1 executionState
+         ,'(participant)' executingPerson
+         ,0 AS "isArchived"
+     FROM questionnairehistory, studyparticipant
+     WHERE questionnairehistory.subject_id=studyparticipant.subject_id and
+           date_sent is null and
+           instance_id in (${visitUidsIn})
+ORDER BY scheduleDateUtc
             `;
 
             logger.info(cmd);

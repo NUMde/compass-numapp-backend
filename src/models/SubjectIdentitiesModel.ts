@@ -117,7 +117,7 @@ export class SubjectIdentitiesModel {
             );
 
             //HACK getQuestionnaire will create initial entry in questionnairehistory
-            const questionnaire = this.questoinnaireHistoryModel.getQuestionnaire(
+            this.questoinnaireHistoryModel.getQuestionnaire(
                 studyParticipant.subject_id,
                 studyParticipant.current_questionnaire_id,
                 'DE'
@@ -314,6 +314,7 @@ export class SubjectIdentitiesModel {
             const getSubjetsQuery = await pool.query(
                 `SELECT * \
                 FROM studyparticipant where subject_uid in (${subjectUidsIn}) \
+                ORDER BY subject_id
                 `
             );
             return getSubjetsQuery.rows.map((r) =>
