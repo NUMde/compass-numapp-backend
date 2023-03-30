@@ -22,4 +22,5 @@ export interface ParticipantEntry {
     general_study_end_date: Date;
     personal_study_end_date: Date;
     language_code: string;
+    discriminators?: Record<string, unknown>;
 }
