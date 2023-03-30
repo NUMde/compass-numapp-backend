@@ -14,7 +14,6 @@ export class OrscfStateModel implements StateModel {
         parameters: StateChangeTrigger
     ): Promise<ParticipantEntry> {
         const result = this.tryGetNextDataRecording(participant).then((nextDataRecording) => {
-
             //HACK: we are not allowed to change the behaviour of the ExampleStatemodel!
             //To handle the strange behaviour when setting initial values, we need:
             //A) to prepare the participant to always have an instance_id
@@ -24,7 +23,7 @@ export class OrscfStateModel implements StateModel {
             //(avoids getting exceptions when other code locations trying to load the non existing questionnaire using this name)
 
             // A)
-            if(!participant.current_instance_id){
+            if (!participant.current_instance_id) {
                 participant.current_instance_id = IdHelper.createID();
             }
 
@@ -34,7 +33,7 @@ export class OrscfStateModel implements StateModel {
                 const result = this.fallbackModel.calculateUpdatedData(participant, parameters);
                 return result.then((entry) => {
                     //B): if the InitialQuestionnaireId isnt configured properly...
-                    if(entry.current_questionnaire_id == 'initial'){
+                    if (entry.current_questionnaire_id == 'initial') {
                         //... use the DefaultQuestionnaireId instead
                         entry.current_questionnaire_id = COMPASSConfig.getDefaultQuestionnaireId();
                     }
