@@ -116,7 +116,8 @@ export class SubjectIdentitiesModel {
                 ]
             );
 
-            //HACK getQuestionnaire will create initial entry in questionnairehistory
+            //HACK getQuestionnaire will create 'initial' entry in questionnairehistory,
+            //if no initial questionnaire is configured AND current_instance_id is NOT set
             this.questoinnaireHistoryModel.getQuestionnaire(
                 studyParticipant.subject_id,
                 studyParticipant.current_questionnaire_id,

@@ -150,8 +150,7 @@ export class VisitModel {
 
             //we want to offer any update-logic ONLY FOR THE NEXT QUESTIONAIRE!
             if (participant.current_instance_id != visit.visitUid) {
-                throw { message: 'Cannot update already executed visits!' };
-                return;
+                throw { message: 'Cannot update visit "' + visit.visitUid + '", because this is only allowed for visit "' + participant.current_instance_id +'", which is the current visit of participant "' + participant.subject_id + '"!' };
             }
 
             //ONLY 'due_date' & 'questionaireId' CAN BE UPDATED,

@@ -14,9 +14,32 @@ export class OrscfStateModel implements StateModel {
         parameters: StateChangeTrigger
     ): Promise<ParticipantEntry> {
         const result = this.tryGetNextDataRecording(participant).then((nextDataRecording) => {
+
+            //HACK: we are not allowed to change the behaviour of the ExampleStatemodel!
+            //To handle the strange behaviour when setting initial values, we need:
+            //A) to prepare the participant to always have an instance_id
+            //(avoids that history-entries will created using the initialQuestionaireName as instance_id ???)
+            //and we need B) to fix up the questionnaire id itself, if it was set to
+            //the hardcoded fallback value 'initial'
+            //(avoids getting exceptions when other code locations trying to load the non existing questionnaire using this name)
+
+            // A)
+            if(!participant.current_instance_id){
+                participant.current_instance_id = IdHelper.createID();
+            }
+
             const updatedParticipant: ParticipantEntry = { ...participant };
+            //indicates, that we not use a completely remote controlled backend (as ORSCF pref.)
             if (nextDataRecording == null) {
-                return this.fallbackModel.calculateUpdatedData(participant, parameters);
+                const result = this.fallbackModel.calculateUpdatedData(participant, parameters);
+                return result.then((entry) => {
+                    //B): if the InitialQuestionnaireId isnt configured properly...
+                    if(entry.current_questionnaire_id == 'initial'){
+                        //... use the DefaultQuestionnaireId instead
+                        entry.current_questionnaire_id = COMPASSConfig.getDefaultQuestionnaireId();
+                    }
+                    return entry;
+                });
             }
 
             const questionnaireVersion = '1.0.0';

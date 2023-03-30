@@ -18,6 +18,10 @@ import { IdHelper } from '../services/IdHelper';
 export class QuestionnaireModel {
     private participantModel: ParticipantModel = new ParticipantModel();
 
+    //HACK: that getQuestionnaire ALWAYS writes a history entry as a side effect,
+    //violates "separation of concerns" and also limits the usability of the
+    //method extreme, since it cannot be called any number of times due to the lack of idempotency
+
     /**
      * Retrieve the questionnaire with the requested ID and create a log entry in the questionnairehistory table.
      *
@@ -53,6 +57,11 @@ export class QuestionnaireModel {
                         `User language '${language}' not available, using fallback language '${res.rows[0].language_code}'`
                     );
                 }
+
+                //HACK:here, as a fallback for an unset current_instance_id the
+                //initalQuesionaireId is used instead, which 1: isn't a UUID at all
+                //and 2: if there is no configuration of the InitialQuestionnaireId
+                //uses the hardcoded fallback value 'initial' + it also influences dbId
                 const dbId =
                     questionnaireId +
                     '-' +
