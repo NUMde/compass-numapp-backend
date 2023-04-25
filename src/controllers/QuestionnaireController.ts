@@ -102,26 +102,37 @@ export class QuestionnaireController {
         const version = req.body.version;
         const name = req.body.name;
         const questionnaire = req.body.questionnaire;
+        const languageCode = req.body.languageCode;
 
-        this.questionnaireModel.addQuestionnaire(url, version, name, questionnaire).then(
-            () => {
-                res.sendStatus(204);
-            },
-            (err) => {
-                if (err.code === 409) {
-                    res.status(409).json({
-                        errorCode: 'QueueNameDuplicate',
-                        errorMessage: 'A questionnaire with this name already exists.'
-                    });
-                } else {
-                    res.status(500).json({
-                        errorCode: 'InternalErr',
-                        errorMessage: 'An internal error occurred.',
-                        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
-                    });
+        if (!(url && version && name && questionnaire)) {
+            return res.status(400).json({
+                errorCode: 'InvalidQuery',
+                errMessage: 'Invalid query: params missing'
+            });
+        }
+
+        this.questionnaireModel
+            .addQuestionnaire(url, version, name, questionnaire, languageCode)
+            .then(
+                () => {
+                    res.sendStatus(204);
+                },
+                (err) => {
+                    if (err.code === 409) {
+                        res.status(409).json({
+                            errorCode: 'QueueNameDuplicate',
+                            errorMessage: 'A questionnaire with this name already exists.'
+                        });
+                    } else {
+                        res.status(500).json({
+                            errorCode: 'InternalErr',
+                            errorMessage: 'An internal error occurred.',
+                            errorStack:
+                                process.env.NODE_ENV !== 'production' ? err.stack : undefined
+                        });
+                    }
                 }
-            }
-        );
+            );
     }
 
     /**
@@ -145,30 +156,33 @@ export class QuestionnaireController {
         const version = req.body.version;
         const name = req.body.name;
         const questionnaire = req.body.questionnaire;
+        const languageCode = req.body.languageCode;
 
-        this.questionnaireModel.updateQuestionnaire(url, version, name, questionnaire).then(
-            () => {
-                res.sendStatus(204);
-            },
-            (err) => {
-                if (err.code === 409) {
-                    res.status(409).json({
-                        errorCode: 'QueueVersionDuplicate',
-                        errorMessage: 'A questionnaire with this url and version already exists'
+        this.questionnaireModel
+            .updateQuestionnaire(url, version, name, questionnaire, languageCode)
+            .then(
+                () => {
+                    res.sendStatus(204);
+                },
+                (err) => {
+                    if (err.code === 409) {
+                        res.status(409).json({
+                            errorCode: 'QueueVersionDuplicate',
+                            errorMessage: 'A questionnaire with this url and version already exists'
+                        });
+                    }
+                    if (err.code === 404) {
+                        res.status(404).json({
+                            errorCode: 'QueueNotFound',
+                            errorMessage: 'No questionnaire with given url and name found to update'
+                        });
+                    }
+                    res.status(500).json({
+                        errorCode: 'InternalErr',
+                        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
                     });
                 }
-                if (err.code === 404) {
-                    res.status(404).json({
-                        errorCode: 'QueueNotFound',
-                        errorMessage: 'No questionnaire with given url and name found to update'
-                    });
-                }
-                res.status(500).json({
-                    errorCode: 'InternalErr',
-                    errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
-                });
-            }
-        );
+            );
     }
 
     /**
@@ -188,10 +202,11 @@ export class QuestionnaireController {
         })
     )
     public async getQuestionnaireByUrlAndVersion(req: Request, res: Response) {
-        let url: string, version: string;
+        let url: string, version: string, languageCode: string;
         try {
             url = req.query.url.toString();
             version = req.query.version.toString();
+            languageCode = req.query.languageCode?.toString() ?? null;
         } catch (err) {
             res.status(400).json({
                 errorCode: 'InvalidQuery',
@@ -201,7 +216,7 @@ export class QuestionnaireController {
             return;
         }
 
-        this.questionnaireModel.getQuestionnaireByUrlAndVersion(url, version).then(
+        this.questionnaireModel.getQuestionnaireByUrlAndVersion(url, version, languageCode).then(
             (response) => {
                 if (response.length === 0) {
                     res.status(404).json({

@@ -103,6 +103,7 @@ export class QueueModel {
                     req.query.subjectId +
                     '-' +
                     (req.query.instanceId || COMPASSConfig.getInitialQuestionnaireId());
+                console.log(dbID);
                 const res = await dbClient.query(
                     'SELECT * FROM questionnairehistory WHERE id = $1',
                     [dbID]
