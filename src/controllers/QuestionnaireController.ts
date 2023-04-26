@@ -60,7 +60,7 @@ export class QuestionnaireController {
             ? req.params.subjectID
             : undefined;
 
-        const questionnaireId = req.params.questionnaireId;
+        const questionnaireId = req.params.questionnaireId.split('|')[0];
         const language = req.params.language
             ? req.params.language
             : COMPASSConfig.getDefaultLanguageCode();
@@ -224,7 +224,7 @@ export class QuestionnaireController {
                         errorMessage: 'No questionnaire found that matches the given parameters.'
                     });
                 }
-                res.status(200).json(response[0]);
+                res.status(200).json(response[0]['body']);
             },
             (err) => {
                 res.status(500).json({

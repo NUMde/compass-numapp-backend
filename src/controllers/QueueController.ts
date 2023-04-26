@@ -57,7 +57,7 @@ export class QueueController {
                 //Data already sent through the other App
                 res.status(409).json({
                     errorCode: 'QueueDuplicateRes',
-                    errcode:
+                    errorMessage:
                         'Queue already contains response object for the corresponding questionnaire.'
                 });
             } else {

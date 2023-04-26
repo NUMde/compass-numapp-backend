@@ -103,7 +103,7 @@ export class QuestionnaireModel {
         try {
             // Make sure there isn't a questionnaire yet with the given id
             const res = await dbClient.query(
-                'SELECT * FROM questionnaires WHERE id = $1 AND ($2 is null OR language_code = $2)',
+                'SELECT * FROM questionnaires WHERE id = $1 AND ($2::text is NULL OR language_code = $2::text)',
                 [name]
             );
             if (res.rows.length !== 0) {
@@ -147,7 +147,7 @@ export class QuestionnaireModel {
         try {
             // Make sure there is no questionnaire present with the given url and version
             const res1 = await dbClient.query(
-                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND version = $2 AND ($3 is NULL or language_code = $3)',
+                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND version = $2 AND ($3::text is NULL or language_code = $3::text)',
                 [url, version, languageCode]
             );
             if (res1.rows.length === 1) {
@@ -155,7 +155,7 @@ export class QuestionnaireModel {
             }
             // Make sure there is a questionnaire with the given url and name
             const res2 = await dbClient.query(
-                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND name = $2 AND ($3 is NULL or language_code = $3)',
+                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND name = $2 AND ($3::text is NULL or language_code = $3::text)',
                 [url, name]
             );
             if (res2.rows.length === 0) {
@@ -166,7 +166,7 @@ export class QuestionnaireModel {
                 [IdHelper.createID(), url, version, name, questionnaire, languageCode]
             );
             dbClient.query(
-                'UPDATE questionnaires SET body = $1 WHERE id = $2 AND ($3 is NULL or language_code = $3) RETURNING id',
+                'UPDATE questionnaires SET body = $1 WHERE id = $2 AND ($3::text is NULL or language_code = $3::text) RETURNING id',
                 [questionnaire, name, languageCode]
             );
         } catch (error) {
@@ -192,7 +192,7 @@ export class QuestionnaireModel {
         const dbClient = await DB.getPool().connect();
         try {
             const res = await dbClient.query(
-                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND version = $2 AND ($3 is NULL or language_code = $3)',
+                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND version = $2 AND ($3::text is null or language_code = $3::text)',
                 [url, version, languageCode]
             );
             return res.rows;
