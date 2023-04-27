@@ -35,6 +35,8 @@ export class QuestionnaireModel {
         // we don't need to dispose the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
 
+        const url = questionnaireId.split('|')[0];
+
         try {
             const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
                 subjectID
@@ -42,7 +44,7 @@ export class QuestionnaireModel {
 
             const res = await dbClient.query(
                 'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);',
-                [questionnaireId, language, COMPASSConfig.getDefaultLanguageCode()]
+                [url, language, COMPASSConfig.getDefaultLanguageCode()]
             );
 
             if (res.rows.length !== 1) {

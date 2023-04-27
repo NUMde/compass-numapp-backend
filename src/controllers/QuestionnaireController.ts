@@ -33,14 +33,18 @@ export class QuestionnaireController {
      */
     @Get('get-languages')
     public async getQuestionnaireLanguages(req: Request, res: Response) {
-        this.questionnaireModel.getQuestionnaireLanguages().then(
-            (response) => {
+        this.questionnaireModel
+            .getQuestionnaireLanguages()
+            .then((response) => {
                 res.status(200).send(response);
-            },
-            (error) => {
-                res.status(500).send;
-            }
-        );
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    errorCode: 'InternalErr',
+                    errorMessage: 'An internal error occurred.',
+                    errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+                });
+            });
     }
 
     /**
@@ -60,25 +64,27 @@ export class QuestionnaireController {
             ? req.params.subjectID
             : undefined;
 
-        const questionnaireId = req.params.questionnaireId.split('|')[0];
         const language = req.params.language
             ? req.params.language
             : COMPASSConfig.getDefaultLanguageCode();
 
-        this.questionnaireModel.getQuestionnaire(subjectID, questionnaireId, language).then(
-            (resp) => res.status(200).json(resp),
-            (err) => {
-                if (err.response) {
-                    res.status(err.response.status).send();
-                } else {
-                    res.status(500).json({
-                        errorCode: 'InternalErr',
-                        errorMessage: 'An internal error occurred.',
-                        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
-                    });
+        this.questionnaireModel
+            .getQuestionnaire(subjectID, req.params.questionnaireId, language)
+            .then(
+                (resp) => res.status(200).json(resp),
+                (err) => {
+                    if (err.response) {
+                        res.status(err.response.status).send();
+                    } else {
+                        res.status(500).json({
+                            errorCode: 'InternalErr',
+                            errorMessage: 'An internal error occurred.',
+                            errorStack:
+                                process.env.NODE_ENV !== 'production' ? err.stack : undefined
+                        });
+                    }
                 }
-            }
-        );
+            );
     }
 
     /**

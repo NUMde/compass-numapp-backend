@@ -38,7 +38,7 @@ export class QueueController {
     @Post()
     @Middleware(AuthorizationController.checkStudyParticipantLogin)
     public async addToQueue(req: Request, res: Response) {
-        let id, version;
+        let id: string, version: string;
         if (req.query.surveyId) {
             [id, version] = req.query.surveyId.toString().split('|');
         }

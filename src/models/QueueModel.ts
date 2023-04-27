@@ -103,7 +103,6 @@ export class QueueModel {
                     req.query.subjectId +
                     '-' +
                     (req.query.instanceId || COMPASSConfig.getInitialQuestionnaireId());
-                console.log(dbID);
                 const res = await dbClient.query(
                     'SELECT * FROM questionnairehistory WHERE id = $1',
                     [dbID]
@@ -114,13 +113,15 @@ export class QueueModel {
                     return false;
                 } else {
                     await dbClient.query(
-                        'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
+                        'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received, questionnaire_id, version) VALUES ($1, $2, $3, $4, $5, $6, $7)',
                         [
                             IdHelper.createID(),
                             queueEntry.subject_id,
                             queueEntry.encrypted_resp,
                             queueEntry.date_sent,
-                            res.rows[0].date_received
+                            res.rows[0].date_received,
+                            queueEntry.questionnaire_id,
+                            queueEntry.version
                         ]
                     );
 
