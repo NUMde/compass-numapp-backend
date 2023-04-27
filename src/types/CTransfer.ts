@@ -9,6 +9,7 @@ export interface CTransfer {
     UUID: string;
     SubjectId: string;
     QuestionnaireId: string;
+    Version: string;
     JSON: string;
     AbsendeDatum: Date;
     ErhaltenDatum: Date;

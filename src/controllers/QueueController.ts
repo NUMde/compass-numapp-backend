@@ -38,10 +38,15 @@ export class QueueController {
     @Post()
     @Middleware(AuthorizationController.checkStudyParticipantLogin)
     public async addToQueue(req: Request, res: Response) {
+        let id: string, version: string;
+        if (req.query.surveyId) {
+            [id, version] = req.query.surveyId.toString().split('|');
+        }
         const queueEntry: QueueEntry = {
             id: null,
             subject_id: req.query.subjectId.toString(),
-            questionnaire_id: req.query.surveyId ? req.query.surveyId.toString() : 'Special_Report',
+            questionnaire_id: id ?? 'Special_Report',
+            version: version ?? 'N/A',
             encrypted_resp: req.body.payload,
             date_sent: new Date(),
             date_received: this.generateDateReceived(req)
@@ -52,7 +57,7 @@ export class QueueController {
                 //Data already sent through the other App
                 res.status(409).json({
                     errorCode: 'QueueDuplicateRes',
-                    errcode:
+                    errorMessage:
                         'Queue already contains response object for the corresponding questionnaire.'
                 });
             } else {

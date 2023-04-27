@@ -35,6 +35,8 @@ export class QuestionnaireModel {
         // we don't need to dispose the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
 
+        const url = questionnaireId.split('|')[0];
+
         try {
             const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
                 subjectID
@@ -42,7 +44,7 @@ export class QuestionnaireModel {
 
             const res = await dbClient.query(
                 'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);',
-                [questionnaireId, language, COMPASSConfig.getDefaultLanguageCode()]
+                [url, language, COMPASSConfig.getDefaultLanguageCode()]
             );
 
             if (res.rows.length !== 1) {
@@ -96,26 +98,28 @@ export class QuestionnaireModel {
         url: string,
         version: string,
         name: string,
-        questionnaire: string
+        questionnaire: string,
+        languageCode?: string
     ): Promise<void> {
         const dbClient = await DB.getPool().connect();
         try {
             // Make sure there isn't a questionnaire yet with the given id
-            const res = await dbClient.query('SELECT * FROM questionnaires WHERE id = $1', [name]);
+            const res = await dbClient.query(
+                'SELECT * FROM questionnaires WHERE id = $1 AND ($2::text is NULL OR language_code = $2::text)',
+                [name]
+            );
             if (res.rows.length !== 0) {
                 throw { code: 409 };
             }
-            await dbClient.query('INSERT INTO questionnaires(id, body) VALUES($1, $2)', [
+            await dbClient.query('INSERT INTO questionnaires VALUES($1, $2, $3)', [
                 name,
-                questionnaire
+                questionnaire,
+                languageCode
             ]);
-            dbClient.query('INSERT INTO questionnaire_version_history VALUES($1, $2, $3, $4, $5)', [
-                IdHelper.createID(),
-                url,
-                version,
-                name,
-                questionnaire
-            ]);
+            dbClient.query(
+                'INSERT INTO questionnaire_version_history VALUES($1, $2, $3, $4, $5, $6)',
+                [IdHelper.createID(), url, version, name, questionnaire, languageCode]
+            );
         } catch (error) {
             logger.err(error);
             throw error;
@@ -138,34 +142,35 @@ export class QuestionnaireModel {
         url: string,
         version: string,
         name: string,
-        questionnaire: string
+        questionnaire: string,
+        languageCode?: string
     ): Promise<void> {
         const dbClient = await DB.getPool().connect();
         try {
             // Make sure there is no questionnaire present with the given url and version
             const res1 = await dbClient.query(
-                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND version = $2',
-                [url, version]
+                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND version = $2 AND ($3::text is NULL or language_code = $3::text)',
+                [url, version, languageCode]
             );
             if (res1.rows.length === 1) {
                 throw { code: 409 };
             }
             // Make sure there is a questionnaire with the given url and name
             const res2 = await dbClient.query(
-                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND name = $2',
+                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND name = $2 AND ($3::text is NULL or language_code = $3::text)',
                 [url, name]
             );
             if (res2.rows.length === 0) {
                 throw { code: 404 };
             }
             await dbClient.query(
-                'INSERT INTO questionnaire_version_history VALUES($1, $2, $3, $4, $5)',
-                [IdHelper.createID(), url, version, name, questionnaire]
+                'INSERT INTO questionnaire_version_history VALUES($1, $2, $3, $4, $5, $6)',
+                [IdHelper.createID(), url, version, name, questionnaire, languageCode]
             );
-            dbClient.query('UPDATE questionnaires SET body = $1 WHERE id = $2 RETURNING id', [
-                questionnaire,
-                name
-            ]);
+            dbClient.query(
+                'UPDATE questionnaires SET body = $1 WHERE id = $2 AND ($3::text is NULL or language_code = $3::text) RETURNING id',
+                [questionnaire, name, languageCode]
+            );
         } catch (error) {
             logger.err(error);
             throw error;
@@ -181,12 +186,16 @@ export class QuestionnaireModel {
      * @param {string} version
      * @returns{object} the questionnaire object
      */
-    public async getQuestionnaireByUrlAndVersion(url: string, version: string): Promise<string[]> {
+    public async getQuestionnaireByUrlAndVersion(
+        url: string,
+        version: string,
+        languageCode?: string
+    ): Promise<string[]> {
         const dbClient = await DB.getPool().connect();
         try {
             const res = await dbClient.query(
-                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND version = $2',
-                [url, version]
+                'SELECT * FROM questionnaire_version_history WHERE url = $1 AND version = $2 AND ($3::text is null or language_code = $3::text)',
+                [url, version, languageCode]
             );
             return res.rows;
         } catch (error) {
