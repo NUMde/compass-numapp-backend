@@ -139,13 +139,14 @@ export class QueueModel {
             } else {
                 // a report is send from the client
                 await dbClient.query(
-                    'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received) VALUES ($1, $2, $3, $4, $5)',
+                    'INSERT INTO queue(id, subject_id, encrypted_resp, date_sent, date_received, questionnaire_id) VALUES ($1, $2, $3, $4, $5, $6)',
                     [
                         IdHelper.createID(),
                         queueEntry.subject_id,
                         queueEntry.encrypted_resp,
                         queueEntry.date_sent,
-                        queueEntry.date_received
+                        queueEntry.date_received,
+                        queueEntry.questionnaire_id
                     ]
                 );
 

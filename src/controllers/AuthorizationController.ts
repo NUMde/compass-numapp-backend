@@ -73,11 +73,11 @@ export class AuthorizationController {
                 token.payload['api_id']
             );
             if (success) {
-                Promise.resolve({ true: true });
-            } else Promise.resolve({ name: 'UnauthorizedApiUser; Not found' });
+                return Promise.resolve(false);
+            } else return Promise.resolve(true);
         } catch (err) {
             logger.err(err);
-            return false;
+            return Promise.reject();
         }
     }
 

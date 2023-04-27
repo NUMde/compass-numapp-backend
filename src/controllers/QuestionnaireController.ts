@@ -6,7 +6,7 @@
 
 import { Request, Response } from 'express';
 
-import { Controller, Get, Middleware, Post, Put } from '@overnightjs/core';
+import { Controller, ClassErrorMiddleware, Get, Middleware, Post, Put } from '@overnightjs/core';
 
 import { QuestionnaireModel } from '../models/QuestionnaireModel';
 import { AuthorizationController } from './AuthorizationController';
@@ -21,6 +21,14 @@ import { COMPASSConfig } from '../config/COMPASSConfig';
  * @class QuestionnaireController
  */
 @Controller('questionnaire')
+@ClassErrorMiddleware((err, _req, res, next) => {
+    res.status(err.status).json({
+        errorCode: err.code,
+        errorMessage: err.inner.message,
+        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+    });
+    next(err);
+})
 export class QuestionnaireController {
     private questionnaireModel: QuestionnaireModel = new QuestionnaireModel();
 

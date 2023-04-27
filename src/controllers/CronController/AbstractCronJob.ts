@@ -3,6 +3,7 @@
  */
 
 import { CronJob } from 'cron';
+import { DateTime } from 'luxon';
 
 import logger from 'jet-logger';
 
@@ -27,7 +28,11 @@ export abstract class AbstractCronJob {
         logger.info('Created Cronjob');
         logger.info('Running: [' + this.job.running + ']');
         logger.imp('Next executions: ');
-        logger.imp(this.job.nextDates(5), true);
+        const nextDates = this.job.nextDates(5) as DateTime[];
+        logger.imp(
+            nextDates.map((date) => date.toString()),
+            true
+        );
     }
 
     protected abstract executeJob(): Promise<void>;

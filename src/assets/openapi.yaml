@@ -134,7 +134,7 @@ paths:
             responses:
                 '200':
                     description: Array of language strings
-                    content: 
+                    content:
                       application/json:
                         schema:
                             $ref: '#/components/schemas/LanguageList'
@@ -380,7 +380,7 @@ components:
                 cTransferList:
                     type: string
                     description: >-
-                        'RSA-SHA256' Signature of object containing UUID, Subject ID, encrypted questionnaire response, dispatch date, reception date.'
+                        'RSA-SHA256' Signature of object containing UUID, Subject ID, Questionnaire ID, encrypted questionnaire response, dispatch date, reception date.'
         UpdateUUIDsParam:
             type: array
             items:
