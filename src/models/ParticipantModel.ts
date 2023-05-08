@@ -82,7 +82,9 @@ export class ParticipantModel {
      *
      * @param subjectID The participant id
      */
-    public async getParticipantBySubjectIdWithoutUpdate(subjectID: string): Promise<ParticipantEntry> {
+    public async getParticipantBySubjectIdWithoutUpdate(
+        subjectID: string
+    ): Promise<ParticipantEntry> {
         const pool: Pool = DB.getPool();
 
         try {

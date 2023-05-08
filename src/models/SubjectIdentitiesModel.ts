@@ -125,9 +125,8 @@ export class SubjectIdentitiesModel {
                 studyParticipant.subject_id,
                 studyParticipant.current_questionnaire_id,
                 'DE',
-                false,
+                false
             );
-
         } catch (err) {
             logger.err(err);
             throw err;

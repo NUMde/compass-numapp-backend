@@ -14,7 +14,6 @@ export class OrscfStateModel implements StateModel {
         parameters: StateChangeTrigger
     ): Promise<ParticipantEntry> {
         const result = this.tryGetNextDataRecording(participant).then((nextDataRecording) => {
-
             const updatedParticipant: ParticipantEntry = { ...participant };
             //indicates, that we not use a completely remote controlled backend (as ORSCF pref.)
             if (nextDataRecording == null) {

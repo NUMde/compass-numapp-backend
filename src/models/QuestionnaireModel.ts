@@ -38,13 +38,15 @@ export class QuestionnaireModel {
         const dbClient = await DB.getPool().connect();
 
         try {
-
             let participant: ParticipantEntry;
-            if(runUpdateParticipant){
-                participant = await this.participantModel.getAndUpdateParticipantBySubjectID(subjectID);
-            }
-            else{
-                participant = await this.participantModel.getParticipantBySubjectIdWithoutUpdate(subjectID);
+            if (runUpdateParticipant) {
+                participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
+                    subjectID
+                );
+            } else {
+                participant = await this.participantModel.getParticipantBySubjectIdWithoutUpdate(
+                    subjectID
+                );
             }
 
             const res = await dbClient.query(

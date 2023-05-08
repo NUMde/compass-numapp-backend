@@ -33,7 +33,10 @@ export class SubjectSubmissionController {
                     throw { message: "This backend is dedicated for studyUid '" + studyUid + "'" };
                 }
 
-                if (typeof subject.periodStart === 'string' || subject.periodStart instanceof String){
+                if (
+                    typeof subject.periodStart === 'string' ||
+                    subject.periodStart instanceof String
+                ) {
                     const parsedDate: Date = new Date(Date.parse(subject.periodStart.toString()));
                     subject.periodStart = parsedDate;
                     subject.periodStart.setHours(0);
@@ -41,7 +44,7 @@ export class SubjectSubmissionController {
                     subject.periodStart.setSeconds(0);
                 }
 
-                if (typeof subject.periodEnd === 'string' || subject.periodEnd instanceof String){
+                if (typeof subject.periodEnd === 'string' || subject.periodEnd instanceof String) {
                     const parsedDate: Date = new Date(Date.parse(subject.periodEnd.toString()));
                     subject.periodEnd = parsedDate;
                     subject.periodEnd.setHours(0);

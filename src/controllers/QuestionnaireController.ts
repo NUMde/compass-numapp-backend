@@ -77,20 +77,23 @@ export class QuestionnaireController {
             ? req.params.language
             : COMPASSConfig.getDefaultLanguageCode();
 
-        this.questionnaireModel.getOrCreateQuestionnaireHistoryEntry(subjectID, questionnaireId, language, true).then(
-            (resp) => res.status(200).json(resp),
-            (err) => {
-                if (err.response) {
-                    res.status(err.response.status).send();
-                } else {
-                    res.status(500).json({
-                        errorCode: 'InternalErr',
-                        errorMessage: 'An internal error occurred.',
-                        errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
-                    });
+        this.questionnaireModel
+            .getOrCreateQuestionnaireHistoryEntry(subjectID, questionnaireId, language, true)
+            .then(
+                (resp) => res.status(200).json(resp),
+                (err) => {
+                    if (err.response) {
+                        res.status(err.response.status).send();
+                    } else {
+                        res.status(500).json({
+                            errorCode: 'InternalErr',
+                            errorMessage: 'An internal error occurred.',
+                            errorStack:
+                                process.env.NODE_ENV !== 'production' ? err.stack : undefined
+                        });
+                    }
                 }
-            }
-        );
+            );
     }
 
     /**
