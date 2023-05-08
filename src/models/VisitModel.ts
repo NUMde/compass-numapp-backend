@@ -132,7 +132,10 @@ export class VisitModel {
     public async updateVisit(visit: VdrModels.VisitStructure): Promise<void> {
         try {
             const pool: Pool = DB.getPool();
-            const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
+            /*const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
+                visit.subjectIdentifier
+            );*/
+            const participant = await this.participantModel.getParticipantBySubjectIdWithoutUpdate(
                 visit.subjectIdentifier
             );
 

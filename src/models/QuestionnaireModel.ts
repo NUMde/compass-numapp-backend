@@ -8,6 +8,7 @@ import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantModel } from '../models/ParticipantModel';
 import { DB } from '../server/DB';
 import { IdHelper } from '../services/IdHelper';
+import { ParticipantEntry } from '../types';
 
 /**
  * Model class that bundles the logic for access to the questionnaire related tables.
@@ -18,10 +19,6 @@ import { IdHelper } from '../services/IdHelper';
 export class QuestionnaireModel {
     private participantModel: ParticipantModel = new ParticipantModel();
 
-    //HACK: that getQuestionnaire ALWAYS writes a history entry as a side effect,
-    //violates "separation of concerns" and also limits the usability of the
-    //method extreme, since it cannot be called any number of times due to the lack of idempotency
-
     /**
      * Retrieve the questionnaire with the requested ID and create a log entry in the questionnairehistory table.
      *
@@ -30,19 +27,25 @@ export class QuestionnaireModel {
      * @return {*}  {Promise<string>}
      * @memberof QuestionnaireModel
      */
-    public async getQuestionnaire(
+    public async getOrCreateQuestionnaireHistoryEntry(
         subjectID: string,
         questionnaireId: string,
-        language: string
+        language: string,
+        runUpdateParticipant: boolean
     ): Promise<string> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
 
         try {
-            const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
-                subjectID
-            );
+
+            let participant: ParticipantEntry;
+            if(runUpdateParticipant){
+                participant = await this.participantModel.getAndUpdateParticipantBySubjectID(subjectID);
+            }
+            else{
+                participant = await this.participantModel.getParticipantBySubjectIdWithoutUpdate(subjectID);
+            }
 
             const res = await dbClient.query(
                 'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);',

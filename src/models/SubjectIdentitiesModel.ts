@@ -12,6 +12,8 @@ import * as SdrModels from 'orscf-subjectdata-contract';
 import { StateModel } from './StateModel';
 import { OrscfStateModel } from './OrscfStateModel';
 import { QuestionnaireModel } from './QuestionnaireModel';
+import { IdHelper } from '../services/IdHelper';
+import { COMPASSConfig } from '../config/COMPASSConfig';
 
 export class SubjectIdentitiesModel {
     private stateModel: StateModel = new OrscfStateModel();
@@ -73,7 +75,10 @@ export class SubjectIdentitiesModel {
     public async createStudyParticipant(studyParticipant: ParticipantEntry): Promise<void> {
         try {
             const pool: Pool = DB.getPool();
-            studyParticipant = await this.stateModel.calculateUpdatedData(studyParticipant, {});
+
+            //studyParticipant = await this.stateModel.calculateUpdatedData(studyParticipant, {});
+            studyParticipant.current_instance_id = IdHelper.createID();
+            studyParticipant.current_questionnaire_id = COMPASSConfig.getDefaultQuestionnaireId();
 
             await pool.query(
                 'INSERT INTO studyparticipant(\
@@ -116,52 +121,46 @@ export class SubjectIdentitiesModel {
                 ]
             );
 
-            //HACK getQuestionnaire will create 'initial' entry in questionnairehistory,
-            //if no initial questionnaire is configured AND current_instance_id is NOT set
-            this.questoinnaireHistoryModel.getQuestionnaire(
+            this.questoinnaireHistoryModel.getOrCreateQuestionnaireHistoryEntry(
                 studyParticipant.subject_id,
                 studyParticipant.current_questionnaire_id,
-                'DE'
+                'DE',
+                false,
             );
+
         } catch (err) {
             logger.err(err);
             throw err;
         }
     }
 
+    /**
+     *
+     * @param studyParticipant PRESEVES the iteration specific values!
+     */
     public async updateStudyParticipant(studyParticipant: ParticipantEntry): Promise<void> {
         try {
             const pool: Pool = DB.getPool();
             await pool.query(
                 'UPDATE studyparticipant \
                     set subject_id = $1,\
-                    current_questionnaire_id = $2,\
-                    start_date = $3,\
-                    due_date = $4,\
-                    current_instance_id = $5,\
-                    current_interval = $6,\
-                    additional_iterations_left = $7,\
-                    status = $8,\
-                    general_study_end_date = $9,\
-                    personal_study_end_date = $10,\
-                    registration_token = $11,\
-                    subject_uid = $12,\
-                    study_uid = $13, \
-                    actual_site_uid = $14,\
-                    enrolling_site_uid = $15,\
-                    actual_site_defined_patient_identifier = $16 where subject_uid = $12',
+                    start_date = $2,\
+                    due_date = $3,\
+                    status = $4,\
+                    general_study_end_date = $5,\
+                    personal_study_end_date = $6,\
+                    subject_uid = $7,\
+                    study_uid = $8, \
+                    actual_site_uid = $9,\
+                    enrolling_site_uid = $10,\
+                    actual_site_defined_patient_identifier = $11 where subject_uid = $7',
                 [
                     studyParticipant.subject_id,
-                    studyParticipant.current_questionnaire_id,
                     studyParticipant.start_date,
                     studyParticipant.due_date,
-                    studyParticipant.current_instance_id,
-                    studyParticipant.current_interval,
-                    studyParticipant.additional_iterations_left,
                     studyParticipant.status,
                     studyParticipant.general_study_end_date,
                     studyParticipant.personal_study_end_date,
-                    null,
                     studyParticipant.subject_uid,
                     studyParticipant.study_uid,
                     studyParticipant.actual_site_uid,

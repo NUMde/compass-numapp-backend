@@ -33,6 +33,22 @@ export class SubjectSubmissionController {
                     throw { message: "This backend is dedicated for studyUid '" + studyUid + "'" };
                 }
 
+                if (typeof subject.periodStart === 'string' || subject.periodStart instanceof String){
+                    const parsedDate: Date = new Date(Date.parse(subject.periodStart.toString()));
+                    subject.periodStart = parsedDate;
+                    subject.periodStart.setHours(0);
+                    subject.periodStart.setMinutes(0);
+                    subject.periodStart.setSeconds(0);
+                }
+
+                if (typeof subject.periodEnd === 'string' || subject.periodEnd instanceof String){
+                    const parsedDate: Date = new Date(Date.parse(subject.periodEnd.toString()));
+                    subject.periodEnd = parsedDate;
+                    subject.periodEnd.setHours(0);
+                    subject.periodEnd.setMinutes(0);
+                    subject.periodEnd.setSeconds(0);
+                }
+
                 const participant: ParticipantEntry =
                     SdrMappingHelper.mapSubjectToParticipantEntry(subject);
                 const subjectIdentityExistence: boolean =

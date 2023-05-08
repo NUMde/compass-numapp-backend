@@ -82,6 +82,29 @@ export class ParticipantModel {
      *
      * @param subjectID The participant id
      */
+    public async getParticipantBySubjectIdWithoutUpdate(subjectID: string): Promise<ParticipantEntry> {
+        const pool: Pool = DB.getPool();
+
+        try {
+            const res = await pool.query('select * from studyparticipant where subject_id = $1', [
+                subjectID
+            ]);
+            if (res.rows.length !== 1) {
+                throw new Error('subject_id_not_found');
+            }
+            const participant = res.rows[0] as ParticipantEntry;
+            return participant;
+        } catch (err) {
+            logger.err(err);
+            throw err;
+        }
+    }
+
+    /**
+     * Retrieve the participant from the database and eventually update the participants data in case due_date is outdated, start_date is not set, or study end dates are outdated.
+     *
+     * @param subjectID The participant id
+     */
     public async getAndUpdateParticipantBySubjectID(subjectID: string): Promise<ParticipantEntry> {
         const pool: Pool = DB.getPool();
 

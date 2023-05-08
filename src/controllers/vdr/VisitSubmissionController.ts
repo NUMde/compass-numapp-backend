@@ -25,6 +25,23 @@ export class VisitSubmissionController {
             const updatedVisitUids: string[] = [];
 
             for (const visit of visits) {
+
+                if (typeof visit.scheduledDateUtc === 'string' || visit.scheduledDateUtc instanceof String){
+                    const parsedDate: Date = new Date(Date.parse(visit.scheduledDateUtc.toString()));
+                    visit.scheduledDateUtc = parsedDate;
+                    visit.scheduledDateUtc.setHours(0);
+                    visit.scheduledDateUtc.setMinutes(0);
+                    visit.scheduledDateUtc.setSeconds(0);
+                }
+
+                if (typeof visit.executionDateUtc === 'string' || visit.executionDateUtc instanceof String){
+                    const parsedDate: Date = new Date(Date.parse(visit.executionDateUtc.toString()));
+                    visit.executionDateUtc = parsedDate;
+                    visit.executionDateUtc.setHours(0);
+                    visit.executionDateUtc.setMinutes(0);
+                    visit.executionDateUtc.setSeconds(0);
+                }
+
                 await this.visitModel.updateVisit(visit);
                 updatedVisitUids.push(visit.visitUid);
                 continue;
