@@ -168,15 +168,22 @@ export class VisitModel {
             //ONLY 'due_date' & 'questionaireId' CAN BE UPDATED,
             //and last one must be updated on participants AND history table synchonously:
             const studyParticipantSql_DueDate_UpdateSql = `update public.studyparticipant set due_date = $1, current_questionnaire_id = $2 where subject_id = $3`;
-            await pool.query(studyParticipantSql_DueDate_UpdateSql,[visit.scheduledDateUtc,visit.visitProcedureName,visit.subjectIdentifier]);
+            await pool.query(studyParticipantSql_DueDate_UpdateSql, [
+                visit.scheduledDateUtc,
+                visit.visitProcedureName,
+                visit.subjectIdentifier
+            ]);
 
             const updateQuestionnaireHistory_QuestionaireId_UpdateSqlSql = `update public.questionnairehistory set questionnaire_id = $1 where instance_id = $2`;
-            await pool.query(updateQuestionnaireHistory_QuestionaireId_UpdateSqlSql,[visit.visitProcedureName,visit.visitUid]);
+            await pool.query(updateQuestionnaireHistory_QuestionaireId_UpdateSqlSql, [
+                visit.visitProcedureName,
+                visit.visitUid
+            ]);
 
             //after changing the 'questionaireId', the 'id' of the history-
             //record becomes inconsistent and needs to be re-calculated:
             const questionnaireHistory_Id_RepairSql = `update public.questionnairehistory set id = CONCAT(questionnaire_id,'-',subject_id,'-',instance_id) where instance_id = $1`;
-            await pool.query(questionnaireHistory_Id_RepairSql,[visit.visitUid]);
+            await pool.query(questionnaireHistory_Id_RepairSql, [visit.visitUid]);
 
             return;
 
