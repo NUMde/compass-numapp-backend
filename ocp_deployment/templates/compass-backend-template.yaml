@@ -11,9 +11,9 @@ objects:
       apiVersion: v1
       metadata:
           annotations:
-              template.openshift.io/expose-database_name: "{.data['database-name']}"
-              template.openshift.io/expose-password: "{.data['database-password']}"
-              template.openshift.io/expose-username: "{.data['database-user']}"
+              template.openshift.io/expose-database_name: "{.data['DB_NAME']}"
+              template.openshift.io/expose-password: "{.data['DB_PASSWORD']}"
+              template.openshift.io/expose-username: "{.data['DB_USER']}"
           name: database-creds
           labels:
               app: database
@@ -22,9 +22,9 @@ objects:
               app.kubernetes.io/instance: ${APP_NAME}-${INSTANCE_IDENTIFIER}
               app.kubernetes.io/part-of: ${HIGH_LVL_APP_NAME}
       stringData:
-          database-name: ${DATABASE_NAME}
-          database-password: ${DATABASE_PASSWORD}
-          database-user: ${DATABASE_USER}
+          DB_NAME: ${DATABASE_NAME}
+          DB_PASSWORD: ${DATABASE_PASSWORD}
+          DB_USER: ${DATABASE_USER}
     - kind: Service
       apiVersion: v1
       metadata:
@@ -93,17 +93,17 @@ objects:
                             - name: POSTGRESQL_USER
                               valueFrom:
                                   secretKeyRef:
-                                      key: database-user
+                                      key: DB_USER
                                       name: database-creds
                             - name: POSTGRESQL_PASSWORD
                               valueFrom:
                                   secretKeyRef:
-                                      key: database-password
+                                      key: DB_PASSWORD
                                       name: database-creds
                             - name: POSTGRESQL_DATABASE
                               valueFrom:
                                   secretKeyRef:
-                                      key: database-name
+                                      key: DB_NAME
                                       name: database-creds
                         image: ' '
                         imagePullPolicy: IfNotPresent

@@ -37,7 +37,7 @@ export class DBCredentials {
      * @memberof DBCredentials
      */
     public static getUser(): string {
-        return env.get('database-user').required().asString();
+        return env.get('DB_USER').required().asString();
     }
 
     /**
@@ -48,7 +48,7 @@ export class DBCredentials {
      * @memberof DBCredentials
      */
     public static getPassword(): string {
-        return env.get('database-password').required().asString();
+        return env.get('DB_PASSWORD').required().asString();
     }
 
     /**
@@ -59,7 +59,7 @@ export class DBCredentials {
      * @memberof DBCredentials
      */
     public static getDB(): string {
-        return env.get('database-name').required().asString();
+        return env.get('DB_NAME').required().asString();
     }
 
     /**
