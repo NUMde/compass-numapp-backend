@@ -1,3 +1,5 @@
+import { OrscfAuthConfig } from './../config/OrscfAuthConfig';
+import { randomBytes } from 'crypto';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
@@ -9,6 +11,7 @@ import logger from 'jet-logger';
 
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { PerformanceLogger } from './PerformanceLogger';
+import env from 'env-var';
 
 /**
  * Encryption related logic.
@@ -50,6 +53,16 @@ export class SecurityService {
             return fs.readFileSync('./private_key.pem', 'utf8');
         } else {
             return privKey;
+        }
+    }
+
+    public static getOrscfPublicKeyOrSecretByIssuer(issuer: string): string {
+        const pubKey = OrscfAuthConfig.getOrscfPublicKeyOrSecretByIssuer(issuer);
+        if (pubKey === 'false') {
+            logger.err('Attention: Using public key from file');
+            return fs.readFileSync('./orscf_public_key.pem', 'utf8');
+        } else {
+            return pubKey;
         }
     }
 
@@ -168,5 +181,18 @@ export class SecurityService {
             salt,
             passwordHash
         };
+    }
+
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+    static secretCallback(req, payload, done) {
+        const result = env
+            .get('JWT_SECRET')
+            .default(randomBytes(256).toString('base64'))
+            .asString();
+        done(null, result);
+    }
+
+    static getJwtSecret(): string {
+        return env.get('JWT_SECRET').default(randomBytes(256).toString('base64')).asString();
     }
 }

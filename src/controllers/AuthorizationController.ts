@@ -81,6 +81,25 @@ export class AuthorizationController {
         }
     }
 
+    public static async checkOrscfAuthentication(
+        _req: Request,
+        payload: {
+            iss: string;
+        },
+        done: (err: { name: string }, revoked: boolean) => void
+    ) {
+        try {
+            if (payload.iss !== 'ECCT') {
+                return done({ name: 'Unauthorized' }, true);
+            } else {
+                return done(null, false);
+            }
+        } catch (err) {
+            logger.err(err);
+            return done({ name: 'InternalError' }, true);
+        }
+    }
+
     /**
      * Login method for an API user
      *

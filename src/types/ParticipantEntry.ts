@@ -22,4 +22,10 @@ export interface ParticipantEntry {
     general_study_end_date: Date;
     personal_study_end_date: Date;
     language_code: string;
+    // orscf - sdr
+    subject_uid: string | null;
+    study_uid: string | null;
+    actual_site_uid: string | null;
+    enrolling_site_uid: string | null;
+    actual_site_defined_patient_identifier: string | null;
 }

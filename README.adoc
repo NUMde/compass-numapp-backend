@@ -121,3 +121,7 @@ The current configuration is suited for an OpenShift deployment. Find detailed i
 == Database Setup
 
 Dedicated documentation for the database setup can be found here link:./db[DB Setup].
+
+== Interoperability
+
+This backend provides API access that conforms to the https://orscf.org[ORSCF] standard's SDR and VDR endpoint definitions.

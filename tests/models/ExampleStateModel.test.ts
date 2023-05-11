@@ -19,7 +19,7 @@ describe('signing', () => {
         global.Date.now = realDateNow;
     });
 
-    it('mustGoToInitialState', () => {
+    it('mustGoToInitialState', async () => {
         // given
         const user: ParticipantEntry = {
             subject_id: '1',
@@ -33,12 +33,17 @@ describe('signing', () => {
             status: ParticipationStatus.OnStudy,
             general_study_end_date: undefined,
             personal_study_end_date: undefined,
-            language_code: 'de'
+            language_code: 'de',
+            subject_uid: null,
+            study_uid: null,
+            actual_site_uid: null,
+            enrolling_site_uid: null,
+            actual_site_defined_patient_identifier: null
         };
         const parameters: StateChangeTrigger = {};
 
         // when
-        const result = sut.calculateUpdatedData(user, parameters);
+        const result = await sut.calculateUpdatedData(user, parameters);
 
         // then
 
@@ -62,7 +67,7 @@ describe('signing', () => {
         expect(result.additional_iterations_left).toBe(0);
     });
 
-    it('mustGoToDefaultState', () => {
+    it('mustGoToDefaultState', async () => {
         // given
         const user: ParticipantEntry = {
             subject_id: '1',
@@ -76,12 +81,17 @@ describe('signing', () => {
             status: ParticipationStatus.OnStudy,
             general_study_end_date: new Date(),
             personal_study_end_date: new Date(),
-            language_code: COMPASSConfig.getDefaultLanguageCode()
+            language_code: COMPASSConfig.getDefaultLanguageCode(),
+            subject_uid: null,
+            study_uid: null,
+            actual_site_uid: null,
+            enrolling_site_uid: null,
+            actual_site_defined_patient_identifier: null
         };
         const parameters: StateChangeTrigger = {};
 
         // when
-        const result = sut.calculateUpdatedData(user, parameters);
+        const result = await sut.calculateUpdatedData(user, parameters);
 
         // then
         //set up expected values
@@ -105,7 +115,7 @@ describe('signing', () => {
         expect(result.additional_iterations_left).toBe(0);
     });
 
-    it('mustGoToShortTrackState', () => {
+    it('mustGoToShortTrackState', async () => {
         // given
         const user: ParticipantEntry = {
             subject_id: '1',
@@ -119,12 +129,17 @@ describe('signing', () => {
             status: ParticipationStatus.OnStudy,
             general_study_end_date: new Date(),
             personal_study_end_date: new Date(),
-            language_code: COMPASSConfig.getDefaultLanguageCode()
+            language_code: COMPASSConfig.getDefaultLanguageCode(),
+            subject_uid: null,
+            study_uid: null,
+            actual_site_uid: null,
+            enrolling_site_uid: null,
+            actual_site_defined_patient_identifier: null
         };
         const parameters: StateChangeTrigger = { basicTrigger: true };
 
         // when
-        const result = sut.calculateUpdatedData(user, parameters);
+        const result = await sut.calculateUpdatedData(user, parameters);
 
         // then
         //set up expected values
@@ -150,7 +165,7 @@ describe('signing', () => {
         expect(result.additional_iterations_left).toBe(0);
     });
 
-    it('mustGoToShortTrackState', () => {
+    it('mustGoToShortTrackState', async () => {
         // given
         const user: ParticipantEntry = {
             subject_id: '1',
@@ -164,12 +179,17 @@ describe('signing', () => {
             status: ParticipationStatus.OnStudy,
             general_study_end_date: new Date(),
             personal_study_end_date: new Date(),
-            language_code: COMPASSConfig.getDefaultLanguageCode()
+            language_code: COMPASSConfig.getDefaultLanguageCode(),
+            subject_uid: null,
+            study_uid: null,
+            actual_site_uid: null,
+            enrolling_site_uid: null,
+            actual_site_defined_patient_identifier: null
         };
         const parameters: StateChangeTrigger = { specialTrigger: true };
 
         // when
-        const result = sut.calculateUpdatedData(user, parameters);
+        const result = await sut.calculateUpdatedData(user, parameters);
 
         // then
         //set up expected values

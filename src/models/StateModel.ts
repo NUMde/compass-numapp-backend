@@ -15,5 +15,8 @@ export interface StateModel {
      * @return {*}  {ParticipantEntry}
      * @memberof StateModel
      */
-    calculateUpdatedData(user: ParticipantEntry, parameters: StateChangeTrigger): ParticipantEntry;
+    calculateUpdatedData(
+        user: ParticipantEntry,
+        parameters: StateChangeTrigger
+    ): Promise<ParticipantEntry>;
 }

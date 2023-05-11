@@ -77,7 +77,12 @@ export class QuestionnaireController {
             : COMPASSConfig.getDefaultLanguageCode();
 
         this.questionnaireModel
-            .getQuestionnaire(subjectID, req.params.questionnaireId, language)
+            .getOrCreateQuestionnaireHistoryEntry(
+                subjectID,
+                req.params.questionnaireId,
+                language,
+                true
+            )
             .then(
                 (resp) => res.status(200).json(resp),
                 (err) => {

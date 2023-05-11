@@ -1,3 +1,5 @@
+import { DataRecordingSubmissionController } from './vdr/DataRecordingSubmissionController';
+import { VisitConsumeController } from './vdr/VisitConsumeController';
 /*
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
@@ -10,6 +12,11 @@ import { QuestionnaireController } from './QuestionnaireController';
 import { QueueController } from './QueueController';
 import { ParticipantController } from './ParticipantController';
 import { SubjectIdentitiesController } from './SubjectIdentitiesController';
+import { SdrApiInfoController } from './sdr/SdrApiInfoController';
+import { SubjectSubmissionController } from './sdr/SubjectSubmissionController';
+import { SubjectConsumeController } from './sdr/SubjectConsumeController';
+import { VdrApiInfoController } from './vdr/VdrApiInfoController';
+import { VisitSubmissionController } from './vdr/VisitSubmissionController';
 
 /**
  * Parent controller
@@ -26,6 +33,13 @@ import { SubjectIdentitiesController } from './SubjectIdentitiesController';
     new ParticipantController(),
     new QueueController(),
     new QuestionnaireController(),
-    new SubjectIdentitiesController()
+    new SubjectIdentitiesController(),
+    new SdrApiInfoController(),
+    new SubjectSubmissionController(),
+    new SubjectConsumeController(),
+    new VdrApiInfoController(),
+    new VisitSubmissionController(),
+    new VisitConsumeController(),
+    new DataRecordingSubmissionController()
 ])
 export class ApiController {}

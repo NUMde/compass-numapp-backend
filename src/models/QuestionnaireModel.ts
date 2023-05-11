@@ -8,6 +8,7 @@ import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantModel } from '../models/ParticipantModel';
 import { DB } from '../server/DB';
 import { IdHelper } from '../services/IdHelper';
+import { ParticipantEntry } from '../types';
 
 /**
  * Model class that bundles the logic for access to the questionnaire related tables.
@@ -26,10 +27,11 @@ export class QuestionnaireModel {
      * @return {*}  {Promise<string>}
      * @memberof QuestionnaireModel
      */
-    public async getQuestionnaire(
+    public async getOrCreateQuestionnaireHistoryEntry(
         subjectID: string,
         questionnaireId: string,
-        language: string
+        language: string,
+        runUpdateParticipant: boolean
     ): Promise<string> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose the client (it will be undefined)
@@ -38,9 +40,16 @@ export class QuestionnaireModel {
         const url = questionnaireId.split('|')[0];
 
         try {
-            const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
-                subjectID
-            );
+            let participant: ParticipantEntry;
+            if (runUpdateParticipant) {
+                participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
+                    subjectID
+                );
+            } else {
+                participant = await this.participantModel.getParticipantBySubjectIdWithoutUpdate(
+                    subjectID
+                );
+            }
 
             const res = await dbClient.query(
                 'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);',
@@ -55,6 +64,11 @@ export class QuestionnaireModel {
                         `User language '${language}' not available, using fallback language '${res.rows[0].language_code}'`
                     );
                 }
+
+                //HACK:here, as a fallback for an unset current_instance_id the
+                //initalQuesionaireId is used instead, which 1: isn't a UUID at all
+                //and 2: if there is no configuration of the InitialQuestionnaireId
+                //uses the hardcoded fallback value 'initial' + it also influences dbId
                 const dbId =
                     questionnaireId +
                     '-' +
