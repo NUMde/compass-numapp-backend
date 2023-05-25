@@ -17,7 +17,7 @@ export class DataRecordingSubmissionController {
     public async importDataRecordings(req: Request, resp: Response) {
         try {
             const dataRecordings: VdrModels.DataRecordingStructure[] = req.body.dataRecordings;
-            if (dataRecordings === undefined || dataRecordings === null) {
+            if (!dataRecordings) {
                 return resp
                     .status(200)
                     .json({ fault: 'no dataRecordings on request', return: null });
@@ -41,8 +41,8 @@ export class DataRecordingSubmissionController {
 
             return resp.status(200).json({
                 fault: null,
-                createdDataRecordingUids: createdDataRecordingUids,
-                updatedDataRecordingUids: updatedDataRecordingUids
+                createdDataRecordingUids,
+                updatedDataRecordingUids
             });
         } catch (error) {
             logger.err(error, true);

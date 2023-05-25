@@ -21,6 +21,7 @@
         "orscf-subjectdata-contract": "^1.9.11841",
         "orscf-visitdata-contract": "^1.9.11841",
         "pg": "8.10.0",
+        "pg-format": "^1.0.4",
         "swagger-ui-express": "4.6.2",
         "uuid": "9.0.0"
     },

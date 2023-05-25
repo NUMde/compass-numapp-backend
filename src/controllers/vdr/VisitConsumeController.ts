@@ -24,11 +24,10 @@ export class VisitConsumeController {
     private visitModel: VisitModel = new VisitModel();
 
     @Post('searchVisits')
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async searchVisits(req: Request, resp: Response) {
         try {
             const searchRequest: SearchVisitsRequest = req.body;
-            if (searchRequest === undefined || searchRequest == null) {
+            if (!searchRequest) {
                 return resp.status(200).json({ fault: 'invalid search request', return: null });
             }
 
@@ -109,8 +108,8 @@ export class VisitConsumeController {
                 }
             }
             const response: CheckVisitExisitenceResponse = {
-                unavailableVisitUids: unavailableVisitUids,
-                availableVisitUids: availableVisitUids,
+                unavailableVisitUids,
+                availableVisitUids,
                 fault: null
             };
 
@@ -143,8 +142,8 @@ export class VisitConsumeController {
                 (s) => result.map((r) => r.visitUid).indexOf(s) < 0
             );
             const response: GetVisitFieldsResponse = {
-                unavailableVisitUids: unavailableVisitUids,
-                result: result,
+                unavailableVisitUids,
+                result,
                 fault: null
             };
             return resp.status(200).json(response);
@@ -155,13 +154,12 @@ export class VisitConsumeController {
     }
 
     @Post('exportVisits')
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     public async exportVisits(req: Request, resp: Response) {
         try {
             const request: ExportVisitsRequest = req.body;
             const visitUids: string[] = request.visitUids;
 
-            if (visitUids === undefined || visitUids === null || visitUids.length === 0) {
+            if (!visitUids || visitUids.length === 0) {
                 return resp.status(200).json({
                     unavailableVisitUids: [],
                     result: [],
@@ -180,8 +178,8 @@ export class VisitConsumeController {
                 (s) => result.map((r) => r.visitUid).indexOf(s) < 0
             );
             const response: ExportVisitsResponse = {
-                unavailableVisitUids: unavailableVisitUids,
-                result: result,
+                unavailableVisitUids,
+                result,
                 fault: null
             };
             return resp.status(200).json(response);

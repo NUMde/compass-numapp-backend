@@ -32,9 +32,7 @@ export class ParticipantController {
     public async getParticipant(req: Request, res: Response) {
         try {
             const participant: ParticipantEntry =
-                await this.participantModel.getAndUpdateParticipantBySubjectID(
-                    req.params.subjectID
-                );
+                await this.participantModel.getParticipantBySubjectID(req.params.subjectID, true);
             this.participantModel.updateLastAction(req.params.subjectID);
 
             const returnObject = {

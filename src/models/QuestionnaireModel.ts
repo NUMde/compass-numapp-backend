@@ -8,7 +8,6 @@ import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantModel } from '../models/ParticipantModel';
 import { DB } from '../server/DB';
 import { IdHelper } from '../services/IdHelper';
-import { ParticipantEntry } from '../types';
 
 /**
  * Model class that bundles the logic for access to the questionnaire related tables.
@@ -40,19 +39,21 @@ export class QuestionnaireModel {
         const url = questionnaireId.split('|')[0];
 
         try {
-            let participant: ParticipantEntry;
-            if (runUpdateParticipant) {
-                participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
-                    subjectID
-                );
-            } else {
-                participant = await this.participantModel.getParticipantBySubjectIdWithoutUpdate(
-                    subjectID
-                );
-            }
+            const participant = await this.participantModel.getParticipantBySubjectID(
+                subjectID,
+                runUpdateParticipant
+            );
 
             const res = await dbClient.query(
-                'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);',
+                `SELECT
+                    body, language_code
+                FROM
+                    questionnaires
+                WHERE
+                    id = $1 AND language_code = COALESCE (
+                        (SELECT
+                            language_code
+                        FROM questionnaires WHERE language_code=$2 LIMIT 1), $3);`,
                 [url, language, COMPASSConfig.getDefaultLanguageCode()]
             );
 
@@ -76,14 +77,22 @@ export class QuestionnaireModel {
                     '-' +
                     (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
                 await dbClient.query(
-                    'INSERT INTO questionnairehistory(id, subject_id, questionnaire_id, language_code, date_received, date_sent, instance_id) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT DO NOTHING;',
+                    `INSERT INTO
+                        questionnairehistory(
+                            id,
+                            subject_id,
+                            questionnaire_id,
+                            language_code,
+                            date_received,
+                            instance_id)
+                         VALUES ($1, $2, $3, $4, $5, $6)
+                         ON CONFLICT DO NOTHING;`,
                     [
                         dbId,
                         subjectID,
                         questionnaireId,
                         res.rows[0].language_code,
                         new Date(),
-                        null,
                         participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId()
                     ]
                 );

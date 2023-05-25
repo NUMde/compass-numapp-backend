@@ -5,11 +5,7 @@ import { Request, Response } from 'express';
 
 import { Controller, Post } from '@overnightjs/core';
 
-import {
-    GetCapabilitiesResponse,
-    GetApiVersionResponse,
-    GetPermittedAuthScopesResponse
-} from 'orscf-visitdata-contract';
+import { GetCapabilitiesResponse, GetApiVersionResponse } from 'orscf-visitdata-contract';
 
 @Controller('vdrApiInfo')
 export class VdrApiInfoController {
@@ -45,8 +41,7 @@ export class VdrApiInfoController {
     public async getPermittedAuthScopes(req: Request, resp: Response) {
         try {
             const authorizationHeader = req.headers.authorization;
-            const result: GetPermittedAuthScopesResponse =
-                OrscfTokenService.getPermittedAuthScopes(authorizationHeader);
+            const result = OrscfTokenService.getPermittedAuthScopes(authorizationHeader);
             return resp.status(200).json(result);
         } catch (error) {
             logger.err(error, true);

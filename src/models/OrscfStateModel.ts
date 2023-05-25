@@ -19,7 +19,7 @@ export class OrscfStateModel implements StateModel {
             if (nextDataRecording == null) {
                 const result = this.fallbackModel.calculateUpdatedData(participant, parameters);
                 return result.then((entry) => {
-                    //if the InitialQuestionnaireId isnt configured properly...
+                    //if the InitialQuestionnaireId isn't configured properly...
                     if (entry.current_questionnaire_id == 'initial') {
                         //... use the DefaultQuestionnaireId instead
                         entry.current_questionnaire_id = COMPASSConfig.getDefaultQuestionnaireId();
@@ -65,12 +65,10 @@ export class OrscfStateModel implements StateModel {
         }
         let result: DataRecordingStructure | null = null;
         drs.forEach((dr) => {
-            if (result == null) {
+            if (!result) {
                 result = dr;
-            } else {
-                if (result.scheduledDateTimeUtc > dr.scheduledDateTimeUtc) {
-                    result = dr;
-                }
+            } else if (result.scheduledDateTimeUtc > dr.scheduledDateTimeUtc) {
+                result = dr;
             }
         });
         return result;
@@ -99,7 +97,7 @@ export class OrscfStateModel implements StateModel {
 
             return {
                 nextInterval: currentParticipant.current_interval,
-                additionalIterationsLeft: additionalIterationsLeft
+                additionalIterationsLeft
             };
         } else {
             // determine other values
@@ -110,8 +108,8 @@ export class OrscfStateModel implements StateModel {
             const additionalIterationsLeft = triggerValues.specialTrigger ? iterationCount : 1;
 
             return {
-                nextInterval: nextInterval,
-                additionalIterationsLeft: additionalIterationsLeft
+                nextInterval,
+                additionalIterationsLeft
             };
         }
     }

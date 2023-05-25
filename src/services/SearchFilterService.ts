@@ -30,20 +30,12 @@ export class SearchFilterService {
         // strings
         result = SearchFilterService.appendAndFilter(
             result,
-            SearchFilterService.buildStringClause(filter.subjectIdentifier, varName, 'subject_uid')
+            SearchFilterService.buildStringClause(filter.assignedArm, varName, 'assigned_arm')
         );
         result = SearchFilterService.appendAndFilter(
             result,
-            SearchFilterService.buildStringClause(filter.status, varName, 'status')
+            SearchFilterService.buildStringClause(filter.actualArm, varName, 'actual_arm')
         );
-        // result = SearchFilterService.appendAndFilter(
-        //     result,
-        //     SearchFilterService.buildStringClause(filter.assignedArm, varName, 'assigned_arm')
-        // );
-        // result = SearchFilterService.appendAndFilter(
-        //     result,
-        //     SearchFilterService.buildStringClause(filter.actualArm, varName, 'actual_arm')
-        // );
         result = SearchFilterService.appendAndFilter(
             result,
             SearchFilterService.buildStringClause(filter.substudyName, varName, 'status')

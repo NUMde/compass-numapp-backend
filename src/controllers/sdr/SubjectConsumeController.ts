@@ -29,7 +29,7 @@ export class SubjectConsumeController {
     public async searchSubjects(req: Request, resp: Response) {
         try {
             const searchRequest: SearchSubjectsRequest = req.body;
-            if (searchRequest === undefined || searchRequest == null) {
+            if (!searchRequest) {
                 return resp.status(200).json({ fault: 'invalid search request', return: null });
             }
 
@@ -42,7 +42,7 @@ export class SubjectConsumeController {
 
             const response: SearchSubjectsResponse = {
                 fault: null,
-                result: result
+                result
             };
             return resp.status(200).json(response);
         } catch (error) {
@@ -57,7 +57,7 @@ export class SubjectConsumeController {
         try {
             const searchRequest: SearchChangedSubjectsRequest = req.body;
 
-            if (searchRequest === undefined || searchRequest === null) {
+            if (!searchRequest) {
                 return resp.status(200).json({ fault: 'invalid search request', return: null });
             }
 
@@ -136,7 +136,7 @@ export class SubjectConsumeController {
             const request: GetSubjectFieldsRequest = req.body;
             const subjectUids: string[] = request.subjectUids;
 
-            if (subjectUids === undefined || subjectUids === null || subjectUids.length === 0) {
+            if (!subjectUids || subjectUids.length === 0) {
                 return resp.status(200).json({
                     unavailableSubjectUids: [],
                     result: [],
@@ -152,7 +152,7 @@ export class SubjectConsumeController {
             );
             const response: GetSubjectFieldsResponse = {
                 unavailableSubjectUids: unavailableSubjectUids,
-                result: result,
+                result,
                 fault: null
             };
             return resp.status(200).json(response);
@@ -169,7 +169,7 @@ export class SubjectConsumeController {
             const request: ExportSubjectsRequest = req.body;
             const subjectUids: string[] = request.subjectUids;
 
-            if (subjectUids === undefined || subjectUids === null || subjectUids.length === 0) {
+            if (!subjectUids || subjectUids.length === 0) {
                 return resp.status(200).json({
                     unavailableSubjectUids: [],
                     result: [],
@@ -185,7 +185,7 @@ export class SubjectConsumeController {
             );
             const response: ExportSubjectsResponse = {
                 unavailableSubjectUids: unavailableSubjectUids,
-                result: result,
+                result,
                 fault: null
             };
             return resp.status(200).json(response);

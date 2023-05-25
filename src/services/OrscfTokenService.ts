@@ -91,7 +91,7 @@ export class OrscfTokenService {
                     );
             }
 
-            const allowedHosts: string[] = OrscfAuthConfig.getAllowedHosts();
+            const allowedHosts = OrscfAuthConfig.getAllowedHosts();
             const host: string = req.hostname.toLowerCase();
             if (allowedHosts.indexOf('*') < 0 && allowedHosts.indexOf(host) < 0) {
                 return res.status(401).send('access denied by firewall rules');

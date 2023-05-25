@@ -61,8 +61,9 @@ export class QueueController {
                         'Queue already contains response object for the corresponding questionnaire.'
                 });
             } else {
-                const newUserData = await this.participantModel.getAndUpdateParticipantBySubjectID(
-                    req.query.subjectId.toString()
+                const newUserData = await this.participantModel.getParticipantBySubjectID(
+                    req.query.subjectId.toString(),
+                    true
                 );
                 return res.status(200).json(newUserData);
             }

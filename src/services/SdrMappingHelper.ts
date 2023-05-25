@@ -1,3 +1,4 @@
+import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantEntry, ParticipationStatus } from './../types/ParticipantEntry';
 import * as SdrModels from 'orscf-subjectdata-contract';
 
@@ -32,7 +33,7 @@ export class SdrMappingHelper {
     public static mapSubjectToParticipantEntry(subject: SdrModels.SubjectFields): ParticipantEntry {
         const result: ParticipantEntry = {
             subject_id: subject.subjectIdentifier,
-            language_code: '',
+            language_code: COMPASSConfig.getDefaultLanguageCode(),
             last_action: new Date(subject.modificationTimestampUtc),
             current_questionnaire_id: null,
             start_date: subject.periodStart,

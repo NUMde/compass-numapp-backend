@@ -17,7 +17,7 @@ export class VisitSubmissionController {
     public async importVisits(req: Request, resp: Response) {
         try {
             const visits: VdrModels.VisitStructure[] = req.body.visits;
-            if (visits === undefined || visits === null) {
+            if (!visits) {
                 return resp.status(200).json({ fault: 'no visits on request', return: null });
             }
 
@@ -25,62 +25,24 @@ export class VisitSubmissionController {
             const updatedVisitUids: string[] = [];
 
             for (const visit of visits) {
-                if (
-                    typeof visit.scheduledDateUtc === 'string' ||
-                    visit.scheduledDateUtc instanceof String
-                ) {
-                    const parsedDate: Date = new Date(
-                        Date.parse(visit.scheduledDateUtc.toString())
-                    );
+                if (typeof visit.scheduledDateUtc === 'string') {
+                    const parsedDate: Date = new Date(visit.scheduledDateUtc);
                     visit.scheduledDateUtc = parsedDate;
-                    visit.scheduledDateUtc.setHours(0);
-                    visit.scheduledDateUtc.setMinutes(0);
-                    visit.scheduledDateUtc.setSeconds(0);
                 }
 
-                if (
-                    typeof visit.executionDateUtc === 'string' ||
-                    visit.executionDateUtc instanceof String
-                ) {
-                    const parsedDate: Date = new Date(
-                        Date.parse(visit.executionDateUtc.toString())
-                    );
+                if (typeof visit.executionDateUtc === 'string') {
+                    const parsedDate: Date = new Date(visit.executionDateUtc);
                     visit.executionDateUtc = parsedDate;
-                    visit.executionDateUtc.setHours(0);
-                    visit.executionDateUtc.setMinutes(0);
-                    visit.executionDateUtc.setSeconds(0);
                 }
 
                 await this.visitModel.updateVisit(visit);
                 updatedVisitUids.push(visit.visitUid);
-                continue;
-                const visitExists: boolean = await this.visitModel.getDataRecordingExistence(
-                    visit.visitUid
-                );
-                if (visitExists) {
-                    await this.visitModel.updateVisit(visit);
-                    updatedVisitUids.push(visit.visitUid);
-                } else {
-                    await this.visitModel.createVisit(visit);
-                    createdVisitUids.push(visit.visitUid);
-                }
-                for (const dataRecording of visit.dataRecordings) {
-                    const dataRecordingExists: boolean =
-                        await this.visitModel.getDataRecordingExistence(
-                            dataRecording.dataRecordingUid
-                        );
-                    if (dataRecordingExists) {
-                        await this.visitModel.updateDataRecording(dataRecording);
-                    } else {
-                        await this.visitModel.createDataRecording(dataRecording);
-                    }
-                }
             }
 
             return resp.status(200).json({
                 fault: null,
-                createdVisitUids: createdVisitUids,
-                updatedVisitUids: updatedVisitUids
+                createdVisitUids,
+                updatedVisitUids
             });
         } catch (error) {
             logger.err(error, true);
@@ -95,8 +57,7 @@ export class VisitSubmissionController {
             const mutationsByVisitUid: {
                 [subjectUid: string]: VdrModels.VisitMutation;
             } = req.body.mutationsByVisitUid;
-            logger.info(req.body);
-            if (mutationsByVisitUid === undefined || mutationsByVisitUid === null) {
+            if (!mutationsByVisitUid) {
                 return resp.status(200).json({ fault: 'no visits on request', return: null });
             }
             const updatedVisitUids: string[] = [];
@@ -113,7 +74,7 @@ export class VisitSubmissionController {
             }
 
             return resp.status(200).json({
-                updatedVisitUids: updatedVisitUids,
+                updatedVisitUids,
                 fault: null
             });
         } catch (error) {
@@ -127,11 +88,11 @@ export class VisitSubmissionController {
     public async applyVisitBatchMutation(req: Request, resp: Response) {
         try {
             const visitUids: string[] = req.body.visitUids;
-            if (visitUids == undefined || visitUids == null) {
+            if (!visitUids) {
                 return resp.status(200).json({ fault: 'no visits on request', return: null });
             }
             const mutation: VdrModels.BatchableVisitMutation = req.body.mutation;
-            if (mutation == undefined || mutation == null) {
+            if (!mutation) {
                 return resp.status(200).json({ fault: 'no mutation on request', return: null });
             }
 
@@ -147,12 +108,12 @@ export class VisitSubmissionController {
             }
             // test
             return resp.status(200).json({
-                updatedVisitUids: updatedVisitUids,
+                updatedVisitUids,
                 fault: null
             });
         } catch (error) {
             logger.err(error, true);
-            return resp.status(200).json({ faule: error.message, return: null });
+            return resp.status(200).json({ fault: error.message, return: null });
         }
     }
 }

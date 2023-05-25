@@ -3,6 +3,7 @@ import { SearchFilterService } from './../services/SearchFilterService';
  * Copyright (c) 2021, IBM Deutschland GmbH
  */
 import { Pool } from 'pg';
+import format from 'pg-format';
 import logger from 'jet-logger';
 import { DB } from '../server/DB';
 import { SdrMappingHelper } from './../services/SdrMappingHelper';
@@ -17,7 +18,7 @@ import { COMPASSConfig } from '../config/COMPASSConfig';
 
 export class SubjectIdentitiesModel {
     private stateModel: StateModel = new OrscfStateModel();
-    private questoinnaireHistoryModel = new QuestionnaireModel();
+    private questIonnaireHistoryModel = new QuestionnaireModel();
 
     /**
      * Verify if participant exists in database.
@@ -26,7 +27,7 @@ export class SubjectIdentitiesModel {
     public async getSubjectIdentityExistence(subjectID: string): Promise<boolean> {
         try {
             const pool: Pool = DB.getPool();
-            const res = await pool.query('select * from studyparticipant where subject_id = $1', [
+            const res = await pool.query('SELECT * FROM studyparticipant WHERE subject_id = $1', [
                 subjectID
             ]);
 
@@ -43,7 +44,7 @@ export class SubjectIdentitiesModel {
     public async getSubjectIdentityExistenceBySubjectUid(subjectUid: string): Promise<boolean> {
         try {
             const pool: Pool = DB.getPool();
-            const res = await pool.query('select * from studyparticipant where subject_uid = $1', [
+            const res = await pool.query('SELECT * FROM studyparticipant WHERE subject_uid = $1', [
                 subjectUid
             ]);
 
@@ -81,27 +82,10 @@ export class SubjectIdentitiesModel {
             studyParticipant.current_questionnaire_id = COMPASSConfig.getDefaultQuestionnaireId();
 
             await pool.query(
-                'INSERT INTO studyparticipant(\
-                    subject_id,\
-                    current_questionnaire_id,\
-                    start_date,\
-                    due_date,\
-                    current_instance_id,\
-                    current_interval,\
-                    additional_iterations_left,\
-                    status,\
-                    general_study_end_date,\
-                    personal_study_end_date,\
-                    registration_token,\
-                    subject_uid,\
-                    study_uid, \
-                    actual_site_uid,\
-                    enrolling_site_uid,\
-                    actual_site_defined_patient_identifier,\
-                    last_action\
-                 ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)',
+                `INSERT INTO studyparticipant VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
                 [
                     studyParticipant.subject_id,
+                    studyParticipant.last_action,
                     studyParticipant.current_questionnaire_id,
                     studyParticipant.start_date,
                     studyParticipant.due_date,
@@ -112,19 +96,19 @@ export class SubjectIdentitiesModel {
                     studyParticipant.general_study_end_date,
                     studyParticipant.personal_study_end_date,
                     null,
+                    studyParticipant.language_code,
                     studyParticipant.subject_uid,
                     studyParticipant.study_uid,
                     studyParticipant.actual_site_uid,
                     studyParticipant.enrolling_site_uid,
-                    studyParticipant.actual_site_defined_patient_identifier,
-                    studyParticipant.last_action
+                    studyParticipant.actual_site_defined_patient_identifier
                 ]
             );
 
-            this.questoinnaireHistoryModel.getOrCreateQuestionnaireHistoryEntry(
+            this.questIonnaireHistoryModel.getOrCreateQuestionnaireHistoryEntry(
                 studyParticipant.subject_id,
                 studyParticipant.current_questionnaire_id,
-                'DE',
+                studyParticipant.language_code,
                 false
             );
         } catch (err) {
@@ -141,18 +125,20 @@ export class SubjectIdentitiesModel {
         try {
             const pool: Pool = DB.getPool();
             await pool.query(
-                'UPDATE studyparticipant \
-                    set subject_id = $1,\
-                    start_date = $2,\
-                    due_date = $3,\
-                    status = $4,\
-                    general_study_end_date = $5,\
-                    personal_study_end_date = $6,\
-                    subject_uid = $7,\
-                    study_uid = $8, \
-                    actual_site_uid = $9,\
-                    enrolling_site_uid = $10,\
-                    actual_site_defined_patient_identifier = $11 where subject_uid = $7',
+                `UPDATE studyparticipant
+                SET
+                    subject_id = $1,
+                    start_date = $2,
+                    due_date = $3,
+                    status = $4,
+                    general_study_end_date = $5,
+                    personal_study_end_date = $6,
+                    subject_uid = $7,
+                    study_uid = $8,
+                    actual_site_uid = $9,
+                    enrolling_site_uid = $10,
+                    actual_site_defined_patient_identifier = $11
+                WHERE subject_uid = $7`,
                 [
                     studyParticipant.subject_id,
                     studyParticipant.start_date,
@@ -180,12 +166,13 @@ export class SubjectIdentitiesModel {
         try {
             const pool: Pool = DB.getPool();
             const updateQuery = await pool.query(
-                'UPDATE studyparticipant SET \
-                    start_date = $1,\
-                    status = $2,\
-                    personal_study_end_date = $3,\
-                    actual_site_defined_patient_identifier = $4 \
-                WHERE subject_uid = $5 RETURNING subject_uid',
+                `UPDATE studyparticipant
+                SET
+                    start_date = $1,
+                    status = $2,
+                    personal_study_end_date = $3,
+                    actual_site_defined_patient_identifier = $4
+                WHERE subject_uid = $5 RETURNING subject_uid`,
                 [
                     subjectMutation.periodStart,
                     subjectMutation.status,
@@ -207,24 +194,22 @@ export class SubjectIdentitiesModel {
     ): Promise<string[]> {
         try {
             const pool: Pool = DB.getPool();
-            let subjectUidsIn = '';
-            // TODO: Performance des womöglich großen where in ???
-            let i = 0;
-            subjectUids.forEach((subjectUid: string) => {
-                subjectUidsIn += `'${subjectUid}'`;
-                if (i < subjectUids.length - 1) {
-                    subjectUidsIn += ',';
-                }
-                i += 1;
-            });
 
             const updateQuery = await pool.query(
-                `UPDATE studyparticipant SET \
-                    start_date = $1,\
-                    status = $2,\
-                    personal_study_end_date = $3\
-                WHERE subject_uid in (${subjectUidsIn}) RETURNING subject_uid`,
-                [mutation.periodStart, mutation.status, mutation.periodEnd]
+                format(
+                    `UPDATE studyparticipant
+                    SET
+                        start_date = %L,
+                        status = %L,
+                        personal_study_end_date = %L
+                    WHERE
+                        subject_uid in (%L)
+                    RETURNING subject_uid`,
+                    mutation.periodStart,
+                    mutation.status,
+                    mutation.periodEnd,
+                    subjectUids
+                )
             );
             return updateQuery.rows;
         } catch (error) {
@@ -236,7 +221,7 @@ export class SubjectIdentitiesModel {
     public async deleteStudyParticipant(subjectId: string): Promise<void> {
         try {
             const pool: Pool = DB.getPool();
-            await pool.query('DELETE FROM studyparticipant where subject_uid = $1', [subjectId]);
+            await pool.query('DELETE FROM studyparticipant WHERE subject_uid = $1', [subjectId]);
         } catch (err) {
             logger.err(err);
             throw err;
@@ -263,35 +248,28 @@ export class SubjectIdentitiesModel {
                 'sp'
             );
 
-            const searchSql = `SELECT \
-                subject_uid AS "subjectUid", \
-                subject_id AS "subjectIdentifier", \
-                study_uid AS "studyUid", \
-                actual_site_uid AS "actualSiteUid", \
-                0 AS "isArchived", \
-                0 AS modiciationTimestampUtc \
-                FROM studyparticipant sp ${filterClause}
-                ORDER BY ${SdrMappingHelper.mapSdrSubjectPropnameToParticipantPropName(
-                    sortingField
-                )} ${sortDescending ? ' DESC' : ''}\
-                LIMIT ${searchRequest.limitResults}`;
-
-            const searchQuery = await pool.query(searchSql);
+            const searchQuery = await pool.query(
+                format(
+                    `SELECT
+                        subject_uid AS "subjectUid",
+                        subject_id AS "subjectIdentifier",
+                        study_uid AS "studyUid",
+                        actual_site_uid AS "actualSiteUid",
+                        0 AS "isArchived",
+                        0 AS modificationTimestampUtc
+                    FROM
+                        studyparticipant sp %s
+                    ORDER BY %I %s
+                    LIMIT %s`,
+                    filterClause,
+                    SdrMappingHelper.mapSdrSubjectPropnameToParticipantPropName(sortingField),
+                    sortDescending ? ' DESC' : '',
+                    searchRequest.limitResults
+                )
+            );
             return searchQuery.rows;
-
-            // const searchQuery2 = await pool.query(`SELECT \
-            //     subject_uid AS "subjectUid", \
-            //     subject_id AS "subjectIdentifier", \
-            //     study_uid AS "studyUid", \
-            //     actual_site_uid AS "actualSiteUid", \
-            //     0 AS "isArchived", \
-            //     0 AS modiciationTimestampUtc \
-            //     FROM studyparticipant`);
-
-            // return searchQuery2.rows;
         } catch (err) {
             logger.err(err);
-            //return [] as SubjectMetaRecord[];
             throw err;
         }
     }
@@ -299,24 +277,19 @@ export class SubjectIdentitiesModel {
     public async getSubjects(subjectUids: string[]): Promise<SdrModels.SubjectFields[]> {
         try {
             const pool: Pool = DB.getPool();
-            let subjectUidsIn = '';
-            // TODO: Performance des womöglich großen where in ???
-            let i = 0;
-            subjectUids.forEach((subjectUid: string) => {
-                subjectUidsIn += `'${subjectUid}'`;
-                if (i < subjectUids.length - 1) {
-                    subjectUidsIn += ',';
-                }
-                i += 1;
-            });
 
             const getSubjetsQuery = await pool.query(
-                `SELECT * \
-                FROM studyparticipant where subject_uid in (${subjectUidsIn}) \
-                ORDER BY subject_id
-                `
+                format(
+                    `SELECT *
+                    FROM
+                        studyparticipant
+                    WHERE
+                        subject_uid in (%L)
+                    ORDER BY subject_id`,
+                    subjectUids
+                )
             );
-            return getSubjetsQuery.rows.map((r) =>
+            return getSubjetsQuery.rows.map((r: ParticipantEntry) =>
                 SdrMappingHelper.mapParticipantEntryToSubject(r)
             );
         } catch (err) {

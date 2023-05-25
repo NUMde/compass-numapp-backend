@@ -28,7 +28,7 @@ export class ParticipantModel {
         try {
             // retrieve participant from db
             const query_result = await pool.query(
-                'select * from studyparticipant where subject_id = $1',
+                'SELECT * FROM studyparticipant WHERE subject_id = $1',
                 [subjectId]
             );
 
@@ -46,9 +46,9 @@ export class ParticipantModel {
 
             // persist changes
             await pool.query(
-                `update
+                `UPDATE
                     studyparticipant
-                set
+                SET
                     current_questionnaire_id = $1,
                     start_date = $2,
                     due_date = $3,
@@ -56,7 +56,7 @@ export class ParticipantModel {
                     current_interval = $5,
                     additional_iterations_left = $6,
                     status = $7
-                where
+                WHERE
                     subject_id = $8
                 `,
                 [
@@ -81,53 +81,33 @@ export class ParticipantModel {
      * Retrieve the participant from the database and eventually update the participants data in case due_date is outdated, start_date is not set, or study end dates are outdated.
      *
      * @param subjectID The participant id
+     * @param updateParticipant whether or not to update the participant
      */
-    public async getParticipantBySubjectIdWithoutUpdate(
-        subjectID: string
+    public async getParticipantBySubjectID(
+        subjectID: string,
+        updateParticipant = false
     ): Promise<ParticipantEntry> {
         const pool: Pool = DB.getPool();
 
         try {
-            const res = await pool.query('select * from studyparticipant where subject_id = $1', [
+            const res = await pool.query('SELECT * FROM studyparticipant WHERE subject_id = $1', [
                 subjectID
             ]);
             if (res.rows.length !== 1) {
-                throw new Error('subject_id_not_found');
+                throw new Error('subject id not found');
             }
             const participant = res.rows[0] as ParticipantEntry;
-            return participant;
-        } catch (err) {
-            logger.err(err);
-            throw err;
-        }
-    }
-
-    /**
-     * Retrieve the participant from the database and eventually update the participants data in case due_date is outdated, start_date is not set, or study end dates are outdated.
-     *
-     * @param subjectID The participant id
-     */
-    public async getAndUpdateParticipantBySubjectID(subjectID: string): Promise<ParticipantEntry> {
-        const pool: Pool = DB.getPool();
-
-        try {
-            const res = await pool.query('select * from studyparticipant where subject_id = $1', [
-                subjectID
-            ]);
-            if (res.rows.length !== 1) {
-                throw new Error('subject_id_not_found');
-            }
-
-            let participant = res.rows[0] as ParticipantEntry;
-            if (
-                !participant.start_date ||
-                (participant.due_date && participant.due_date < new Date()) ||
-                (participant.status == ParticipationStatus['OnStudy'] &&
-                    (participant.personal_study_end_date < new Date() ||
-                        participant.general_study_end_date < new Date()))
-            ) {
-                // TODO rewrite updateParticipant to take an existing participant object and not reload from the db
-                participant = await this.updateParticipant(participant.subject_id);
+            if (updateParticipant) {
+                if (
+                    !participant.start_date ||
+                    (participant.due_date && participant.due_date < new Date()) ||
+                    (participant.status == ParticipationStatus['OnStudy'] &&
+                        (participant.personal_study_end_date < new Date() ||
+                            participant.general_study_end_date < new Date()))
+                ) {
+                    // TODO rewrite updateParticipant to take an existing participant object and not reload from the db
+                    return await this.updateParticipant(participant.subject_id);
+                }
             }
             return participant;
         } catch (err) {
@@ -144,7 +124,7 @@ export class ParticipantModel {
         try {
             const pool: Pool = DB.getPool();
             await pool.query(
-                'update studyparticipant set last_action = $1 where subject_id = $2;',
+                'UPDATE studyparticipant SET last_action = $1 WHERE subject_id = $2;',
                 [new Date(), subjectID]
             );
             return;
@@ -162,14 +142,10 @@ export class ParticipantModel {
         try {
             const pool: Pool = DB.getPool();
             const res = await pool.query(
-                'select subject_id from studyparticipant where subject_id = $1',
+                'SELECT subject_id FROM studyparticipant WHERE subject_id = $1',
                 [subjectID]
             );
-            if (res.rows.length !== 1) {
-                return false;
-            } else {
-                return true;
-            }
+            return res.rows.length === 1;
         } catch (err) {
             logger.err(err);
             throw err;
@@ -187,19 +163,19 @@ export class ParticipantModel {
             const pool: Pool = DB.getPool();
             const dateParam = this.convertDateToQueryString(referenceDate);
             const res = await pool.query(
-                `select
+                `SELECT
                     s.registration_token
-                from
+                FROM
                     studyparticipant s
-                left join questionnairehistory q on
+                LEFT JOIN questionnairehistory q ON
                     s.subject_id = q.subject_id
-                    and s.current_questionnaire_id = q.questionnaire_id
-                    and s.current_instance_id = q.instance_id
-                where
-                    q.id is null
-                    and s.start_date <= $1
-                    and s.due_date >= $1
-                    and s.status = $2
+                    AND s.current_questionnaire_id = q.questionnaire_id
+                    AND s.current_instance_id = q.instance_id
+                WHERE
+                    q.id IS NULL
+                    AND s.start_date <= $1
+                    AND s.due_date >= $1
+                    AND s.status = $2
                 `,
                 [dateParam, ParticipationStatus['OnStudy']]
             );
@@ -221,19 +197,19 @@ export class ParticipantModel {
             const pool: Pool = DB.getPool();
             const dateParam = this.convertDateToQueryString(referenceDate);
             const res = await pool.query(
-                `select
+                `SELECT
                     s.registration_token
-                from
+                FROM
                     studyparticipant s,
                     questionnairehistory q
-                where
+                WHERE
                     s.start_date <= $1
-                    and s.due_date >= $1
-                    and q.subject_id = s.subject_id
-                    and q.questionnaire_id = s.current_questionnaire_id
-                    and q.instance_id = s.current_instance_id
-                    and q.date_sent is null
-                    and s.status = $2
+                    AND s.due_date >= $1
+                    AND q.subject_id = s.subject_id
+                    AND q.questionnaire_id = s.current_questionnaire_id
+                    AND q.instance_id = s.current_instance_id
+                    AND q.date_sent is null
+                    AND s.status = $2
                 `,
                 [dateParam, ParticipationStatus['OnStudy']]
             );
@@ -254,7 +230,7 @@ export class ParticipantModel {
         try {
             const pool: Pool = DB.getPool();
             await pool.query(
-                'update studyparticipant set registration_token = $1 where subject_id = $2;',
+                'UPDATE studyparticipant SET registration_token = $1 WHERE subject_id = $2;',
                 [token, subjectID]
             );
             return;
@@ -273,7 +249,7 @@ export class ParticipantModel {
         try {
             const pool: Pool = DB.getPool();
             await pool.query(
-                'update studyparticipant set language_code = $1 where subject_id = $2;',
+                'UPDATE studyparticipant SET language_code = $1 WHERE subject_id = $2;',
                 [language, subjectID]
             );
             return;

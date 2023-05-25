@@ -20,7 +20,7 @@ export class SubjectSubmissionController {
     public async importSubjects(req: Request, resp: Response) {
         try {
             const subjects: SdrModels.SubjectStructure[] = req.body.subjects;
-            if (subjects === undefined || subjects === null) {
+            if (!subjects) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
 
@@ -33,23 +33,14 @@ export class SubjectSubmissionController {
                     throw { message: "This backend is dedicated for studyUid '" + studyUid + "'" };
                 }
 
-                if (
-                    typeof subject.periodStart === 'string' ||
-                    subject.periodStart instanceof String
-                ) {
-                    const parsedDate: Date = new Date(Date.parse(subject.periodStart.toString()));
+                if (typeof subject.periodStart === 'string') {
+                    const parsedDate = new Date(subject.periodStart);
                     subject.periodStart = parsedDate;
-                    subject.periodStart.setHours(0);
-                    subject.periodStart.setMinutes(0);
-                    subject.periodStart.setSeconds(0);
                 }
 
-                if (typeof subject.periodEnd === 'string' || subject.periodEnd instanceof String) {
-                    const parsedDate: Date = new Date(Date.parse(subject.periodEnd.toString()));
+                if (typeof subject.periodEnd === 'string') {
+                    const parsedDate: Date = new Date(subject.periodEnd);
                     subject.periodEnd = parsedDate;
-                    subject.periodEnd.setHours(0);
-                    subject.periodEnd.setMinutes(0);
-                    subject.periodEnd.setSeconds(0);
                 }
 
                 const participant: ParticipantEntry =
@@ -69,8 +60,8 @@ export class SubjectSubmissionController {
 
             return resp.status(200).json({
                 fault: null,
-                createdSubjectUids: createdSubjectUids,
-                updatedSubjectUids: updatedSubjectUids
+                createdSubjectUids,
+                updatedSubjectUids
             });
         } catch (error) {
             logger.err(error, true);
@@ -83,7 +74,7 @@ export class SubjectSubmissionController {
     public async archiveSubjects(req: Request, resp: Response) {
         try {
             const subjectUids: string[] = req.body.subjectUids;
-            if (subjectUids === undefined || subjectUids === null) {
+            if (!subjectUids) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
 
@@ -104,7 +95,7 @@ export class SubjectSubmissionController {
 
             return resp.status(200).json({
                 fault: null,
-                archivedSubjectUids: archivedSubjectUids
+                archivedSubjectUids
             });
         } catch (error) {
             logger.err(error, true);
@@ -119,7 +110,7 @@ export class SubjectSubmissionController {
             const mutationsBySubjectUid: {
                 [subjectUid: string]: SdrModels.SubjectMutation;
             } = req.body.mutationsBySubjecttUid;
-            if (mutationsBySubjectUid === undefined || mutationsBySubjectUid === null) {
+            if (!mutationsBySubjectUid) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
 
@@ -138,7 +129,7 @@ export class SubjectSubmissionController {
             }
 
             return resp.status(200).json({
-                updatedSubjectUids: updatedSubjectUids,
+                updatedSubjectUids,
                 fault: null
             });
         } catch (error) {
@@ -152,12 +143,11 @@ export class SubjectSubmissionController {
     public async applySubjectBatchMutation(req: Request, resp: Response) {
         try {
             const subjectUids: string[] | undefined | null = req.body.subjectUids;
-            if (subjectUids == undefined || subjectUids == null) {
+            if (!subjectUids) {
                 return resp.status(200).json({ fault: 'no subjects on request', return: null });
             }
-            const mutation: SdrModels.BatchableSubjectMutation | undefined | null =
-                req.body.mutation;
-            if (mutation == undefined || mutation == null) {
+            const mutation: SdrModels.BatchableSubjectMutation | undefined = req.body.mutation;
+            if (!mutation) {
                 return resp.status(200).json({ fault: 'no mutation on request', return: null });
             }
 
@@ -167,12 +157,12 @@ export class SubjectSubmissionController {
             );
 
             return resp.status(200).json({
-                updatedSubjectUids: updatedSubjectUids,
+                updatedSubjectUids,
                 fault: null
             });
         } catch (error) {
             logger.err(error, true);
-            return resp.status(200).json({ faule: error.message, return: null });
+            return resp.status(200).json({ fault: error.message, return: null });
         }
     }
 }
