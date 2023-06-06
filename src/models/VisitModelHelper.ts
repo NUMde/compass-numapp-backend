@@ -25,9 +25,9 @@ export class VisitModelHelper {
                         dr.data_scheme_url "dataSchemaUrl",
                         dr.notes_regarding_outcome "notesRegardingOutcome",
                         dr.execution_person "executingPerson",
-                        dr.recorded_data "recordedData",
+                        dr.recorded_data "recordedData"
                     FROM datarecordings dr INNER JOIN visits v on v.Id = dr.visit_id
-                    WHERE v.subject_identifier = %s`,
+                    WHERE v.subject_identifier = %L`,
                     subjectIdentifier
                 )
             );

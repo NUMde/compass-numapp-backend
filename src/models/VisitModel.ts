@@ -172,17 +172,17 @@ export class VisitModel {
                         datarecordings
                     SET
                         visit_id = $s,
-                        modification_timestamp_utc =  $s,
-                        data_recording_name = %s,
-                        task_execution_title = %s,
-                        scheduled_date_utc = %s,
-                        execution_date_utc = %s,
-                        execution_state =  %s,
-                        data_scheme_url = %s',
-                        notes_regarding_outcome = %s,
-                        execution_person = %s,
-                        recorded_data = %s
-                    WHERE id = %s`,
+                        modification_timestamp_utc =  $L,
+                        data_recording_name = %L,
+                        task_execution_title = %L,
+                        scheduled_date_utc = %L,
+                        execution_date_utc = %L,
+                        execution_state =  %L,
+                        data_scheme_url = %L',
+                        notes_regarding_outcome = %L,
+                        execution_person = %L,
+                        recorded_data = %L
+                    WHERE id = %L`,
                     dr.visitUid,
                     dr.modificationTimestampUtc,
                     dr.dataRecordingName,
