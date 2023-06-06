@@ -79,7 +79,7 @@ export class SubjectIdentitiesModel {
 
             //studyParticipant = await this.stateModel.calculateUpdatedData(studyParticipant, {});
             studyParticipant.current_instance_id = IdHelper.createID();
-            studyParticipant.current_questionnaire_id = COMPASSConfig.getDefaultQuestionnaireId();
+            studyParticipant.current_questionnaire_id = COMPASSConfig.getInitialQuestionnaireId();
 
             await pool.query(
                 `INSERT INTO studyparticipant VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,

@@ -37,7 +37,11 @@ export class SdrMappingHelper {
             last_action: new Date(subject.modificationTimestampUtc),
             current_questionnaire_id: null,
             start_date: subject.periodStart,
-            due_date: subject.periodStart,
+            due_date: new Date(
+                new Date(subject.periodStart).setDate(
+                    subject.periodStart.getDate() + COMPASSConfig.getDefaultInterval()
+                )
+            ),
             current_instance_id: null,
             current_interval: null,
             additional_iterations_left: 0,

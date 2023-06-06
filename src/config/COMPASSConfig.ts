@@ -125,7 +125,7 @@ export class COMPASSConfig {
      * @memberof COMPASSConfig
      */
     public static getInitialQuestionnaireId(): string {
-        return env.get('COMPASS_INITIAL_QUESTIONNAIRE_ID').default('initial').asString();
+        return env.get('COMPASS_INITIAL_QUESTIONNAIRE_ID').default('EMPTY').asString();
     }
 
     /**
