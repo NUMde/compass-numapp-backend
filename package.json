@@ -19,7 +19,7 @@
         "jsonwebtoken": "9.0.0",
         "jws": "4.0.0",
         "pg": "8.11.1",
-        "swagger-ui-express": "4.6.3",
+        "swagger-ui-express": "5.0.0",
         "uuid": "9.0.0"
     },
     "devDependencies": {
