@@ -9,5 +9,8 @@
  * @class Route
  */
 export class Route {
-    constructor(readonly method: string, readonly route: string) {}
+    constructor(
+        readonly method: string,
+        readonly route: string
+    ) {}
 }

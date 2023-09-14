@@ -38,9 +38,8 @@ export class QuestionnaireModel {
         const url = questionnaireId.split('|')[0];
 
         try {
-            const participant = await this.participantModel.getAndUpdateParticipantBySubjectID(
-                subjectID
-            );
+            const participant =
+                await this.participantModel.getAndUpdateParticipantBySubjectID(subjectID);
 
             const res = await dbClient.query(
                 'SELECT body, language_code  FROM questionnaires WHERE id = $1 AND language_code = coalesce ((select language_code from questionnaires where language_code=$2 limit 1), $3);',
