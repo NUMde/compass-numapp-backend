@@ -60,6 +60,8 @@ jobs:
                       ${{ runner.OS }}-build-
                       ${{ runner.OS }}-
             - name: install npm
-              run: npm install
+              run: npm install -g npm@latest
+            - name: install node dependencies
+              run: npm ci
             - name: run lint and generate annotations
               run: npm run lint:annotate
