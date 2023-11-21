@@ -13,6 +13,7 @@ import { COMPASSConfig } from '../config/COMPASSConfig';
 import { QueueModel } from '../models/QueueModel';
 import { ParticipantModel } from '../models/ParticipantModel';
 import { AuthorizationController } from './AuthorizationController';
+import { QuestionnaireModel } from '../models/QuestionnaireModel';
 
 /**
  * Endpoint class for all study data queue related restful methods.
@@ -24,6 +25,7 @@ import { AuthorizationController } from './AuthorizationController';
 export class QueueController {
     private queueModel: QueueModel = new QueueModel();
     private participantModel = new ParticipantModel();
+    private questionnaireModel = new QuestionnaireModel();
 
     /**
      * Add entries to the queue. It is called during following events from the client:
@@ -64,6 +66,12 @@ export class QueueController {
                 const newUserData = await this.participantModel.getParticipantBySubjectID(
                     req.query.subjectId.toString(),
                     true
+                );
+                await this.questionnaireModel.getOrCreateQuestionnaireHistoryEntry(
+                    req.query.subjectId.toString(),
+                    newUserData.current_questionnaire_id,
+                    newUserData.language_code,
+                    false
                 );
                 return res.status(200).json(newUserData);
             }
