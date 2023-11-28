@@ -98,9 +98,9 @@ export class QueueModel {
             if (req.query.type === COMPASSConfig.getQuestionnaireResponseType()) {
                 // a questionnaire response is send from the client
                 const dbID =
-                    req.query.surveyId +
+                    queueEntry.questionnaire_id +
                     '-' +
-                    req.query.subjectId +
+                    queueEntry.subject_id +
                     '-' +
                     (req.query.instanceId || COMPASSConfig.getInitialQuestionnaireId());
                 const res = await dbClient.query(
