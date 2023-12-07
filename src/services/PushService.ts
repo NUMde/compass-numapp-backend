@@ -34,14 +34,14 @@ export class PushService {
      * @return {*}  {Promise<void>}
      * @memberof PushService
      */
-    public async send(msg: string, registrationTokens: string[]): Promise<void> {
+    public async send(msg: string, deviceToken: string[]): Promise<void> {
         logger.info(' --> Entering Send');
 
         if (msg === null) {
             logger.warn('No message provided. Skip sending push notifications.');
             return;
         }
-        if (registrationTokens === null || registrationTokens.length < 1) {
+        if (deviceToken === null || deviceToken.length < 1) {
             logger.warn('No participantid provided. Skip sending push notifications.');
             return;
         }
@@ -52,7 +52,7 @@ export class PushService {
             return;
         }
 
-        logger.imp(`Sending message [${msg}] to [${registrationTokens.length}] recipients.`);
+        logger.imp(`Sending message [${msg}] to [${deviceToken.length}] recipients.`);
 
         const android: admin.messaging.AndroidConfig = {
             collapseKey: 'Accept',
@@ -72,55 +72,59 @@ export class PushService {
             }
         };
 
-        this.chunkArray(registrationTokens, 500).forEach(async (chunk) => {
+        let successCount = 0;
+        const failedTokens = [];
+
+        const queries: Promise<{ success: boolean; token: string | undefined }>[] = [];
+
+        deviceToken.forEach((registrationToken) => {
             // build message
-            const message: admin.messaging.MulticastMessage = {
+            const message: admin.messaging.Message = {
                 notification: {
                     title: msg,
                     body: 'Zum Öffnen der App tippen'
                 },
-                tokens: chunk,
+                token: registrationToken,
                 android,
                 apns
             };
 
-            // Send a message to the device corresponding to the provided
-            // registration token.
-            try {
-                const response = await admin.messaging().sendMulticast(message);
-                logger.info(response.successCount + ' messages were sent successfully');
-                if (response.failureCount > 0) {
-                    const failedTokens = [];
-                    response.responses.forEach((resp, idx) => {
-                        if (!resp.success) {
-                            failedTokens.push(registrationTokens[idx]);
+            // Send a message to the devices corresponding to the provided
+            // registration tokens.
+
+            queries.push(
+                admin
+                    .messaging()
+                    .send(message)
+                    .then((response) => {
+                        if (response) {
+                            return { success: true, token: undefined };
+                        } else {
+                            return { success: false, token: registrationToken };
                         }
-                    });
-                    logger.err('List of tokens that caused failures: ' + failedTokens);
+                    })
+                    .catch((error) => {
+                        logger.err('Error sending message: ' + error);
+                        return { success: false, token: registrationToken };
+                    })
+            );
+        });
+
+        const results = await Promise.allSettled(queries);
+
+        results.forEach((result) => {
+            if (result.status === 'fulfilled') {
+                if (result.value.success) {
+                    successCount++;
+                } else {
+                    failedTokens.push(result.value.token);
                 }
-            } catch (error) {
-                logger.err('Error sending message: ' + error);
             }
         });
 
-        logger.info(' <-- Leaving Send');
-    }
+        logger.info(successCount + ' messages were sent successfully');
+        logger.err('List of tokens that caused failures: ' + failedTokens);
 
-    /**
-     * Returns an array of arrays of the given size.
-     *
-     * @param {T[]} array The array to split
-     * @param {number} chunkSize Size of every chunk
-     */
-    private chunkArray<T>(array: T[], chunkSize: number): T[][] {
-        if (chunkSize <= 0) {
-            throw 'Invalid chunk size';
-        }
-        const result = [];
-        const arrayLength = array.length;
-        for (let i = 0; i < arrayLength; i += chunkSize) {
-            result.push(array.slice(i, i + chunkSize));
-        }
-        return result;
+        logger.info(' <-- Leaving Send');
     }
 }
