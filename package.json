@@ -28,7 +28,7 @@
         "@types/express-jwt": "6.0.4",
         "@types/jest": "29.5.4",
         "@types/jsonwebtoken": "9.0.2",
-        "@types/jws": "3.2.5",
+        "@types/jws": "3.2.10",
         "@types/node": "18.17.14",
         "@types/pg": "8.10.2",
         "@types/request": "2.48.8",
