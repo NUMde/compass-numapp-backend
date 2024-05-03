@@ -9,9 +9,11 @@ import logger from 'jet-logger';
 import { StateChangeTrigger, ParticipationStatus, ParticipantEntry } from '../types';
 import { DB } from '../server/DB';
 import { StateModel } from './StateModel';
+import { QuestionnaireModel } from './QuestionnaireModel';
 export class ParticipantModel {
     // the model that determines which questionnaire to send - replace this with you custom model
     private stateModel: StateModel = new OrscfStateModel();
+    private questionnaireModel: QuestionnaireModel = new QuestionnaireModel();
 
     /**
      * Update the participants current questionnaire, the start and due date and short interval usage.
@@ -70,6 +72,12 @@ export class ParticipantModel {
                     updatedParticipant.subject_id
                 ]
             );
+            await this.questionnaireModel.createQuestionnaireHistoryEntry(
+                updatedParticipant.subject_id,
+                updatedParticipant.current_questionnaire_id,
+                updatedParticipant.current_instance_id,
+                updatedParticipant.language_code
+            );
             return updatedParticipant;
         } catch (err) {
             logger.err(err);
@@ -105,8 +113,7 @@ export class ParticipantModel {
                         (participant.personal_study_end_date < new Date() ||
                             participant.general_study_end_date < new Date()))
                 ) {
-                    // TODO rewrite updateParticipant to take an existing participant object and not reload from the db
-                    return await this.updateParticipant(participant.subject_id);
+                    await this.updateParticipant(participant.subject_id);
                 }
             }
             return participant;

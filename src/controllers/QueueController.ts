@@ -67,12 +67,7 @@ export class QueueController {
                     req.query.subjectId.toString(),
                     true
                 );
-                await this.questionnaireModel.getOrCreateQuestionnaireHistoryEntry(
-                    req.query.subjectId.toString(),
-                    newUserData.current_questionnaire_id,
-                    newUserData.language_code,
-                    false
-                );
+
                 return res.status(200).json(newUserData);
             }
         } catch (err) {

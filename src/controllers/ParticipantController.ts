@@ -12,6 +12,7 @@ import { ParticipantEntry } from '../types/ParticipantEntry';
 import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantModel } from '../models/ParticipantModel';
 import { AuthorizationController } from './AuthorizationController';
+import { QuestionnaireModel } from '../models/QuestionnaireModel';
 
 /**
  *  Endpoint class for all participant related restful methods.
@@ -22,6 +23,7 @@ import { AuthorizationController } from './AuthorizationController';
 @Controller('participant')
 export class ParticipantController {
     private participantModel: ParticipantModel = new ParticipantModel();
+    private questionnaireModel: QuestionnaireModel = new QuestionnaireModel();
 
     /**
      * Retrieve the current subject data.
@@ -30,10 +32,11 @@ export class ParticipantController {
     @Get(':subjectID')
     @Middleware([AuthorizationController.checkStudyParticipantLogin])
     public async getParticipant(req: Request, res: Response) {
+        const { subjectID } = req.params;
         try {
             const participant: ParticipantEntry =
-                await this.participantModel.getParticipantBySubjectID(req.params.subjectID, true);
-            this.participantModel.updateLastAction(req.params.subjectID);
+                await this.participantModel.getParticipantBySubjectID(subjectID, true);
+            await this.participantModel.updateLastAction(subjectID);
 
             const returnObject = {
                 current_instance_id: participant.current_instance_id,

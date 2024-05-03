@@ -12,7 +12,7 @@ import { QuestionnaireModel } from '../models/QuestionnaireModel';
 import { AuthorizationController } from './AuthorizationController';
 import { expressjwt as jwt } from 'express-jwt';
 import { AuthConfig } from '../config/AuthConfig';
-import { COMPASSConfig } from '../config/COMPASSConfig';
+import logger from 'jet-logger';
 
 /**
  * Endpoint class for all questionnaire related restful methods.
@@ -72,32 +72,22 @@ export class QuestionnaireController {
             ? req.params.subjectID
             : undefined;
 
-        const language = req.params.language
-            ? req.params.language
-            : COMPASSConfig.getDefaultLanguageCode();
-
-        this.questionnaireModel
-            .getOrCreateQuestionnaireHistoryEntry(
-                subjectID,
-                req.params.questionnaireId,
-                language,
-                true
-            )
-            .then(
-                (resp) => res.status(200).json(resp),
-                (err) => {
-                    if (err.response) {
-                        res.status(err.response.status).send();
-                    } else {
-                        res.status(500).json({
-                            errorCode: 'InternalErr',
-                            errorMessage: 'An internal error occurred.',
-                            errorStack:
-                                process.env.NODE_ENV !== 'production' ? err.stack : undefined
-                        });
-                    }
-                }
+        const { questionnaireId, language } = req.params;
+        try {
+            await this.questionnaireModel.updateEntryForParticipant(subjectID);
+            const questionnaire = await this.questionnaireModel.getQuestionnaire(
+                questionnaireId,
+                language
             );
+            res.status(200).json(questionnaire);
+        } catch (error) {
+            logger.err(error.message);
+            res.status(500).json({
+                errorCode: 'InternalErr',
+                errorMessage: 'An internal error occurred.',
+                errorStack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+            });
+        }
     }
 
     /**

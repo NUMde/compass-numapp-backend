@@ -5,9 +5,12 @@
 import logger from 'jet-logger';
 
 import { COMPASSConfig } from '../config/COMPASSConfig';
-import { ParticipantModel } from '../models/ParticipantModel';
+
 import { DB } from '../server/DB';
 import { IdHelper } from '../services/IdHelper';
+import { ParticipantEntry } from '../types';
+import { QueryResult } from 'pg';
+import format from 'pg-format';
 
 /**
  * Model class that bundles the logic for access to the questionnaire related tables.
@@ -16,22 +19,15 @@ import { IdHelper } from '../services/IdHelper';
  * @class QuestionnaireModel
  */
 export class QuestionnaireModel {
-    private participantModel: ParticipantModel = new ParticipantModel();
-
     /**
      * Retrieve the questionnaire with the requested ID and create a log entry in the questionnairehistory table.
      *
-     * @param {string} subjectID
      * @param {string} questionnaireId
+     * @param {string} language
      * @return {*}  {Promise<string>}
      * @memberof QuestionnaireModel
      */
-    public async getOrCreateQuestionnaireHistoryEntry(
-        subjectID: string,
-        questionnaireId: string,
-        language: string,
-        runUpdateParticipant: boolean
-    ): Promise<string> {
+    public async getQuestionnaire(questionnaireId: string, language: string): Promise<string> {
         // note: we don't try/catch this because if connecting throws an exception
         // we don't need to dispose the client (it will be undefined)
         const dbClient = await DB.getPool().connect();
@@ -39,11 +35,6 @@ export class QuestionnaireModel {
         const url = questionnaireId.split('|')[0];
 
         try {
-            const participant = await this.participantModel.getParticipantBySubjectID(
-                subjectID,
-                runUpdateParticipant
-            );
-
             const res = await dbClient.query(
                 `SELECT
                     body, language_code
@@ -66,42 +57,82 @@ export class QuestionnaireModel {
                     );
                 }
 
-                //HACK:here, as a fallback for an unset current_instance_id the
-                //initalQuesionaireId is used instead, which 1: isn't a UUID at all
-                //and 2: if there is no configuration of the InitialQuestionnaireId
-                //uses the hardcoded fallback value 'initial' + it also influences dbId
-                const dbId =
-                    questionnaireId +
-                    '-' +
-                    subjectID +
-                    '-' +
-                    (participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId());
-                await dbClient.query(
+                return res.rows[0].body;
+            }
+        } catch (e) {
+            logger.err('!!! DB might be inconsistent. Check DB !!!');
+            logger.err(e);
+        } finally {
+            dbClient.release();
+        }
+    }
+
+    // create entry in questionnairehistory table
+    public async createQuestionnaireHistoryEntry(
+        subjectID: string,
+        questionnaireID: string,
+        instanceID: string,
+        languageCode: string = COMPASSConfig.getDefaultLanguageCode()
+    ) {
+        const dbClient = await DB.getPool().connect();
+        const dbId = questionnaireID + '-' + subjectID + '-' + instanceID;
+        try {
+            await dbClient.query(
+                format(
                     `INSERT INTO
                         questionnairehistory(
                             id,
                             subject_id,
                             questionnaire_id,
                             language_code,
-                            date_received,
                             instance_id)
-                         VALUES ($1, $2, $3, $4, $5, $6)
-                         ON CONFLICT DO NOTHING;`,
-                    [
-                        dbId,
-                        subjectID,
-                        questionnaireId,
-                        res.rows[0].language_code,
-                        new Date(),
-                        participant.current_instance_id || COMPASSConfig.getInitialQuestionnaireId()
-                    ]
-                );
-                return res.rows[0].body;
-            }
-        } catch (e) {
-            logger.err('!!! DB might be inconsistent. Check DB !!!');
-            logger.err(e);
-            throw e;
+                     VALUES %L;`,
+                    [[dbId, subjectID, questionnaireID, languageCode, instanceID]]
+                )
+            );
+        } catch (error) {
+            logger.err(error);
+        } finally {
+            dbClient.release();
+        }
+    }
+
+    public async updateEntryForParticipant(subjectID: string) {
+        const dbClient = await DB.getPool().connect();
+
+        try {
+            const res: QueryResult<ParticipantEntry> = await dbClient.query(
+                format(
+                    `SELECT
+                    *
+                FROM
+                    studyparticipant
+                WHERE
+                    subject_id = %L`,
+                    [subjectID]
+                )
+            );
+            const participant = res.rows[0];
+            const dbId =
+                participant.current_questionnaire_id +
+                '-' +
+                subjectID +
+                '-' +
+                participant.current_instance_id;
+            await dbClient.query(
+                format(
+                    `UPDATE
+                    questionnairehistory
+                SET
+                date_received = %L
+                WHERE
+                    id = %L;`,
+                    new Date(),
+                    dbId
+                )
+            );
+        } catch (error) {
+            logger.err(error);
         } finally {
             dbClient.release();
         }

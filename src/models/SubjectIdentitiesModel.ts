@@ -105,11 +105,11 @@ export class SubjectIdentitiesModel {
                 ]
             );
 
-            this.questIonnaireHistoryModel.getOrCreateQuestionnaireHistoryEntry(
+            await this.questIonnaireHistoryModel.createQuestionnaireHistoryEntry(
                 studyParticipant.subject_id,
                 studyParticipant.current_questionnaire_id,
-                studyParticipant.language_code,
-                false
+                studyParticipant.current_instance_id,
+                studyParticipant.language_code
             );
         } catch (err) {
             logger.err(err);
