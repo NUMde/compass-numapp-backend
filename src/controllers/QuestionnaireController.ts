@@ -225,23 +225,26 @@ export class QuestionnaireController {
             return;
         }
 
-        this.questionnaireModel.getQuestionnaireByUrlAndVersion(url, version, languageCode).then(
-            (response) => {
-                if (response.length === 0) {
-                    res.status(404).json({
-                        errorCode: 'QuestionnaireNotFound',
-                        errorMessage: 'No questionnaire found that matches the given parameters.'
-                    });
-                }
-                res.status(200).json(response[0]['body']);
-            },
-            (err) => {
-                res.status(500).json({
-                    errorCode: 'Internal error',
-                    errorMessage: 'Query failed.',
-                    errorStack: process.env.NODE_ENV !== 'production' ? err.stack : undefined
+        try {
+            const response = await this.questionnaireModel.getQuestionnaireByUrlAndVersion(
+                url,
+                version,
+                languageCode
+            );
+            if (response.length === 0) {
+                res.status(404).json({
+                    errorCode: 'QuestionnaireNotFound',
+                    errorMessage: 'No questionnaire found that matches the given parameters.'
                 });
             }
-        );
+            console.log(response);
+            res.status(200).json(response[0]['body']);
+        } catch (error) {
+            res.status(500).json({
+                errorCode: 'Internal error',
+                errorMessage: 'Query failed.',
+                errorStack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+            });
+        }
     }
 }
