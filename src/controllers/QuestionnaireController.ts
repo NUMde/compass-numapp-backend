@@ -232,12 +232,12 @@ export class QuestionnaireController {
                 languageCode
             );
             if (response.length === 0) {
-                res.status(404).json({
+                return res.status(404).json({
                     errorCode: 'QuestionnaireNotFound',
                     errorMessage: 'No questionnaire found that matches the given parameters.'
                 });
             }
-            console.log(response);
+
             res.status(200).json(response[0]['body']);
         } catch (error) {
             res.status(500).json({
