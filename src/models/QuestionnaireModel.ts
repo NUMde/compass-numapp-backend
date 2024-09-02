@@ -35,30 +35,34 @@ export class QuestionnaireModel {
         const url = questionnaireId.split('|')[0];
 
         try {
-            const res = await dbClient.query(
+            let res = await dbClient.query(
                 `SELECT
-                    body, language_code
+                    body
                 FROM
                     questionnaires
                 WHERE
-                    id = $1 AND language_code = COALESCE (
-                        (SELECT
-                            language_code
-                        FROM questionnaires WHERE language_code=$2 LIMIT 1), $3);`,
-                [url, language, COMPASSConfig.getDefaultLanguageCode()]
+                    id = $1 AND language_code = $2`,
+                [url, language]
             );
 
-            if (res.rows.length !== 1) {
-                throw new Error('questionnaire_not_found');
-            } else {
-                if (language != res.rows[0].language_code) {
-                    logger.info(
-                        `User language '${language}' not available, using fallback language '${res.rows[0].language_code}'`
-                    );
-                }
+            if (res.rows.length === 0) {
+                `User language '${language}' not available, using fallback language '${COMPASSConfig.getDefaultLanguageCode()}'`;
 
-                return res.rows[0].body;
+                res = await dbClient.query(
+                    `SELECT
+                        body
+                    FROM
+                        questionnaires
+                    WHERE
+                        id = $1 AND language_code = $2`,
+                    [url, COMPASSConfig.getDefaultLanguageCode()]
+                );
+                if (res.rows.length === 0) {
+                    throw new Error('questionnaire_not_found');
+                }
             }
+
+            return res.rows[0].body;
         } catch (e) {
             logger.err('!!! DB might be inconsistent. Check DB !!!');
             logger.err(e);
