@@ -102,7 +102,8 @@ export class DownloadController {
                 Version: queueEntry.version ?? '0.1',
                 JSON: queueEntry.encrypted_resp,
                 AbsendeDatum: queueEntry.date_sent,
-                ErhaltenDatum: queueEntry.date_received
+                ErhaltenDatum: queueEntry.date_received,
+                InstanceId: queueEntry.instance_id
             };
             cTransferList.push(cTransfer);
         }

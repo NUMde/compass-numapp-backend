@@ -13,4 +13,5 @@ export interface QueueEntry {
     encrypted_resp: string;
     date_sent: Date;
     date_received: Date;
+    instance_id: string;
 }

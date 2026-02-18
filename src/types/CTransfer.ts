@@ -13,4 +13,5 @@ export interface CTransfer {
     JSON: string;
     AbsendeDatum: Date;
     ErhaltenDatum: Date;
+    InstanceId: string;
 }
