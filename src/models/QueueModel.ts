@@ -33,7 +33,11 @@ export class QueueModel {
         try {
             const pool: Pool = DB.getPool();
             const res = await pool.query(
-                'SELECT * FROM queue WHERE downloaded=false ORDER BY date_sent ASC LIMIT $1 OFFSET $2',
+                `SELECT *
+                    FROM queue 
+                    JOIN questionnairehistory qh ON queue.date_received = qh.date_received
+                    WHERE downloaded=false 
+                    ORDER BY date_sent ASC LIMIT $1 OFFSET $2;`,
                 [limit, (page - 1) * limit]
             );
             return res.rows as QueueEntry[];
