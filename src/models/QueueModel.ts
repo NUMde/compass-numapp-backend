@@ -11,6 +11,7 @@ import { COMPASSConfig } from '../config/COMPASSConfig';
 import { ParticipantModel } from '../models/ParticipantModel';
 import { DB } from '../server/DB';
 import { IdHelper } from '../services/IdHelper';
+import { CTransfer } from '../types';
 
 /**
  * Model class that bundles the logic for access to the "queue" table.
@@ -29,18 +30,18 @@ export class QueueModel {
      * @return {*}
      * @memberof QueueModel
      */
-    public async getAvailableQueueData(limit: number, page: number): Promise<QueueEntry[]> {
+    public async getAvailableQueueData(limit: number, page: number): Promise<CTransfer[]> {
         try {
             const pool: Pool = DB.getPool();
             const res = await pool.query(
-                `SELECT *
-                    FROM queue 
+                `SELECT queue.id as "UUID", queue.subject_id as "SubjectId", queue.questionnaire_id as "QuestionnaireId", queue.version as "Version", queue.encrypted_resp as "JSON", queue.date_sent as "AbsendeDatum", queue.date_received as "ErhaltenDatum", qh.instance_id as "InstanceId"
+                    FROM queue
                     JOIN questionnairehistory qh ON queue.date_received = qh.date_received
                     WHERE downloaded=false 
-                    ORDER BY date_sent ASC LIMIT $1 OFFSET $2;`,
+                    ORDER BY queue.date_sent ASC LIMIT $1 OFFSET $2;`,
                 [limit, (page - 1) * limit]
             );
-            return res.rows as QueueEntry[];
+            return res.rows as CTransfer[];
         } catch (err) {
             logger.err(err);
             throw err;

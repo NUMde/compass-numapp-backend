@@ -67,7 +67,7 @@ export class DownloadController {
                 await this.queueModel.countAvailableQueueData(),
                 10
             );
-            const queueEntries: QueueEntry[] = await this.queueModel.getAvailableQueueData(
+            const queueEntries: CTransfer[] = await this.queueModel.getAvailableQueueData(
                 this.limitEntries,
                 page
             );
@@ -92,18 +92,13 @@ export class DownloadController {
         }
     }
 
-    private prepareQueueEntries(queueEntries: QueueEntry[]) {
+    private prepareQueueEntries(queueEntries: CTransfer[]) {
         const cTransferList: CTransfer[] = new Array<CTransfer>();
         for (const queueEntry of queueEntries) {
             const cTransfer: CTransfer = {
-                UUID: queueEntry.id,
-                SubjectId: queueEntry.subject_id,
-                QuestionnaireId: queueEntry.questionnaire_id ?? '',
-                Version: queueEntry.version ?? '0.1',
-                JSON: queueEntry.encrypted_resp,
-                AbsendeDatum: queueEntry.date_sent,
-                ErhaltenDatum: queueEntry.date_received,
-                InstanceId: queueEntry.instance_id
+                ...queueEntry,
+                Version: queueEntry.Version ?? '1.0',
+                QuestionnaireId: queueEntry.QuestionnaireId ?? ''
             };
             cTransferList.push(cTransfer);
         }
